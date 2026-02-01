@@ -213,20 +213,19 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
 
         // --- KONFIGURASI FIREBASE ---
         // Ganti bagian ini dengan config dari Firebase Console Anda
         const firebaseConfig = {
-            apiKey: "AIzaSyC045t3bXPztmzK3QtbIFk8_PlRd41aMNw",
-            authDomain: "letterboxd-clone-78461.firebaseapp.com",
-            databaseURL: "https://letterboxd-clone-78461-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "letterboxd-clone-78461",
-            storageBucket: "letterboxd-clone-78461.firebasestorage.app",
-            messagingSenderId: "712947389741",
-            appId: "1:712947389741:web:22b8d9ff75e21061b92fa4",
-            measurementId: "G-16NV65KMDN",
+            apiKey: "AIzaSyCNp9zp5rttLA3RzUeiXnFPFniP6h5pFuE",
+            authDomain: "threesmovie.firebaseapp.com",
+            projectId: "threesmovie",
+            storageBucket: "threesmovie.firebasestorage.app",
+            messagingSenderId: "182928045479",
+            appId: "1:182928045479:web:80e632e1cdfd63bd27b282",
+            measurementId: "G-WGJ7EQPEEG"
         };
 
         // Initialize Firebase
