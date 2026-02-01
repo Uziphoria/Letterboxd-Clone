@@ -91,6 +91,22 @@
         /* Delete Button */
         .comment-group:hover .btn-delete { opacity: 1; }
         .btn-delete { opacity: 0; transition: opacity 0.2s; }
+
+        /* Badge Owner Keren */
+        .owner-badge {
+        background: linear-gradient(45deg, #FFD700, #FFA500); /* Warna Emas */
+        color: black;
+        font-size: 0.6rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-left: 8px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+        border: 1px solid #B8860B;
+        vertical-align: middle;
+        display: inline-block;
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -110,7 +126,7 @@
             
             <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
                 <i class="fas fa-film text-3xl text-[#00e054]"></i>
-                <span class="text-white font-bold text-lg tracking-widest block">THREE'S MOVIE</span>
+                <span class="text-white font-bold text-lg tracking-widest block">CINELOG</span>
             </div>
 
             <div class="flex items-center gap-4">
@@ -391,12 +407,69 @@
             rate(0);
             
             // LOAD LIVE COMMENTS FROM FIREBASE
-            subscribeToComments(id);
+            // LIVE LOAD COMMENTS (REAL-TIME)
+        function subscribeToComments(movieId) {
+            const list = document.getElementById('comments-list');
+            list.innerHTML = `<div class="text-center py-6 text-gray-600 text-sm animate-pulse">Memuat ulasan...</div>`;
 
-            const modal = document.getElementById('movie-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
+            // NAMA OWNER (Ganti ini dengan nama yang Anda pakai di website)
+            // Pastikan huruf besar/kecilnya SAMA PERSIS dengan nama profile Anda
+            const OWNER_NAME = "Uziphoria"; 
+
+            import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then((fs) => {
+                const q = fs.query(
+                    fs.collection(window.db, "reviews"),
+                    fs.where("movieId", "==", movieId),
+                    fs.orderBy("createdAt", "desc")
+                );
+
+                unsubscribeComments = fs.onSnapshot(q, (snapshot) => {
+                    list.innerHTML = '';
+                    
+                    if (snapshot.empty) {
+                        list.innerHTML = `<div class="text-center py-6 text-gray-600 text-sm italic">Belum ada ulasan. Jadilah yang pertama!</div>`;
+                        return;
+                    }
+
+                    snapshot.forEach((doc) => {
+                        const r = doc.data();
+                        const starStr = '★'.repeat(r.rating);
+                        
+                        let dateStr = "Baru saja";
+                        if(r.createdAt) {
+                            dateStr = r.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+                        }
+
+                        // --- LOGIKA BADGE OWNER ---
+                        let badgeHtml = "";
+                        if (r.user === OWNER_NAME) {
+                            badgeHtml = `<span class="owner-badge"><i class="fas fa-check-circle"></i> OWNER</span>`;
+                        }
+
+                        const item = document.createElement('div');
+                        item.className = "comment-group flex gap-4 p-3 rounded-lg hover:bg-[#1f252b] transition relative group";
+                        
+                        // Perhatikan bagian ${badgeHtml} yang saya tambahkan di sebelah ${r.user}
+                        item.innerHTML = `
+                            <img src="${r.avatar || 'https://i.pravatar.cc/150'}" class="w-10 h-10 rounded-full object-cover shrink-0 border border-gray-700">
+                            <div class="flex-grow">
+                                <div class="flex items-center flex-wrap gap-1 mb-1">
+                                    <span class="text-white font-bold text-sm">${r.user}</span>
+                                    ${badgeHtml}
+                                    <span class="text-[#00e054] text-xs tracking-tighter ml-2">${starStr}</span>
+                                    <span class="text-gray-500 text-[10px] ml-auto">${dateStr}</span>
+                                </div>
+                                <p class="text-gray-300 text-sm leading-relaxed">${r.text}</p>
+                            </div>
+                            <button onclick="deleteReview('${doc.id}', '${r.user}')" class="btn-delete absolute top-2 right-2 text-red-500 hover:text-red-400 bg-black/60 px-2 py-1 rounded text-xs">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        `;
+                        list.appendChild(item);
+                    });
+                });
+            });
+        }
         }
 
         function closeModal() {
