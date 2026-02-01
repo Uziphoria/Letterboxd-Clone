@@ -213,32 +213,36 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-analytics.js";
+        // PENTING: Jangan hapus dua baris import di bawah ini!
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         // --- KONFIGURASI FIREBASE ---
-        // Ganti bagian ini dengan config dari Firebase Console Anda
+        // Pastikan API Key ini sudah benar (sesuai yang Anda copy dari Firebase Console)
         const firebaseConfig = {
             apiKey: "AIzaSyCNp9zp5rttLA3RzUeiXnFPFniP6h5pFuE",
             authDomain: "threesmovie.firebaseapp.com",
             projectId: "threesmovie",
             storageBucket: "threesmovie.firebasestorage.app",
             messagingSenderId: "182928045479",
-            appId: "1:182928045479:web:80e632e1cdfd63bd27b282",
-            measurementId: "G-WGJ7EQPEEG"
+            appId: "1:182928045479:web:80e632e1cdfd63bd27b282"
         };
 
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // Global Variables
-        window.db = db; // expose to window for helper functions
+        // MENEMPELKAN FUNGSI FIREBASE KE WINDOW (Agar bisa dipakai script lain)
+        // Bagian ini memperbaiki error "window.collection is not a function"
+        window.db = db;
         window.collection = collection;
         window.addDoc = addDoc;
         window.deleteDoc = deleteDoc;
         window.doc = doc;
         window.serverTimestamp = serverTimestamp;
+
+        console.log("Firebase berhasil dimuat!"); // Cek console, harusnya muncul tulisan ini
+    </script>
     </script>
 
     <script>
@@ -322,9 +326,9 @@
             { id: 39, title: "Moana", year: 2016, dir: "Ron Clements, Don Hall, John Musker", genre: ["Animation", "Adventure", "Family", "Comedy"], imdb: 7.9, cast: "Auli'i Cravalho, Dwayne Johnson, Rachel House", img: "https://m.media-amazon.com/images/M/MV5BMjI4MzU5NTExNF5BMl5BanBnXkFtZTgwNzY1MTEwMDI@._V1_.jpg", syn: "Setelah dibangkitkan, seorang pahlawan berapi dan temannya berusaha keras mendapatkan lagi wujud fisik mereka." },
             { id: 40, title: "Spider-Man: Across the Spider-Verse", year: 2023, dir: "Joaquim Dos Santos, Kemp Powers, Justin K. Thompson", genre: ["Animation", "Science Fiction", "Adventure", "Action"], imdb: 8.5, cast: "Shameik Moore, Hailee Steinfeld, Brian Tyree Henry", img: "https://m.media-amazon.com/images/M/MV5BNThiZjA3MjItZGY5Ni00ZmJhLWEwN2EtOTBlYTA4Y2E0M2ZmXkEyXkFqcGc@._V1_.jpg", syn: "Remaja Miles Morales menjadi Spider-Man di alam semestanya." },
             { id: 41, title: "The Secret World of Arrietty", year: 2010, dir: "Hiromasa Yonebayashi", genre: ["Animation", "Fantasy", "Family"], imdb: 7.6, cast: "Mirai Shida, Ryûnosuke Kamiki, Tatsuya Fujiwara", img: "https://m.media-amazon.com/images/M/MV5BMTAxNjk3OTYyODReQTJeQWpwZ15BbWU3MDgyODY2OTY@._V1_.jpg", syn: "Keluarga Peminjam (Borrowers) mungil yang tinggal diam-diam di bawah lantai rumah manusia." },
-            { id: 42, title: "Kimi no Nawa", year: 2016, dir: "Makoto Shinkai", genre: ["Animation", "Romance", "Drama"], imdb: 8.4, cast: "Ryûnosuke Kamiki, Mone Kamishiraishi, Ryo Narita", img: "https://static.wikia.nocookie.net/kiminonawa/images/6/62/Kimi-no-Na-wa.-Visual.jpg/revision/latest?cb=20160927170951", syn: "Mitsuha, gadis desa yang bosan hidup di pedesaan, dan Taki, remaja laki-laki di Tokyo. Keduanya secara misterius bertukar tubuh saat tidur. Mereka berupaya memahami fenomena ini, terhubung satu sama lain, hingga mengungkap rahasia bencana komet yang melampaui batas ruang dan waktu." },
-            { id: 43, title: "Tenki No Ko", year: 2019, dir: "Makoto Shinkai", genre: ["Fantasy", "Animation", "Romance", "Drama"], imdb: 7.5, cast: "Kotaro Daigo, Nana Mori, Tsubasa Honda", img: "https://static.wikia.nocookie.net/tenkinoko1663/images/c/c9/Key_Visual_3.png/revision/latest?cb=20201124164242", syn: "Seorang anak laki-laki yang kabur ke Tokyo berteman dengan seorang gadis yatim piatu yang tampaknya mampu memanipulasi cuaca." },
-            { id: 44, title: "Suzume no Tojimari", year: 2022, dir: "Makoto Shinkai", genre: ["Fantasy", "Animation", "Adventure", "Drama"], imdb: 7.6, cast: "Nanoka Hara, Hokuto Matsumura, Eri Fukatsu", img: "https://static.wikia.nocookie.net/makotoshinkai/images/7/7c/Suzume_no_Tojimari_2nd_poster.jpg/revision/latest?cb=20220408234725", syn: "Suzume, gadis SMA yang tak sengaja membuka pintu misterius di reruntuhan, melepaskan bencana gempa bumi di seluruh Jepang, dan kemudian berkelana bersama Souta, pemuda yang berubah menjadi kursi, untuk menutup pintu-pintu tersebut sebelum kehancuran meluas, sekaligus menghentikan kucing bernama Daijin yang bertanggung jawab atas kekacauan itu, dalam petualangan epik lintas Jepang yang menyentuh isu kehilangan dan trauma pasca bencana." },
+            { id: 42, title: "Kimi no Nawa", year: 2016, dir: "Makoto Shinkai", genre: ["Animation", "Romance", "Drama"], imdb: 8.4, cast: "Ryûnosuke Kamiki, Mone Kamishiraishi, Ryo Narita", img: "https://m.media-amazon.com/images/M/MV5BMjI1ODZkYTgtYTY3Yy00ZTJkLWFkOTgtZDUyYWM4MzQwNjk0XkEyXkFqcGc@._V1_.jpg", syn: "Mitsuha, gadis desa yang bosan hidup di pedesaan, dan Taki, remaja laki-laki di Tokyo. Keduanya secara misterius bertukar tubuh saat tidur. Mereka berupaya memahami fenomena ini, terhubung satu sama lain, hingga mengungkap rahasia bencana komet yang melampaui batas ruang dan waktu." },
+            { id: 43, title: "Tenki No Ko", year: 2019, dir: "Makoto Shinkai", genre: ["Fantasy", "Animation", "Romance", "Drama"], imdb: 7.5, cast: "Kotaro Daigo, Nana Mori, Tsubasa Honda", img: "https://m.media-amazon.com/images/M/MV5BMmJiYWI4ZjktMzgyZS00MjBiLThmOTYtZWJmOTUzOTFkMTFiXkEyXkFqcGc@._V1_.jpg", syn: "Seorang anak laki-laki yang kabur ke Tokyo berteman dengan seorang gadis yatim piatu yang tampaknya mampu memanipulasi cuaca." },
+            { id: 44, title: "Suzume no Tojimari", year: 2022, dir: "Makoto Shinkai", genre: ["Fantasy", "Animation", "Adventure", "Drama"], imdb: 7.6, cast: "Nanoka Hara, Hokuto Matsumura, Eri Fukatsu", img: "https://m.media-amazon.com/images/M/MV5BODhkNDhmNzktODFmMC00NDZiLWEzN2UtY2YwYzgzYTVlMWZmXkEyXkFqcGc@._V1_.jpg", syn: "Suzume, gadis SMA yang tak sengaja membuka pintu misterius di reruntuhan, melepaskan bencana gempa bumi di seluruh Jepang, dan kemudian berkelana bersama Souta, pemuda yang berubah menjadi kursi, untuk menutup pintu-pintu tersebut sebelum kehancuran meluas, sekaligus menghentikan kucing bernama Daijin yang bertanggung jawab atas kekacauan itu, dalam petualangan epik lintas Jepang yang menyentuh isu kehilangan dan trauma pasca bencana." },
             { id: 45, title: "Demon Slayer: Kimetsu no Yaiba Infinity Castle", year: 2025, dir: "Haruo Sotozaki", genre: ["Anime", "Action", "Animation"], imdb: 8.5, cast: "Natsuki Hanae, Takahiro Sakurai", img: "https://m.media-amazon.com/images/M/MV5BOGQ3YWUzYjEtMTJiYy00ZjQ0LWI0YjktYjhiNGVhNGExYTM3XkEyXkFqcGc@._V1_.jpg", syn: "Pertempuran terakhir Korps Pembasmi Iblis di kastil misterius Muzan." },
         
         ];
