@@ -285,14 +285,14 @@
         function handleProfileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-            if (file.size > 20 * 1024 * 1024) { // Limit 2MB for local storage perf
-                alert("Ukuran file terlalu besar! Maksimal 2MB.");
+            if (file.size > 20 * 1024 * 1024) { // Limit 20MB for local storage perf
+                alert("Ukuran file terlalu besar! Maksimal 20MB.");
                 return;
             }
             const reader = new FileReader();
             reader.onloadend = function() {
                 user.avatar = reader.result; 
-                localStorage.setItem('cinelog_user', JSON.stringify(user));
+                localStorage.setItem('threesmovie_user', JSON.stringify(user));
                 updateNav();
             }
             reader.readAsDataURL(file);
