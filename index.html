@@ -285,7 +285,7 @@
         function handleProfileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
-            if (file.size > 2 * 1024 * 1024) { // Limit 2MB for local storage perf
+            if (file.size > 20 * 1024 * 1024) { // Limit 2MB for local storage perf
                 alert("Ukuran file terlalu besar! Maksimal 2MB.");
                 return;
             }
