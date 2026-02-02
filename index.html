@@ -437,6 +437,59 @@
         
         ];
 
+        // --- 3. LOGIKA WELCOME SCREEN & INIT ---
+
+        function enterApp() {
+            const screen = document.getElementById('welcome-screen');
+            
+            // 1. Mulai animasi menghilang (Fade Out)
+            screen.style.opacity = '0';
+            screen.style.pointerEvents = 'none'; // Agar tidak bisa diklik lagi saat memudar
+            
+            // 2. Tunggu 1 detik sampai benar-benar hilang, baru hapus dari layar
+            setTimeout(() => { 
+                screen.style.display = 'none'; 
+                
+                // 3. LOGIKA BARU: CEK PROFIL SETELAH MASUK
+                // Jika nama masih "Guest", paksa ganti nama
+                if (user.name === "Guest" || user.name === "Pengunjung") {
+                    setTimeout(() => {
+                        alert("👋 Selamat Datang di Three's Movie!\n\nSebelum mulai, mohon ganti Nama dan Foto Profil dulu ya.");
+                        editName(); // Langsung buka popup ganti nama
+                    }, 500); // Beri jeda setengah detik biar enak dilihat
+                }
+
+            }, 1000); // Waktu ini harus sama dengan durasi transisi CSS
+        }
+
+        function init() {
+            // Update nama di pojok kanan atas saat web baru dibuka
+            updateNav(); 
+            
+            // Render (Tampilkan) Poster Film
+            const grid = document.getElementById('grid-container');
+            // Kosongkan grid dulu biar tidak dobel kalau direfresh
+            grid.innerHTML = ''; 
+
+            movies.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'poster-wrapper group bg-[#1f252b] cursor-pointer relative';
+                div.onclick = () => openModal(m.id);
+                div.innerHTML = `
+                    <img src="${m.img}" loading="lazy" alt="${m.title}">
+                    <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+                        <h4 class="text-white font-bold text-xs uppercase tracking-wide">${m.title}</h4>
+                        <p class="text-[#556677] text-[10px] mt-1">${m.year}</p>
+                        <div class="mt-2 text-[#00e054] text-xs"><i class="fas fa-star"></i> ${m.imdb}</div>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        // Jalankan fungsi init saat script selesai dimuat
+        init();
+
         // --- 3. INIT APP ---
         function init() {
             updateNav();
