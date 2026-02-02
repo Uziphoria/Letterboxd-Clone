@@ -7,18 +7,12 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Graphik+Web:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
-        /* --- TEMPEL DI SINI (Di atas </style>) --- */
-        .fade-out-cinematic {
-            opacity: 0 !important;
-            transform: scale(1.1);
-            filter: blur(10px);
-            pointer-events: none;
-            transition: all 1s ease-in-out;
-        }
-        /* --- DESIGN SYSTEM (TIDAK BERUBAH) --- */
+        /* --- 1. DESIGN SYSTEM --- */
         :root {
             --bg-dark: #14181c;
             --bg-card: #1f252b;
@@ -35,22 +29,7 @@
             overflow-x: hidden;
         }
 
-        /* ANIMATED BACKGROUND */
-        .aurora-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -1;
-            background: linear-gradient(-45deg, #14181c, #1b2229, #232a32, #0d2b1d);
-            background-size: 400% 400%;
-            animation: aurora 15s ease infinite;
-        }
-        @keyframes aurora {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        /* --- 2. MOVIE INTRO WELCOME SCREEN (BARU) --- */
+        /* --- 2. MOVIE INTRO WELCOME SCREEN (CINEMATIC) --- */
         #welcome-screen {
             position: fixed;
             inset: 0;
@@ -82,11 +61,11 @@
             text-align: center;
         }
         
-        /* Teks Utama Cinematic */
+        /* Teks Utama Cinematic (Montserrat) */
         .brand-text {
             font-family: 'Montserrat', sans-serif;
             font-weight: 900;
-            font-size: 3.5rem; /* Ukuran font di HP akan disesuaikan di bawah */
+            font-size: 3.5rem;
             color: white;
             text-transform: uppercase;
             letter-spacing: 5px;
@@ -95,7 +74,6 @@
             animation: cinematicReveal 2.5s cubic-bezier(0.2, 1, 0.3, 1) forwards;
         }
         
-        /* Efek Glow pada titik */
         .accent-dot { 
             color: var(--accent); 
             text-shadow: 0 0 20px var(--accent);
@@ -122,26 +100,36 @@
             animation: fadeIn 1s forwards 2s;
         }
 
-        /* --- ANIMASI --- */
+        /* Kelas Animasi Keluar (Fade Out) */
+        .fade-out-cinematic {
+            opacity: 0 !important;
+            transform: scale(1.1);
+            filter: blur(10px);
+            pointer-events: none;
+            transition: all 1s ease-in-out;
+        }
+
         @keyframes bgZoom {
             0% { transform: scale(1); }
             100% { transform: scale(1.1); }
         }
-
         @keyframes cinematicReveal { 
             0% { opacity: 0; transform: translateY(30px) scale(0.9); letter-spacing: 0px; } 
             100% { opacity: 1; transform: translateY(0) scale(1); letter-spacing: 8px; } 
         }
-
         @keyframes loadProgress { 0% { width: 0; opacity: 0;} 20% { opacity: 1; } 100% { width: 150px; opacity: 0; } }
         @keyframes fadeIn { to { opacity: 1; } }
 
-        @media (max-width: 640px) {
-            .brand-text { font-size: 2.5rem; letter-spacing: 2px; }
-            @keyframes cinematicReveal { to { letter-spacing: 4px; opacity: 1; transform: scale(1); } }
+        /* --- 3. UI COMPONENTS --- */
+        .aurora-bg {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
+            background: linear-gradient(-45deg, #14181c, #1b2229, #232a32, #0d2b1d);
+            background-size: 400% 400%; animation: aurora 15s ease infinite;
+        }
+        @keyframes aurora {
+            0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
         }
 
-        /* UI COMPONENTS */
         .poster-wrapper {
             position: relative; aspect-ratio: 2/3; border-radius: 6px; overflow: hidden;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s, box-shadow 0.2s;
@@ -152,36 +140,33 @@
         }
         .poster-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Modal & Scroll */
+        /* Modal Style */
         .modal-backdrop { background-color: rgba(0, 0, 0, 0.9); backdrop-filter: blur(8px); }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #14181c; }
         ::-webkit-scrollbar-thumb { background: #445566; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
-        /* Rating Stars */
         .star-rating i { cursor: pointer; transition: color 0.2s; }
         .star-filled { color: var(--accent); }
         .star-empty { color: #445566; }
 
-        /* Delete Button */
         .comment-group:hover .btn-delete { opacity: 1; }
         .btn-delete { opacity: 0; transition: opacity 0.2s; }
 
-        /* Badge Owner / Pemilik */
+        /* Badge Owner Emas */
         .owner-badge {
-        background: linear-gradient(45deg, #FFD700, #FFA500); /* Warna Emas */
-        color: black;
-        font-size: 0.6rem;
-        padding: 2px 6px;
-        border-radius: 4px;
-        margin-left: 8px;
-        font-weight: 800;
-        letter-spacing: 1px;
-        box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
-        border: 1px solid #B8860B;
-        vertical-align: middle;
-        display: inline-block; }
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: black; font-size: 0.6rem; padding: 2px 6px;
+            border-radius: 4px; margin-left: 8px; font-weight: 800;
+            letter-spacing: 1px; box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
+            border: 1px solid #B8860B; vertical-align: middle; display: inline-block;
+        }
+
+        @media (max-width: 640px) {
+            .brand-text { font-size: 2.5rem; letter-spacing: 2px; }
+            @keyframes cinematicReveal { to { letter-spacing: 4px; opacity: 1; transform: scale(1); } }
+        }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
@@ -189,27 +174,26 @@
     <div class="aurora-bg"></div>
 
     <div id="welcome-screen" onclick="enterApp()">
-    <div id="welcome-bg"></div>
-
-    <div class="welcome-content">
-        <h1 class="brand-text">Three's Movie<span class="accent-dot">.</span></h1>
-        <div class="loader-bar"></div>
-        <p class="tap-hint">Tap to Enter</p>
+        <div id="welcome-bg"></div>
+        <div class="welcome-content">
+            <h1 class="brand-text">Three's Movie<span class="accent-dot">.</span></h1>
+            <div class="loader-bar"></div>
+            <p class="tap-hint">Tap to Enter</p>
+        </div>
     </div>
-</div>
 
     <input type="file" id="profile-upload" accept="image/*" class="hidden" onchange="handleProfileUpload(event)">
 
     <nav class="sticky top-0 z-40 bg-[#14181c]/95 border-b border-[#2c3440] backdrop-blur-sm">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center relative z-50">
             
-            <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
+            <div class="flex items-center gap-3 cursor-pointer select-none" onclick="window.scrollTo(0,0)">
                 <i class="fas fa-film text-3xl text-[#00e054]"></i>
                 <span class="text-white font-bold text-lg tracking-widest block">CINELOG</span>
             </div>
 
             <div class="flex items-center gap-4">
-                <div class="text-right block group cursor-pointer" onclick="editName()">
+                <div class="text-right block group cursor-pointer select-none" onclick="editName()">
                     <p id="nav-username" class="text-gray-200 font-bold text-sm group-hover:text-[#00e054] transition">Guest</p>
                     <p class="text-[10px] text-gray-500 uppercase tracking-wider">Ganti Nama</p>
                 </div>
@@ -227,7 +211,7 @@
     <main class="container mx-auto px-4 py-8 flex-grow">
         <div class="flex items-end justify-between border-b border-[#2c3440] pb-4 mb-6">
             <h2 class="text-white text-xl font-normal tracking-wide">FILM FAVORITE CLASS XI F-3</h2>
-            <span class="text-xs text-[#00e054] font-bold">MORE</span>
+            <span class="text-xs text-[#00e054] font-bold">45 JUDUL</span>
         </div>
 
         <div id="grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4 lg:gap-6">
@@ -244,7 +228,7 @@
         </div>
     </footer>
 
-    <div id="movie-modal" class="fixed inset-0 z-50 hidden modal-backdrop justify-center items-center p-4">
+    <div id="movie-modal" class="fixed inset-0 z-[100] hidden modal-backdrop justify-center items-center p-4">
         <div class="bg-[#14181c] w-full max-w-5xl h-[85vh] rounded-xl border border-[#2c3440] shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
             
             <button onclick="closeModal()" class="absolute top-4 right-4 z-20 text-gray-400 hover:text-white text-2xl transition">
@@ -309,12 +293,10 @@
     </div>
 
     <script type="module">
-        // PENTING: Jangan hapus dua baris import di bawah ini!
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // --- KONFIGURASI FIREBASE ---
-        // Pastikan API Key ini sudah benar (sesuai yang Anda copy dari Firebase Console)
+        // CONFIG FIREBASE (Sesuai Data Anda)
         const firebaseConfig = {
             apiKey: "AIzaSyCNp9zp5rttLA3RzUeiXnFPFniP6h5pFuE",
             authDomain: "threesmovie.firebaseapp.com",
@@ -324,12 +306,10 @@
             appId: "1:182928045479:web:80e632e1cdfd63bd27b282"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // MENEMPELKAN FUNGSI FIREBASE KE WINDOW (Agar bisa dipakai script lain)
-        // Bagian ini memperbaiki error "window.collection is not a function"
+        // Expose ke Window
         window.db = db;
         window.collection = collection;
         window.addDoc = addDoc;
@@ -337,28 +317,22 @@
         window.doc = doc;
         window.serverTimestamp = serverTimestamp;
 
-        console.log("Firebase berhasil dimuat!"); // Cek console, harusnya muncul tulisan ini
-    </script>
+        console.log("Firebase Connected!");
     </script>
 
     <script>
-        // --- 1. USER PROFILE (Disimpan Local di Browser Pengunjung) ---
-        let user = {
-            name: "Guest",
-            avatar: "https://i.pravatar.cc/150?img=12"
-        };
+        // ==========================================
+        // 1. SISTEM PROFIL PENGGUNA (ANTI-RESET)
+        // ==========================================
+        
+        let user = { name: "Guest", avatar: "https://i.pravatar.cc/150?img=12" };
 
-        // Coba ambil data yang tersimpan
-        const savedData = localStorage.getItem('threesmovie_user');
+        // Coba ambil data tersimpan (Anti-Reset)
+        const savedData = localStorage.getItem('cinelog_user');
         if (savedData) {
-            try {
-                user = JSON.parse(savedData);
-            } catch (e) {
-                console.error("Data rusak, reset ke default");
-            }
+            try { user = JSON.parse(savedData); } catch (e) { console.error("Error load user", e); }
         }
 
-        // Fungsi Update Tampilan Pojok Kanan Atas
         function updateNav() {
             if (document.getElementById('nav-username')) {
                 document.getElementById('nav-username').innerText = user.name;
@@ -366,32 +340,31 @@
             }
         }
 
-        // Fungsi Simpan Data ke Memori HP/Laptop
         function saveUser() {
-            localStorage.setItem('cinelog_user', JSON.stringify(user));
-            updateNav();
+            try {
+                localStorage.setItem('cinelog_user', JSON.stringify(user));
+                updateNav();
+            } catch (e) { alert("Memori penuh. Coba foto yang lebih kecil."); }
         }
 
-        // Fungsi Ganti Nama
         function editName() {
             let newName = prompt("Siapa nama panggilanmu?", user.name);
             if (newName && newName.trim() !== "") {
                 user.name = newName;
-                saveUser(); // LANGSUNG SIMPAN
+                saveUser();
                 alert("Nama tersimpan: " + newName);
             } else {
-                // Jika user masih Guest, paksa isi lagi
                 if(user.name === "Guest" || user.name === "Pengunjung") {
-                    setTimeout(() => editName(), 100); // Paksa tanya lagi
+                    setTimeout(() => editName(), 100); // Paksa isi nama
                 }
             }
         }
 
-        // Fungsi Upload Foto (Limit 20MB)
         function handleProfileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
+            // Batas 20MB
             if (file.size > 20 * 1024 * 1024) { 
                 alert("Ukuran file terlalu besar! Maksimal 20MB.");
                 return;
@@ -400,94 +373,88 @@
             const reader = new FileReader();
             reader.onloadend = function() {
                 user.avatar = reader.result;
-                saveUser(); // LANGSUNG SIMPAN
+                saveUser();
                 alert("Foto profil berhasil diganti!");
             }
             reader.readAsDataURL(file);
         }
 
-        // --- 2. DATA 35 MOVIES (STATIC) ---
-        // Data film tetap hardcoded agar website cepat dimuat
+        // ==========================================
+        // 2. DATA FILM (45 JUDUL LENGKAP)
+        // ==========================================
         const movies = [
-            { id: 1, title: "Jumbo", year: 2025, dir: "Ryan Adriandhy", genre: ["Family", "Animation", "Drama", "Comedy", "Fantasy"], imdb: 8.6, cast: "Prince Poetiray, Quinn Salman, Yusuf Ozkan", img: "https://m.media-amazon.com/images/M/MV5BMjMxODU2YTYtZjFlZC00MDFlLTg0ZmItNDE5NjMxMmU0ZTlmXkEyXkFqcGc@._V1_.jpg", syn: "Don, anak 10 tahun bertubuh gempal yang sering dirundung (di-bully), yang bertualang mencari buku dongeng peninggalan orang tuanya yang dicuri Atta. Dibantu dua sahabatnya, Nurman dan Mae, Don bertemu arwah kecil bernama Meri, memicu petualangan magis penuh persahabatan, keberanian, dan penemuan jati diri" },
-            { id: 2, title: "Agak Laen", year: 2024, dir: "Mouhadkly Ach", genre: ["Comedy", "Horror"], imdb: 7.6, cast: "Bene Dion Rajagukguk, Oki Rengga, Indra Jegel", img: "https://m.media-amazon.com/images/M/MV5BODg5YzA5MmEtN2NkOC00M2JhLTgzZjktZjg1M2U3ZmEyN2IyXkEyXkFqcGc@._V1_FMjpg_UX528_.jpg", syn: "Empat penjaga rumah hantu pasar malam yang gagal menakuti pengunjung, mencoba merenovasi wahana mereka, namun malah memakan korban jiwa dan mereka harus menyembunyikan mayatnya." },
-            { id: 3, title: "Sore: Istri dari Masa Depan", year: 2025, dir: "Yandy Laurens", genre: ["Science Fiction", "Drama", "Fantasy", "Romance"], imdb: 7.7, cast: "Sheila Dara AishaDion WiyokoGoran Bogdan", img: "https://a.ltrbxd.com/resized/film-poster/1/2/7/0/8/1/4/1270814-sore-a-wife-from-the-future-0-1000-0-1500-crop.jpg?v=7a31b7c5a8", syn: "Sore, seorang wanita misterius, datang dari masa depan ke masa lalu dengan satu misi - mengubah takdir hidup Jonathan, suaminya. Namun, segalanya menjadi rumit karena masa lalu, masa kini, dan masa depan Jonathan bersama Sore menjadi berbenturan." },
-            { id: 4, title: "Stealing Raden Saleh", year: 2022, dir: "Angga Dwimas Sasongko", genre: ["Crime", "Drama"], imdb: 7.3, cast: "Iqbaal Dhiafakhri Ramadhan, Angga Yunanda, Rachel Amanda", img: "https://a.ltrbxd.com/resized/film-poster/7/4/8/4/1/0/748410-stealing-raden-saleh-0-1000-0-1500-crop.jpg?v=a933bb731e", syn: "Pencurian terbesar abad ini tinggal menghitung hari menjelang tanggal eksekusinya. Komplotan sudah lengkap dan siap menjalankan misi untuk mencuri lukisan sang maestro, Raden Saleh, yang berjudul Penangkapan Diponegoro. Pemalsuan, peretasan, pertarungan, dan manipulasi terjadi dalam pencurian berencana yang dijalankan oleh sekelompok anak muda amatiran." },
-            { id: 5, title: "Glorious Days", year: 2019, dir: "Riri Riza", genre: ["Drama"], imdb: 7.4, cast: "Maizura, Sheryl Sheinafia, Agatha Pricilla", img: "https://a.ltrbxd.com/resized/film-poster/5/2/9/5/6/2/529562-glorious-days-0-1000-0-1500-crop.jpg?v=70f7d56aec", syn: "Reuni geng SMA tahun 90-an yang terpecah akibat insiden tragis. Vina (Marsha Timothy) berusaha mengumpulkan kembali anggota Geng Bebas Kris, Jessica, Gina, Suci, dan Jojo—demi memenuhi keinginan terakhir Kris (Susan Bachtiar) yang divonis kanker stadium akhir." },
-            { id: 6, title: "5 cm", year: 2012, dir: "Rizal Mantovani", genre: ["Adventure", "Romance", "Drama"], imdb: 7.3, cast: "Herjunot Ali, Raline Shah, Fedi Nuril", img: "https://m.media-amazon.com/images/M/MV5BYzEyM2VlZTgtNGI3MS00NzBiLWJkODItNGE4OWU5M2FmNTg0XkEyXkFqcGc@._V1_.jpg", syn: "persahabatan lima orang Genta, Arial, Zafran, Riani, dan Ian yang jenuh lalu memutuskan tidak berkomunikasi selama tiga bulan. Setelah berpisah, mereka bertemu kembali untuk mendaki Gunung Semeru, puncak tertinggi di Jawa, menempuh perjalanan penuh perjuangan, cinta, dan nasionalisme demi mengibarkan sang saka merah putih pada 17 Agustus." },
-            { id: 7, title: "Train To Busan", year: 2016, dir: "Yeon Sang-ho", genre: ["Thriller", "Horror", "Adventure", "Action"], imdb: 7.6, cast: "Gong Yoo, Jung Yu-mi, Ma Dong-seok", img: "https://a.ltrbxd.com/resized/film-poster/3/3/0/9/1/2/330912-train-to-busan-0-1000-0-1500-crop.jpg?v=c85e151cfe", syn: "Wabah zombie mendadak yang menginfeksi penumpang kereta cepat KTX dari Seoul ke Busan. Manajer keuangan sibuk, Seok-woo (Gong Yoo), berjuang melindungi putrinya, Soo-an, di tengah kepanikan dan perjuangan bertahan hidup melawan gelombang zombie di setiap gerbong." },
-            { id: 8, title: "Unlocked", year: 2023, dir: "Kim Tae-joon", genre: ["Thriller"], imdb: 6.4, cast: "Chun Woo-hee, Yim Si-wan, Kim Hee-woni", img: "https://m.media-amazon.com/images/M/MV5BNzBhN2IzMmYtOGY5MC00ZDkwLTkxYWUtMDkzZmJmZWFiYmRhXkEyXkFqcGc@._V1_.jpg", syn: "Lee Na-mi (Chun Woo-hee) yang hidupnya hancur setelah kehilangan ponselnya. Ponsel itu ditemukan oleh Oh Jun-yeong (Im Si-wan), seorang psikopat yang memasang spyware dan meretas data pribadinya untuk meneror dan melakukan kejahatan atas nama Na-mi." },
-            { id: 9, title: "The Call", year: 2020, dir: "Chung-Hyun Lee", genre: ["Thriller", "Mystery", "Science Fiction"], imdb: 7.1, cast: "Park Shin-hye, Jeon Jong-seo, Kim Sung-ryung", img: "https://m.media-amazon.com/images/M/MV5BYzZlOGEyZTMtYmIxYS00NmIxLWIwNjYtMzY3Yjg2OThjODU2XkEyXkFqcGc@._V1_.jpg", syn: "Seo-yeon (Park Shin-hye) yang menemukan telepon tua di rumah masa kecilnya. Ia terhubung dengan Young-sook (Jeon Jong-seo), wanita yang tinggal di rumah yang sama 20 tahun sebelumnya." },
-            { id: 10, title: "Love Your Enemy", year: 2024, dir: "Park Joon-hwa", genre: ["Drama"], imdb: 7.4, cast: "Ju Ji-hoon, Jung Yu-mi, Lee Shi-Woo", img: "https://a.ltrbxd.com/resized/film-poster/1/2/9/8/3/1/7/1298317-love-your-enemy-0-1000-0-1500-crop.jpg?v=633a4ce23b", syn: "Seok Ji-Won (Ju Ji-Hoon) dan Yoon Ji-Won (Jung Yu-Mi), sepasang kekasih masa kecil yang lahir di hari yang sama dengan nama mirip, namun terjebak dalam permusuhan keluarga turun-temurun. Keduanya kembali bertemu sebagai direktur dan guru di SMA Dokmok, memicu reuni benci-tapi-cinta yang penuh konflik." },
-            { id: 11, title: "High & Low: The Movie", year: 2016, dir: "Shigeaki Kubo", genre: ["Action"], imdb: 6.4, cast: "Joshua Walters, Ryôhei Abe, Leon Shibli Ahmad", img: "https://m.media-amazon.com/images/M/MV5BNDFkY2IwZjgtZmIyMi00MTc5LTgzYzktZDFjNmJkNjFmMTkwXkEyXkFqcGc@._V1_.jpg", syn: "Film aksi Jepang yang berpusat pada konflik di wilayah SWORD, yang dikuasai oleh lima geng berandalan (Sannoh Rengokai, White Rascals, Oni-Jinja, Rude Boys, dan Daruma Ikka) setelah bubarnya geng legendaris Mugen." },
-            { id: 12, title: "Crows Zero", year: 2007, dir: "Takashi Miike", genre: ["Action", "Crime", "Comedy"], imdb: 7.0, cast: "Shun Oguri, Kyôsuke Yabe, Meisa Kuroki", img: "https://m.media-amazon.com/images/M/MV5BNDM1NDI1NDYtZTgzZi00NDFiLTg4MjQtODllY2M1ZDA2YWY5XkEyXkFqcGc@._V1_.jpg", syn: "Pertarungan kekuasaan antar geng siswa di SMA Suzuran, sekolah khusus pria yang terkenal sebagai sarang berandalan, dengan fokus pada murid baru Takiya Genji yang berusaha menaklukkan sekolah tersebut demi ayahnya, sambil bersaing sengit dengan pemimpin geng terkuat, Serizawa Tamao, dan membentuk gengnya sendiri, Genji Perfect Seiha. Ceritanya mengeksplorasi tema persahabatan, harga diri, dan kekerasan remaja di tengah konflik perebutan dominasi, dengan adegan pertarungan brutal yang realistis tanpa senjata." },
-            { id: 13, title: "One Love", year: 2003, dir: "Rick Elgood, Don Letts", genre: ["Romance", "Drama"], imdb: 6.1, cast: "Ky-Mani Marley, Cherine Anderson, Idris Elba", img: "https://m.media-amazon.com/images/M/MV5BZjc0OWQ1ZjUtZTNlNy00Mjg4LThkNTItYzk2MmE1MDVhMzU3XkEyXkFqcGc@._V1_.jpg", syn: "Musisi Rasta muda yang jatuh cinta dengan putri seorang pendeta Pentakosta setelah bertemu di sebuah kontes musik." },
-            { id: 14, title: "The Sound of Music", year: 1965, dir: "Robert Wise", genre: ["Drama", "Music", "Romance", "Family"], imdb: 8.1, cast: "Julie Andrews, Christopher Plummer, Eleanor Parker", img: "https://m.media-amazon.com/images/M/MV5BYWJhYmU4MjQtZDJhYi00ZGVjLTlkNTEtNzkzNGVjOWQ3MjcwXkEyXkFqcGc@._V1_.jpg", syn: "Maria, biarawati muda ceria yang menjadi pengasuh tujuh anak duda kaya, Kapten von Trapp, di Austria menjelang Perang Dunia II." },
-            { id: 15, title: "Passion Pay", year: 2010, dir: "Mitch Glazer", genre: ["Family", "Drama", "Romance", "Horror"], imdb: 4.5, cast: "Mickey Rourke, Megan Fox, Bill Murray", img: "https://a.ltrbxd.com/resized/film-poster/2/5/8/6/3/25863-passion-play-0-1000-0-1500-crop.jpg?v=fd0c2e5271", syn: "Nate, seorang pemain terompet jazz yang sial (Mickey Rourke), yang melarikan diri dari gangster kejam bernama Happy Shannon." },
-            { id: 16, title: "Forrest Gump", year: 1994, dir: "Robert Zemeckis", genre: ["Drama", "Romance", "Comedy"], imdb: 8.8, cast: "Tom Hanks, Robin Wright, Gary Sinise", img: "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg", syn: "Mengisahkan perjalanan hidup Forrest Gump, pria Alabama dengan IQ 75 yang jujur dan berhati tulus." },
-            { id: 17, title: "Se7en", year: 1995, dir: "David Fincher", genre: ["Crime", "Mystery"], imdb: 8.6, cast: "Morgan Freeman, Brad Pitt, Kevin Spacey", img: "https://image.tmdb.org/t/p/w500/6yoghtyTpznpBik8EngEmJskVUO.jpg", syn: "Dua detektif memburu pembunuh berantai yang menggunakan tujuh dosa mematikan sebagai motif." },
-            { id: 18, title: "La La Land", year: 2016, dir: "Damien Chazelle", genre: ["Drama", "Comedy", "Romance"], imdb: 8.0, cast: "Ryan Gosling, Emma Stone, Rosemarie DeWitt", img: "https://m.media-amazon.com/images/M/MV5BMzUzNDM2NzM2MV5BMl5BanBnXkFtZTgwNTM3NTg4OTE@._V1_.jpg", syn: "Seorang pianis jazz dan aktris yang bercita-cita tinggi jatuh cinta di Los Angeles." },
-            { id: 19, title: "(500) Days of Summer", year: 2009, dir: "Marc Webb", genre: ["Drama", "Comedy", "Romance"], imdb: 7.6, cast: "Zooey Deschanel, Joseph Gordon-Levitt, Geoffrey Arend", img: "https://m.media-amazon.com/images/M/MV5BMTk5MjM4OTU1OV5BMl5BanBnXkFtZTcwODkzNDIzMw@@._V1_.jpg", syn: "Drama romantis nonlinear tentang Tom Hansen, seorang penulis kartu ucapan yang romantis, dan Summer Finn, wanita yang tidak percaya cinta sejati. Film ini menelusuri 500 hari hubungan mereka yang tidak seimbang, menyoroti ekspektasi cinta Tom versus realitas santai Summer, serta perjalanan patah hati dan kedewasaan Tom." },
-            { id: 20, title: "The Greatest Showman", year: 2017, dir: "Michael Gracey", genre: ["Drama"], imdb: 7.5, cast: "Hugh Jackman, Michelle Williams, Zac Efron", img: "https://m.media-amazon.com/images/M/MV5BMjI1NDYzNzY2Ml5BMl5BanBnXkFtZTgwODQwODczNTM@._V1_.jpg", syn: "Musikal biografi tentang Phineas Taylor Barnum (Hugh Jackman) yang bangkit dari kemiskinan untuk menciptakan sirkus spektakuler di Amerika abad ke-19, merayakan keunikan orang-orang pinggiran, namun ambisinya hampir menghancurkan keluarganya dan sirkusnya, yang akhirnya ia sadari bahwa keluarga dan orang-orang yang mencintainya adalah kekayaan sesungguhnya, sambil mengajarkan pesan tentang menerima perbedaan dan meraih mimpi." },
-            { id: 21, title: "Cruella", year: 2021, dir: "Craig Gillespie", genre: ["Comedy", "Adventure", "Crime"], imdb: 7.3, cast: "Emma Stone, Emma Thompson, Joel Fry", img: "https://m.media-amazon.com/images/M/MV5BMWY5MjljNjctZjhjZS00MWY0LTgwYzUtZTJiYTVmMmJkM2E0XkEyXkFqcGc@._V1_.jpg", syn: "Mengisahkan asal-usul Estella (Emma Stone), gadis yatim piatu berbakat fashion di London era punk-rock 70-an yang cerdas dan kreatif. Bersama dua sahabat pencurinya, Jasper dan Horace, Estella berusaha mengejar impian menjadi desainer, hingga menarik perhatian Baroness von Hellman (Emma Thompson), ikon fashion yang kejam, yang memicu transformasi Estella menjadi sosok kejam, modis, dan penuh dendam bernama Cruella de Vil." },
-            { id: 22, title: "Mission: Imposible", year: 1996, dir: "Brian De Palma", genre: ["Thriller", "Action", "Adventure"], imdb: 7.2, cast: "Tom Cruise, Jon Voight, Emmanuelle Béart", img: "https://m.media-amazon.com/images/M/MV5BOTI4ZmFlNWItYjkwZC00ZDcyLWIwNTctOGI5MDdlOWI3ZGIzXkEyXkFqcGc@._V1_.jpg", syn: "Seorang agen rahasia Amerika dituduh telah berkhianat dan menghabisi seluruh anggota timnya." },
-            { id: 23, title: "Dead Poets Society", year: 1989, dir: "Peter Weir", genre: ["Drama"], imdb: 8.1, cast: "Robin Williams, Robert Sean Leonard, Ethan Hawke", img: "https://m.media-amazon.com/images/M/MV5BMDYwNGVlY2ItMWYxMS00YjZiLWE5MTAtYWM5NWQ2ZWJjY2Q3XkEyXkFqcGc@._V1_.jpg", syn: "John Keating (Robin Williams), guru bahasa Inggris karismatik di sekolah asrama laki-laki elit dan kaku, Welton Academy, tahun 1950-an. Ia menginspirasi murid-muridnya untuk berpikir bebas dan mengejar impian. Kelompok murid, dipimpin Neil Perry, menghidupkan kembali klub puisi rahasia, namun kebebasan ini berujung tragedi akibat tekanan konformitas sosial." },
-            { id: 24, title: "The Color Purple", year: 2023, dir: "Blitz Bazawule", genre: ["Drama"], imdb: 6.8, cast: "Fantasia Barrino, Taraji P. Henson, Danielle Brooks", img: "https://m.media-amazon.com/images/M/MV5BYzg2ZGEzZjItZWY3Ni00MTFjLTk3ZmEtZTE1OGFmOTkzM2I4XkEyXkFqcGc@._V1_.jpg", syn: "Kisah emosional tentang Celie, seorang wanita Afrika-Amerika di pedesaan Georgia awal 1900-an yang berjuang melawan kemiskinan, rasisme, dan pelecehan brutal dari ayah serta suaminya." }, 
-            { id: 25, title: "White Chicks", year: 2004, dir: "Keenen Ivory Wayans", genre: ["Comedy", "Crime"], imdb: 5.9, cast: "Marlon Wayans, Shawn Wayans, Busy Philipps", img: "https://m.media-amazon.com/images/M/MV5BMTY3OTg2OTM3OV5BMl5BanBnXkFtZTYwNzY5OTA3._V1_.jpg", syn: "Dua agen FBI bersaudara, Kevin (Shawn Wayans) dan Marcus Copeland (Marlon Wayans), yang menyamar menjadi wanita kulit putih kaya (Tiffany dan Brittany Wilson). Penyamaran ini dilakukan untuk menggagalkan rencana penculikan dan menyelamatkan karier mereka setelah melakukan kesalahan dalam misi sebelumnya." },
-            { id: 26, title: "The Maze Runner", year: 2014, dir: "Wes Ball", genre: ["Science Fictio", "Thriller", "Action", "Mystery"], imdb: 6.8, cast: "Dylan O'Brien, Kaya Scodelario, Will Poulter", img: "https://m.media-amazon.com/images/M/MV5BMjUyNTA3MTAyM15BMl5BanBnXkFtZTgwOTEyMTkyMjE@._V1_.jpg", syn: "Thomas, seorang remaja yang terbangun tanpa ingatan di Glade, sebuah komunitas yang dikelilingi labirin raksasa yang berbahaya. Bersama para remaja pria lainnya, Thomas berusaha memecahkan rahasia labirin untuk melarikan diri, sambil menghadapi monster mekanis, Grievers, dan mengungkap bahwa mereka adalah bagian dari eksperimen misterius organisasi WCKD." }, 
-            { id: 27, title: "Little Miss Sunshine", year: 2006, dir: "Jonathan Dayton, Valerie Faris", genre: ["Drama", "Comedy"], imdb: 7.8, cast: "Steve Carell, Toni Collette, Greg Kinnear", img: "https://m.media-amazon.com/images/M/MV5BMTgzNTgzODU0NV5BMl5BanBnXkFtZTcwMjEyMjMzMQ@@._V1_.jpg", syn: "Keluarga Hoover yang disfungsional namun penuh kasih, melakukan perjalanan darat (road trip) dari Albuquerque ke California dengan VW Van kuning. Tujuannya adalah mengantar putri bungsu mereka, Olive (7 tahun), mengikuti final kontes kecantikan anak-anak." },
-            { id: 28, title: "The Devil Wears Prada", year: 2006, dir: "David Frankel", genre: ["Comedy", "Drama"], imdb: 7.0, cast: "Anne Hathaway, Meryl Streep, Adrian Grenier", img: "https://m.media-amazon.com/images/M/MV5BMjUyNTA3MTAyM15BMl5BanBnXkFtZTgwOTEyMTkyMjE@._V1_.jpg", syn: "Thomas, seorang remaja yang terbangun tanpa ingatan di Glade, sebuah komunitas yang dikelilingi labirin raksasa yang berbahaya. Bersama para remaja pria lainnya, Thomas berusaha memecahkan rahasia labirin untuk melarikan diri, sambil menghadapi monster mekanis, Grievers, dan mengungkap bahwa mereka adalah bagian dari eksperimen misterius organisasi WCKD." }, 
-            { id: 29, title: "The Help", year: 2011, dir: "Tate Taylor", genre: ["Drama"], imdb: 8.0, cast: "Viola Davis, Emma Stone, Octavia Spencerr", img: "https://m.media-amazon.com/images/M/MV5BOWM3NTI3YWEtYjJmMy00M2U5LWI1NzEtZWM3ZDY2ZWNjOGRiXkEyXkFqcGc@._V1_.jpg", syn: "Seorang wanita muda lulus dari jurusan jurnalistik, datang ke New York dan menjadi asisten salah seorang editor majalah terhebat di kota ini, yang kejam dan juga sinis, Miranda Priestly." },
-            { id: 30, title: "Breaking Bad", year: 2008, dir: "Vince Gilligan", genre: ["Crime", "Comedy"], imdb: 9.5, cast: "Bryan Cranston, Aaron Paul, Anna Gunn", img: "https://m.media-amazon.com/images/M/MV5BMTM5OTMyMjIxOV5BMl5BanBnXkFtZTcwNzU4MjIwNQ@@._V1_.jpg", syn: "Mississippi pada tahun 1960 dan Skeeter kembali dari kuliah. Niatnya menulis sebuah buku tentang perempuan kulit hitam, yang menghabiskan hidup mereka merawat keluarga selatan, berujung malapetaka." },
-            { id: 31, title: "Ocean's Eight", year: 2018, dir: "Gary Ross", genre: ["Crime", "Action", "Comedy"], imdb: 6.3, cast: "Sandra Bullock, Cate Blanchett, Anne Hathaway", img: "https://m.media-amazon.com/images/M/MV5BMjAyNDEyMzc4Ml5BMl5BanBnXkFtZTgwMjEzNjM0NTM@._V1_.jpg", syn: "Sekelompok wanita yang dipimpin oleh Debbie Ocean (adik Danny Ocean) untuk melakukan perampokan besar-besaran di acara Met Gala, mencuri kalung berlian Cartier senilai $150 juta yang akan dikenakan oleh aktris terkenal Daphne Kluger, sekaligus membalas dendam kepada mantan pacarnya yang mengkhianatinya, dengan mengumpulkan tim ahli dari berbagai bidang." },
-            { id: 32, title: "Pitch Perfect", year: 2012, dir: "Jason Moore", genre: ["Music", "Comedy", "Romance"], imdb: 7.1, cast: "Anna Kendrick, Brittany Snow, Rebel Wilson", img: "https://m.media-amazon.com/images/M/MV5BMTcyMTMzNzE5N15BMl5BanBnXkFtZTcwNzg5NjM5Nw@@._V1_.jpg", syn: "Beca Mitchell (Anna Kendrick), mahasiswi baru yang terpaksa bergabung dengan grup a cappella perempuan, The Barden Bellas di Universitas Barden. Beca membawa energi baru dan aransemen modern yang dibutuhkan grup untuk mengalahkan rival laki-laki mereka, The Treblemakers, dalam kompetisi kampus." },
-            { id: 33, title: "Avatar: The Way of Water", year: 2022, dir: "James Cameron", genre: ["Science Fiction", "Action", "Adventure"], imdb: 7.5, cast: "Sam Worthington, Zoe Saldaña, Sigourney Weaver", img: "https://m.media-amazon.com/images/M/MV5BNWI0Y2NkOWEtMmM2OC00MjQ3LWI1YzItZGQxYzQ3NzI4NWZmXkEyXkFqcGc@._V1_.jpg", syn: "Jake Sully dan Neytiri yang kini berkeluarga, berjuang melindungi anak-anak mereka dari kembalinya ancaman manusia (RDA) yang dipimpin oleh avatar rekombinan Kolonel Quaritch. Mereka terpaksa mengungsi ke klan laut Metkayina, mempelajari cara hidup air, dan melawan penjajah demi kelangsungan hidup Pandor." },
-            { id: 34, title: "Avengers: Infinity War", year: 2018, dir: "Anthony Russo, Joe Russon", genre: ["Action Science", "Fiction", "Adventure"], imdb: 8.4, cast: "Robert Downey Jr, Chris Hemsworth, Mark Ruffalo", img: "https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_.jpg", syn: "Mengisahkan perjuangan para Avengers dan Guardians of the Galaxy untuk menghentikan Thanos, tiran kosmik yang berusaha mengumpulkan keenam Infinity Stones. Tujuannya adalah memusnahkan setengah populasi alam semesta demi menciptakan keseimbangan. Pertarungan epik terjadi di Wakanda dan Titan, namun berakhir tragis saat Thanos berhasil menjentikkan jarinya." },
-            { id: 35, title: "Captain America: Civil War", year: 2016, dir: "Anthony Russo, Joe Russo", genre: ["Adventure", "Action", "Science Fiction"], imdb: 7.8, cast: "Chris Evans, Robert Downey Jr, Scarlett Johansson", img: "https://m.media-amazon.com/images/M/MV5BMjQ0MTgyNjAxMV5BMl5BanBnXkFtZTgwNjUzMDkyODE@._V1_.jpg", syn: "Konflik internal di antara Avengers terkait Perjanjian Sokovia, yang menuntut superhero diawasi pemerintah." },
-            { id: 36, title: "Zootopia 2", year: 2025, dir: "Jared BushByron Howard", genre: ["Adventure", "Family", "Comedy", "Animation", "Mystery"], imdb: 7.5, cast: "Ginnifer Goodwin, Jason Bateman, Ke Huy Quan", img: "https://m.media-amazon.com/images/M/MV5BYjg1Mjc3MjQtMTZjNy00YWVlLWFhMWEtMWI3ZTgxYjJmNmRlXkEyXkFqcGc@._V1_.jpg", syn: "Setelah berhasil memecahkan kasus terbesar dalam sejarah Zootopia, dua polisi pemula Judy Hopps dan Nick Wilde menyadari kemitraan mereka tak sekompak yang mereka pikirkan." },
-            { id: 37, title: "Coco", year: 2017, dir: "L. Unkrich", genre: ["Animation", "Family"], imdb: 8.4, cast: "Anthony Gonzalez, Gael García Bernal", img: "https://image.tmdb.org/t/p/w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg", syn: "Calon musisi Miguel memasuki Tanah Orang Mati untuk menemukan kakek buyutnya." },
-            { id: 38, title: "Nezha: Mo tong nao hai", year: 2025, dir: "Yu Yang", genre: ["Fantasy", "Action", "Adventure", "Animation"], imdb: 7.9, cast: "Lü Yanting, Joseph, Han Mo", img: "https://m.media-amazon.com/images/M/MV5BYjIyMDc3ZmQtZTQyYy00NDhhLTlmMWEtYzM3MDYwNjRmY2NkXkEyXkFqcGc@._V1_FMjpg_UY12004_.jpg", syn: "Setelah dibangkitkan, seorang pahlawan berapi dan temannya berusaha keras mendapatkan lagi wujud fisik mereka." },
-            { id: 39, title: "Moana", year: 2016, dir: "Ron Clements, Don Hall, John Musker", genre: ["Animation", "Adventure", "Family", "Comedy"], imdb: 7.9, cast: "Auli'i Cravalho, Dwayne Johnson, Rachel House", img: "https://m.media-amazon.com/images/M/MV5BMjI4MzU5NTExNF5BMl5BanBnXkFtZTgwNzY1MTEwMDI@._V1_.jpg", syn: "Setelah dibangkitkan, seorang pahlawan berapi dan temannya berusaha keras mendapatkan lagi wujud fisik mereka." },
-            { id: 40, title: "Spider-Man: Across the Spider-Verse", year: 2023, dir: "Joaquim Dos Santos, Kemp Powers, Justin K. Thompson", genre: ["Animation", "Science Fiction", "Adventure", "Action"], imdb: 8.5, cast: "Shameik Moore, Hailee Steinfeld, Brian Tyree Henry", img: "https://m.media-amazon.com/images/M/MV5BNThiZjA3MjItZGY5Ni00ZmJhLWEwN2EtOTBlYTA4Y2E0M2ZmXkEyXkFqcGc@._V1_.jpg", syn: "Remaja Miles Morales menjadi Spider-Man di alam semestanya." },
-            { id: 41, title: "The Secret World of Arrietty", year: 2010, dir: "Hiromasa Yonebayashi", genre: ["Animation", "Fantasy", "Family"], imdb: 7.6, cast: "Mirai Shida, Ryûnosuke Kamiki, Tatsuya Fujiwara", img: "https://m.media-amazon.com/images/M/MV5BMTAxNjk3OTYyODReQTJeQWpwZ15BbWU3MDgyODY2OTY@._V1_.jpg", syn: "Keluarga Peminjam (Borrowers) mungil yang tinggal diam-diam di bawah lantai rumah manusia." },
-            { id: 42, title: "Kimi no Nawa", year: 2016, dir: "Makoto Shinkai", genre: ["Animation", "Romance", "Drama"], imdb: 8.4, cast: "Ryûnosuke Kamiki, Mone Kamishiraishi, Ryo Narita", img: "https://m.media-amazon.com/images/M/MV5BMjI1ODZkYTgtYTY3Yy00ZTJkLWFkOTgtZDUyYWM4MzQwNjk0XkEyXkFqcGc@._V1_.jpg", syn: "Mitsuha, gadis desa yang bosan hidup di pedesaan, dan Taki, remaja laki-laki di Tokyo. Keduanya secara misterius bertukar tubuh saat tidur. Mereka berupaya memahami fenomena ini, terhubung satu sama lain, hingga mengungkap rahasia bencana komet yang melampaui batas ruang dan waktu." },
-            { id: 43, title: "Tenki No Ko", year: 2019, dir: "Makoto Shinkai", genre: ["Fantasy", "Animation", "Romance", "Drama"], imdb: 7.5, cast: "Kotaro Daigo, Nana Mori, Tsubasa Honda", img: "https://m.media-amazon.com/images/M/MV5BMmJiYWI4ZjktMzgyZS00MjBiLThmOTYtZWJmOTUzOTFkMTFiXkEyXkFqcGc@._V1_.jpg", syn: "Seorang anak laki-laki yang kabur ke Tokyo berteman dengan seorang gadis yatim piatu yang tampaknya mampu memanipulasi cuaca." },
-            { id: 44, title: "Suzume no Tojimari", year: 2022, dir: "Makoto Shinkai", genre: ["Fantasy", "Animation", "Adventure", "Drama"], imdb: 7.6, cast: "Nanoka Hara, Hokuto Matsumura, Eri Fukatsu", img: "https://m.media-amazon.com/images/M/MV5BODhkNDhmNzktODFmMC00NDZiLWEzN2UtY2YwYzgzYTVlMWZmXkEyXkFqcGc@._V1_.jpg", syn: "Suzume, gadis SMA yang tak sengaja membuka pintu misterius di reruntuhan, melepaskan bencana gempa bumi di seluruh Jepang, dan kemudian berkelana bersama Souta, pemuda yang berubah menjadi kursi, untuk menutup pintu-pintu tersebut sebelum kehancuran meluas, sekaligus menghentikan kucing bernama Daijin yang bertanggung jawab atas kekacauan itu, dalam petualangan epik lintas Jepang yang menyentuh isu kehilangan dan trauma pasca bencana." },
-            { id: 45, title: "Demon Slayer: Kimetsu no Yaiba Infinity Castle", year: 2025, dir: "Haruo Sotozaki", genre: ["Anime", "Action", "Animation"], imdb: 8.5, cast: "Natsuki Hanae, Takahiro Sakurai", img: "https://m.media-amazon.com/images/M/MV5BOGQ3YWUzYjEtMTJiYy00ZjQ0LWI0YjktYjhiNGVhNGExYTM3XkEyXkFqcGc@._V1_.jpg", syn: "Pertempuran terakhir Korps Pembasmi Iblis di kastil misterius Muzan." },
-        
+            { id: 1, title: "Jumbo", year: 2025, dir: "Ryan Adriandhy", genre: ["Family", "Animation", "Drama", "Comedy", "Fantasy"], imdb: 8.6, cast: "Prince Poetiray, Quinn Salman, Yusuf Ozkan", img: "https://m.media-amazon.com/images/M/MV5BMjMxODU2YTYtZjFlZC00MDFlLTg0ZmItNDE5NjMxMmU0ZTlmXkEyXkFqcGc@._V1_.jpg", syn: "Don, anak 10 tahun bertubuh gempal yang sering dirundung (di-bully), yang bertualang mencari buku dongeng peninggalan orang tuanya yang dicuri Atta." },
+            { id: 2, title: "Agak Laen", year: 2024, dir: "Mouhadkly Ach", genre: ["Comedy", "Horror"], imdb: 7.6, cast: "Bene Dion Rajagukguk, Oki Rengga, Indra Jegel", img: "https://m.media-amazon.com/images/M/MV5BODg5YzA5MmEtN2NkOC00M2JhLTgzZjktZjg1M2U3ZmEyN2IyXkEyXkFqcGc@._V1_FMjpg_UX528_.jpg", syn: "Empat penjaga rumah hantu pasar malam yang gagal menakuti pengunjung, mencoba merenovasi wahana mereka, namun malah memakan korban jiwa." },
+            { id: 3, title: "Sore: Istri dari Masa Depan", year: 2025, dir: "Yandy Laurens", genre: ["Science Fiction", "Drama", "Fantasy", "Romance"], imdb: 7.7, cast: "Sheila Dara Aisha, Dion Wiyoko", img: "https://a.ltrbxd.com/resized/film-poster/1/2/7/0/8/1/4/1270814-sore-a-wife-from-the-future-0-1000-0-1500-crop.jpg?v=7a31b7c5a8", syn: "Sore, seorang wanita misterius, datang dari masa depan ke masa lalu dengan satu misi - mengubah takdir hidup Jonathan, suaminya." },
+            { id: 4, title: "Stealing Raden Saleh", year: 2022, dir: "Angga Dwimas Sasongko", genre: ["Crime", "Drama"], imdb: 7.3, cast: "Iqbaal Ramadhan, Angga Yunanda", img: "https://a.ltrbxd.com/resized/film-poster/7/4/8/4/1/0/748410-stealing-raden-saleh-0-1000-0-1500-crop.jpg?v=a933bb731e", syn: "Pencurian terbesar abad ini tinggal menghitung hari. Komplotan anak muda amatiran berencana mencuri lukisan sang maestro, Raden Saleh." },
+            { id: 5, title: "Glorious Days", year: 2019, dir: "Riri Riza", genre: ["Drama"], imdb: 7.4, cast: "Maizura, Sheryl Sheinafia", img: "https://a.ltrbxd.com/resized/film-poster/5/2/9/5/6/2/529562-glorious-days-0-1000-0-1500-crop.jpg?v=70f7d56aec", syn: "Reuni geng SMA tahun 90-an yang terpecah akibat insiden tragis. Vina berusaha mengumpulkan kembali anggota Geng Bebas." },
+            { id: 6, title: "5 cm", year: 2012, dir: "Rizal Mantovani", genre: ["Adventure", "Romance", "Drama"], imdb: 7.3, cast: "Herjunot Ali, Raline Shah", img: "https://m.media-amazon.com/images/M/MV5BYzEyM2VlZTgtNGI3MS00NzBiLWJkODItNGE4OWU5M2FmNTg0XkEyXkFqcGc@._V1_.jpg", syn: "Persahabatan lima orang yang jenuh lalu memutuskan mendaki Gunung Semeru untuk mengibarkan sang saka merah putih." },
+            { id: 7, title: "Train To Busan", year: 2016, dir: "Yeon Sang-ho", genre: ["Thriller", "Horror"], imdb: 7.6, cast: "Gong Yoo, Ma Dong-seok", img: "https://a.ltrbxd.com/resized/film-poster/3/3/0/9/1/2/330912-train-to-busan-0-1000-0-1500-crop.jpg?v=c85e151cfe", syn: "Wabah zombie mendadak menginfeksi penumpang kereta cepat KTX dari Seoul ke Busan." },
+            { id: 8, title: "Unlocked", year: 2023, dir: "Kim Tae-joon", genre: ["Thriller"], imdb: 6.4, cast: "Chun Woo-hee, Yim Si-wan", img: "https://m.media-amazon.com/images/M/MV5BNzBhN2IzMmYtOGY5MC00ZDkwLTkxYWUtMDkzZmJmZWFiYmRhXkEyXkFqcGc@._V1_.jpg", syn: "Seorang wanita kehilangan ponselnya yang kemudian ditemukan oleh psikopat yang memasang spyware." },
+            { id: 9, title: "The Call", year: 2020, dir: "Chung-Hyun Lee", genre: ["Thriller", "Mystery"], imdb: 7.1, cast: "Park Shin-hye, Jeon Jong-seo", img: "https://m.media-amazon.com/images/M/MV5BYzZlOGEyZTMtYmIxYS00NmIxLWIwNjYtMzY3Yjg2OThjODU2XkEyXkFqcGc@._V1_.jpg", syn: "Dua wanita terhubung lewat telepon tua di rumah yang sama namun berbeda waktu 20 tahun." },
+            { id: 10, title: "Love Your Enemy", year: 2024, dir: "Park Joon-hwa", genre: ["Drama"], imdb: 7.4, cast: "Ju Ji-hoon, Jung Yu-mi", img: "https://a.ltrbxd.com/resized/film-poster/1/2/9/8/3/1/7/1298317-love-your-enemy-0-1000-0-1500-crop.jpg?v=633a4ce23b", syn: "Sepasang kekasih masa kecil yang terjebak dalam permusuhan keluarga turun-temurun kembali bertemu." },
+            { id: 11, title: "High & Low: The Movie", year: 2016, dir: "Shigeaki Kubo", genre: ["Action"], imdb: 6.4, cast: "AKIRA, Takahiro", img: "https://m.media-amazon.com/images/M/MV5BNDFkY2IwZjgtZmIyMi00MTc5LTgzYzktZDFjNmJkNjFmMTkwXkEyXkFqcGc@._V1_.jpg", syn: "Konflik wilayah SWORD dan pertarungan antar geng berandalan legendaris." },
+            { id: 12, title: "Crows Zero", year: 2007, dir: "Takashi Miike", genre: ["Action", "Crime"], imdb: 7.0, cast: "Shun Oguri, Kyôsuke Yabe", img: "https://m.media-amazon.com/images/M/MV5BNDM1NDI1NDYtZTgzZi00NDFiLTg4MjQtODllY2M1ZDA2YWY5XkEyXkFqcGc@._V1_.jpg", syn: "Pertarungan kekuasaan antar geng siswa di SMA Suzuran, sekolah khusus pria yang terkenal sebagai sarang berandalan." },
+            { id: 13, title: "One Love", year: 2003, dir: "Rick Elgood", genre: ["Romance", "Drama"], imdb: 6.1, cast: "Ky-Mani Marley, Cherine Anderson", img: "https://m.media-amazon.com/images/M/MV5BZjc0OWQ1ZjUtZTNlNy00Mjg4LThkNTItYzk2MmE1MDVhMzU3XkEyXkFqcGc@._V1_.jpg", syn: "Musisi Rasta muda jatuh cinta dengan putri seorang pendeta Pentakosta." },
+            { id: 14, title: "The Sound of Music", year: 1965, dir: "Robert Wise", genre: ["Drama", "Musical"], imdb: 8.1, cast: "Julie Andrews, Christopher Plummer", img: "https://m.media-amazon.com/images/M/MV5BYWJhYmU4MjQtZDJhYi00ZGVjLTlkNTEtNzkzNGVjOWQ3MjcwXkEyXkFqcGc@._V1_.jpg", syn: "Maria, biarawati muda ceria yang menjadi pengasuh tujuh anak duda kaya di Austria." },
+            { id: 15, title: "Passion Play", year: 2010, dir: "Mitch Glazer", genre: ["Drama", "Fantasy"], imdb: 4.5, cast: "Mickey Rourke, Megan Fox", img: "https://a.ltrbxd.com/resized/film-poster/2/5/8/6/3/25863-passion-play-0-1000-0-1500-crop.jpg?v=fd0c2e5271", syn: "Pemain terompet jazz menyelamatkan wanita bersayap dari gangster kejam." },
+            { id: 16, title: "Forrest Gump", year: 1994, dir: "Robert Zemeckis", genre: ["Drama", "Romance"], imdb: 8.8, cast: "Tom Hanks, Robin Wright", img: "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg", syn: "Perjalanan hidup Forrest Gump, pria Alabama dengan IQ rendah namun berhati tulus." },
+            { id: 17, title: "Se7en", year: 1995, dir: "David Fincher", genre: ["Crime", "Mystery"], imdb: 8.6, cast: "Brad Pitt, Morgan Freeman", img: "https://image.tmdb.org/t/p/w500/6yoghtyTpznpBik8EngEmJskVUO.jpg", syn: "Dua detektif memburu pembunuh berantai yang menggunakan tujuh dosa mematikan sebagai motif." },
+            { id: 18, title: "La La Land", year: 2016, dir: "Damien Chazelle", genre: ["Drama", "Romance"], imdb: 8.0, cast: "Ryan Gosling, Emma Stone", img: "https://m.media-amazon.com/images/M/MV5BMzUzNDM2NzM2MV5BMl5BanBnXkFtZTgwNTM3NTg4OTE@._V1_.jpg", syn: "Seorang pianis jazz dan aktris yang bercita-cita tinggi jatuh cinta di Los Angeles." },
+            { id: 19, title: "(500) Days of Summer", year: 2009, dir: "Marc Webb", genre: ["Drama", "Romance"], imdb: 7.6, cast: "Joseph Gordon-Levitt, Zooey Deschanel", img: "https://m.media-amazon.com/images/M/MV5BMTk5MjM4OTU1OV5BMl5BanBnXkFtZTcwODkzNDIzMw@@._V1_.jpg", syn: "Kisah cinta nonlinear tentang Tom yang romantis dan Summer yang tidak percaya cinta sejati." },
+            { id: 20, title: "The Greatest Showman", year: 2017, dir: "Michael Gracey", genre: ["Drama", "Musical"], imdb: 7.5, cast: "Hugh Jackman, Zac Efron", img: "https://m.media-amazon.com/images/M/MV5BMjI1NDYzNzY2Ml5BMl5BanBnXkFtZTgwODQwODczNTM@._V1_.jpg", syn: "Musikal biografi tentang P.T. Barnum yang menciptakan sirkus spektakuler." },
+            { id: 21, title: "Cruella", year: 2021, dir: "Craig Gillespie", genre: ["Comedy", "Crime"], imdb: 7.3, cast: "Emma Stone, Emma Thompson", img: "https://m.media-amazon.com/images/M/MV5BMWY5MjljNjctZjhjZS00MWY0LTgwYzUtZTJiYTVmMmJkM2E0XkEyXkFqcGc@._V1_.jpg", syn: "Asal-usul Estella, gadis yatim piatu berbakat fashion yang bertransformasi menjadi Cruella de Vil." },
+            { id: 22, title: "Mission: Impossible", year: 1996, dir: "Brian De Palma", genre: ["Action", "Thriller"], imdb: 7.2, cast: "Tom Cruise", img: "https://m.media-amazon.com/images/M/MV5BOTI4ZmFlNWItYjkwZC00ZDcyLWIwNTctOGI5MDdlOWI3ZGIzXkEyXkFqcGc@._V1_.jpg", syn: "Ethan Hunt memburu pengkhianat yang menjebaknya atas kematian timnya." },
+            { id: 23, title: "Dead Poets Society", year: 1989, dir: "Peter Weir", genre: ["Drama"], imdb: 8.1, cast: "Robin Williams, Ethan Hawke", img: "https://m.media-amazon.com/images/M/MV5BMDYwNGVlY2ItMWYxMS00YjZiLWE5MTAtYWM5NWQ2ZWJjY2Q3XkEyXkFqcGc@._V1_.jpg", syn: "Guru bahasa Inggris karismatik menginspirasi murid-muridnya untuk berpikir bebas lewat puisi." },
+            { id: 24, title: "The Color Purple", year: 2023, dir: "Blitz Bazawule", genre: ["Drama"], imdb: 6.8, cast: "Fantasia Barrino, Taraji P. Henson", img: "https://m.media-amazon.com/images/M/MV5BYzg2ZGEzZjItZWY3Ni00MTFjLTk3ZmEtZTE1OGFmOTkzM2I4XkEyXkFqcGc@._V1_.jpg", syn: "Kisah emosional wanita Afrika-Amerika yang berjuang melawan penindasan di Georgia awal 1900-an." },
+            { id: 25, title: "White Chicks", year: 2004, dir: "Keenen Ivory Wayans", genre: ["Comedy"], imdb: 5.9, cast: "Marlon Wayans, Shawn Wayans", img: "https://m.media-amazon.com/images/M/MV5BMTY3OTg2OTM3OV5BMl5BanBnXkFtZTYwNzY5OTA3._V1_.jpg", syn: "Dua agen FBI bersaudara menyamar menjadi wanita kulit putih kaya untuk menggagalkan penculikan." },
+            { id: 26, title: "The Maze Runner", year: 2014, dir: "Wes Ball", genre: ["Sci-Fi", "Action"], imdb: 6.8, cast: "Dylan O'Brien, Kaya Scodelario", img: "https://m.media-amazon.com/images/M/MV5BMjUyNTA3MTAyM15BMl5BanBnXkFtZTgwOTEyMTkyMjE@._V1_.jpg", syn: "Thomas terbangun di Glade dan harus memecahkan rahasia labirin raksasa untuk melarikan diri." },
+            { id: 27, title: "Little Miss Sunshine", year: 2006, dir: "Jonathan Dayton", genre: ["Drama", "Comedy"], imdb: 7.8, cast: "Steve Carell, Toni Collette", img: "https://m.media-amazon.com/images/M/MV5BMTgzNTgzODU0NV5BMl5BanBnXkFtZTcwMjEyMjMzMQ@@._V1_.jpg", syn: "Keluarga disfungsional melakukan perjalanan darat mengantar putri bungsu mereka ikut kontes kecantikan." },
+            { id: 28, title: "The Devil Wears Prada", year: 2006, dir: "David Frankel", genre: ["Comedy", "Drama"], imdb: 7.0, cast: "Anne Hathaway, Meryl Streep", img: "https://m.media-amazon.com/images/M/MV5BMjUyNTA3MTAyM15BMl5BanBnXkFtZTgwOTEyMTkyMjE@._V1_.jpg", syn: "Lulusan baru menjadi asisten editor majalah fashion yang kejam dan sinis, Miranda Priestly." },
+            { id: 29, title: "The Help", year: 2011, dir: "Tate Taylor", genre: ["Drama"], imdb: 8.0, cast: "Viola Davis, Emma Stone", img: "https://m.media-amazon.com/images/M/MV5BOWM3NTI3YWEtYjJmMy00M2U5LWI1NzEtZWM3ZDY2ZWNjOGRiXkEyXkFqcGc@._V1_.jpg", syn: "Seorang penulis muda menulis buku tentang kehidupan pelayan kulit hitam di Mississippi tahun 1960-an." },
+            { id: 30, title: "Breaking Bad", year: 2008, dir: "Vince Gilligan", genre: ["Crime", "Drama"], imdb: 9.5, cast: "Bryan Cranston, Aaron Paul", img: "https://m.media-amazon.com/images/M/MV5BMTM5OTMyMjIxOV5BMl5BanBnXkFtZTcwNzU4MjIwNQ@@._V1_.jpg", syn: "Guru kimia yang sakit kanker beralih menjadi produsen meth demi masa depan keluarganya." },
+            { id: 31, title: "Ocean's Eight", year: 2018, dir: "Gary Ross", genre: ["Crime", "Action"], imdb: 6.3, cast: "Sandra Bullock, Cate Blanchett", img: "https://m.media-amazon.com/images/M/MV5BMjAyNDEyMzc4Ml5BMl5BanBnXkFtZTgwMjEzNjM0NTM@._V1_.jpg", syn: "Debbie Ocean memimpin tim wanita untuk mencuri kalung berlian di acara Met Gala." },
+            { id: 32, title: "Pitch Perfect", year: 2012, dir: "Jason Moore", genre: ["Music", "Comedy"], imdb: 7.1, cast: "Anna Kendrick, Rebel Wilson", img: "https://m.media-amazon.com/images/M/MV5BMTcyMTMzNzE5N15BMl5BanBnXkFtZTcwNzg5NjM5Nw@@._V1_.jpg", syn: "Mahasiswi baru bergabung dengan grup a cappella kampus dan membawa energi baru." },
+            { id: 33, title: "Avatar: The Way of Water", year: 2022, dir: "James Cameron", genre: ["Sci-Fi", "Action"], imdb: 7.5, cast: "Sam Worthington, Zoe Saldaña", img: "https://m.media-amazon.com/images/M/MV5BNWI0Y2NkOWEtMmM2OC00MjQ3LWI1YzItZGQxYzQ3NzI4NWZmXkEyXkFqcGc@._V1_.jpg", syn: "Jake Sully dan keluarganya mengungsi ke klan laut untuk menghindari ancaman manusia." },
+            { id: 34, title: "Avengers: Infinity War", year: 2018, dir: "Anthony Russo", genre: ["Action", "Sci-Fi"], imdb: 8.4, cast: "Robert Downey Jr, Chris Hemsworth", img: "https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_.jpg", syn: "Avengers bersatu melawan Thanos yang ingin memusnahkan setengah populasi alam semesta." },
+            { id: 35, title: "Captain America: Civil War", year: 2016, dir: "Anthony Russo", genre: ["Action", "Sci-Fi"], imdb: 7.8, cast: "Chris Evans, Robert Downey Jr", img: "https://m.media-amazon.com/images/M/MV5BMjQ0MTgyNjAxMV5BMl5BanBnXkFtZTgwNjUzMDkyODE@._V1_.jpg", syn: "Konflik internal Avengers tentang pengawasan pemerintah memecah belah tim." },
+            { id: 36, title: "Zootopia 2", year: 2025, dir: "Jared Bush", genre: ["Animation", "Comedy"], imdb: 7.5, cast: "Ginnifer Goodwin, Jason Bateman", img: "https://m.media-amazon.com/images/M/MV5BYjg1Mjc3MjQtMTZjNy00YWVlLWFhMWEtMWI3ZTgxYjJmNmRlXkEyXkFqcGc@._V1_.jpg", syn: "Judy dan Nick kembali beraksi memecahkan misteri baru di Zootopia." },
+            { id: 37, title: "Coco", year: 2017, dir: "Lee Unkrich", genre: ["Animation", "Family"], imdb: 8.4, cast: "Anthony Gonzalez", img: "https://image.tmdb.org/t/p/w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg", syn: "Miguel memasuki dunia orang mati untuk mencari kakek buyutnya dan menjadi musisi." },
+            { id: 38, title: "Nezha: Mo tong nao hai", year: 2025, dir: "Yu Yang", genre: ["Animation", "Action"], imdb: 7.9, cast: "Lü Yanting", img: "https://m.media-amazon.com/images/M/MV5BYjIyMDc3ZmQtZTQyYy00NDhhLTlmMWEtYzM3MDYwNjRmY2NkXkEyXkFqcGc@._V1_FMjpg_UY12004_.jpg", syn: "Pahlawan berapi berusaha mendapatkan kembali wujud fisiknya." },
+            { id: 39, title: "Moana", year: 2016, dir: "Ron Clements", genre: ["Animation", "Adventure"], imdb: 7.9, cast: "Auli'i Cravalho, Dwayne Johnson", img: "https://m.media-amazon.com/images/M/MV5BMjI4MzU5NTExNF5BMl5BanBnXkFtZTgwNzY1MTEwMDI@._V1_.jpg", syn: "Seorang gadis berlayar melintasi lautan untuk menyelamatkan rakyatnya bersama demigod Maui." },
+            { id: 40, title: "Spider-Man: Across the Spider-Verse", year: 2023, dir: "Joaquim Dos Santos", genre: ["Animation", "Action"], imdb: 8.5, cast: "Shameik Moore, Hailee Steinfeld", img: "https://m.media-amazon.com/images/M/MV5BNThiZjA3MjItZGY5Ni00ZmJhLWEwN2EtOTBlYTA4Y2E0M2ZmXkEyXkFqcGc@._V1_.jpg", syn: "Miles Morales menjelajahi multiverse dan bertemu tim Spider-People lainnya." },
+            { id: 41, title: "The Secret World of Arrietty", year: 2010, dir: "Hiromasa Yonebayashi", genre: ["Animation", "Fantasy"], imdb: 7.6, cast: "Mirai Shida", img: "https://m.media-amazon.com/images/M/MV5BMTAxNjk3OTYyODReQTJeQWpwZ15BbWU3MDgyODY2OTY@._V1_.jpg", syn: "Manusia kecil yang tinggal diam-diam di bawah lantai rumah manusia." },
+            { id: 42, title: "Kimi no Nawa", year: 2016, dir: "Makoto Shinkai", genre: ["Animation", "Romance"], imdb: 8.4, cast: "Ryûnosuke Kamiki", img: "https://m.media-amazon.com/images/M/MV5BMjI1ODZkYTgtYTY3Yy00ZTJkLWFkOTgtZDUyYWM4MzQwNjk0XkEyXkFqcGc@._V1_.jpg", syn: "Dua remaja yang bertukar tubuh dan mencoba menyelamatkan desa dari komet." },
+            { id: 43, title: "Tenki No Ko", year: 2019, dir: "Makoto Shinkai", genre: ["Animation", "Romance"], imdb: 7.5, cast: "Kotaro Daigo", img: "https://m.media-amazon.com/images/M/MV5BMmJiYWI4ZjktMzgyZS00MjBiLThmOTYtZWJmOTUzOTFkMTFiXkEyXkFqcGc@._V1_.jpg", syn: "Anak laki-laki yang kabur ke Tokyo berteman dengan gadis yang bisa mengendalikan cuaca." },
+            { id: 44, title: "Suzume no Tojimari", year: 2022, dir: "Makoto Shinkai", genre: ["Animation", "Adventure"], imdb: 7.6, cast: "Nanoka Hara", img: "https://m.media-amazon.com/images/M/MV5BODhkNDhmNzktODFmMC00NDZiLWEzN2UtY2YwYzgzYTVlMWZmXkEyXkFqcGc@._V1_.jpg", syn: "Gadis SMA yang menutup pintu bencana di seluruh Jepang bersama kursi ajaib." },
+            { id: 45, title: "Demon Slayer: Infinity Castle", year: 2025, dir: "Haruo Sotozaki", genre: ["Anime", "Action"], imdb: 8.5, cast: "Natsuki Hanae", img: "https://m.media-amazon.com/images/M/MV5BOGQ3YWUzYjEtMTJiYy00ZjQ0LWI0YjktYjhiNGVhNGExYTM3XkEyXkFqcGc@._V1_.jpg", syn: "Pertempuran terakhir Korps Pembasmi Iblis melawan Muzan di Infinity Castle." }
         ];
 
-        // --- 3. INIT APP ---
+        // ==========================================
+        // 3. LOGIKA UTAMA APLIKASI
+        // ==========================================
+
         function enterApp() {
             const screen = document.getElementById('welcome-screen');
-            
-            // AKTIFKAN ANIMASI CSS BARU
             screen.classList.add('fade-out-cinematic');
             
-            // Tunggu 1 detik (sesuai durasi animasi CSS) baru hilangkan total
             setTimeout(() => { 
                 screen.style.display = 'none'; 
-                
-                // CEK APAKAH USER MASIH GUEST?
-                // Jika ya, tampilkan popup ganti nama
+                // Cek Nama (Force)
                 if (user.name === "Guest" || user.name === "Pengunjung") {
                     setTimeout(() => {
-                        alert("👋 Selamat Datang!\n\nMohon ganti Nama & Foto Profil dulu ya agar teman-teman tahu ini kamu.");
+                        alert("👋 Selamat Datang!\n\nMohon ganti Nama & Foto Profil dulu ya.");
                         editName(); 
                     }, 500); 
                 }
-
             }, 1000); 
         }
 
         function init() {
-            // 1. Load data nama user segera setelah web dibuka
             updateNav(); 
-            
-            // 2. Tampilkan Poster Film
             const grid = document.getElementById('grid-container');
             if(grid) {
-                grid.innerHTML = ''; // Bersihkan dulu
+                grid.innerHTML = ''; 
                 movies.forEach(m => {
                     const div = document.createElement('div');
                     div.className = 'poster-wrapper group bg-[#1f252b] cursor-pointer relative';
@@ -505,10 +472,13 @@
             }
         }
 
-        // --- 4. MODAL LOGIC ---
+        // ==========================================
+        // 4. MODAL & ULASAN SYSTEM
+        // ==========================================
+
         let currentId = null;
         let userRating = 0;
-        let unsubscribeComments = null; // Untuk menghentikan live update saat modal ditutup
+        let unsubscribeComments = null;
 
         function openModal(id) {
             currentId = id;
@@ -533,8 +503,6 @@
 
             document.getElementById('review-text').value = '';
             rate(0);
-            
-            // LOAD LIVE COMMENTS FROM FIREBASE
             subscribeToComments(id);
 
             const modal = document.getElementById('movie-modal');
@@ -548,91 +516,59 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             document.body.style.overflow = 'auto';
-            
-            // Stop listening to database to save data usage
-            if (unsubscribeComments) {
-                unsubscribeComments();
-            }
+            if (unsubscribeComments) unsubscribeComments();
         }
 
         function rate(n) {
             userRating = n;
             const stars = document.querySelectorAll('#input-stars i');
             stars.forEach((s, idx) => {
-                if(idx < n) {
-                    s.classList.remove('star-empty');
-                    s.classList.add('star-filled');
-                } else {
-                    s.classList.remove('star-filled');
-                    s.classList.add('star-empty');
-                }
+                s.classList.toggle('star-filled', idx < n);
+                s.classList.toggle('star-empty', idx >= n);
             });
         }
 
-        // --- 5. FIREBASE BACKEND INTEGRATION ---
-        
-        // POST REVIEW
         async function postReview() {
             const text = document.getElementById('review-text').value;
             if(!text && userRating === 0) {
-                alert("Mohon isi ulasan atau berikan rating.");
-                return;
+                alert("Mohon isi ulasan atau berikan rating."); return;
             }
 
             const btn = document.getElementById('btn-post');
-            btn.disabled = true;
-            btn.innerText = "Mengirim...";
+            btn.disabled = true; btn.innerText = "Mengirim...";
 
             try {
-                // Menggunakan fungsi window.addDoc yang di-expose dari module
                 await window.addDoc(window.collection(window.db, "reviews"), {
                     movieId: currentId,
                     user: user.name,
                     avatar: user.avatar,
                     rating: userRating,
                     text: text,
-                    createdAt: window.serverTimestamp() // Waktu server agar konsisten
+                    createdAt: window.serverTimestamp()
                 });
-
-                // Reset form
                 document.getElementById('review-text').value = '';
                 rate(0);
             } catch (e) {
-                console.error("Error posting review: ", e);
-                alert("Gagal mengirim ulasan. Periksa koneksi internet.");
+                console.error("Error:", e);
+                alert("Gagal kirim. Cek internet.");
             } finally {
-                btn.disabled = false;
-                btn.innerText = "POSTING";
+                btn.disabled = false; btn.innerText = "POSTING";
             }
         }
 
-        // DELETE REVIEW (Simple Check)
         window.deleteReview = async function(docId, reviewerName) {
-            // Sederhana: Hanya izinkan hapus jika nama sama dengan user saat ini
-            // (Untuk keamanan asli butuh Firebase Auth login)
             if(reviewerName !== user.name) {
-                alert("Anda hanya bisa menghapus ulasan Anda sendiri!");
-                return;
+                alert("Hanya bisa hapus ulasan sendiri!"); return;
             }
-
-            if(!confirm("Hapus ulasan ini dari database?")) return;
-
-            try {
-                await window.deleteDoc(window.doc(window.db, "reviews", docId));
-            } catch (e) {
-                console.error("Error deleting: ", e);
-                alert("Gagal menghapus.");
-            }
+            if(!confirm("Hapus ulasan ini?")) return;
+            try { await window.deleteDoc(window.doc(window.db, "reviews", docId)); } 
+            catch (e) { alert("Gagal hapus."); }
         }
 
-        // LIVE LOAD COMMENTS (REAL-TIME)
         function subscribeToComments(movieId) {
             const list = document.getElementById('comments-list');
             list.innerHTML = `<div class="text-center py-6 text-gray-600 text-sm animate-pulse">Memuat ulasan...</div>`;
-
-            // --- SETTING KODE RAHASIA ---
             const OWNER_NAME = "Uziphoria"; 
-            const SECRET_CODE = "#123"; // <--- Ganti kode ini sesuka Anda (misal #boss, #admin, dll)
 
             import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then((fs) => {
                 const q = fs.query(
@@ -643,37 +579,24 @@
 
                 unsubscribeComments = fs.onSnapshot(q, (snapshot) => {
                     list.innerHTML = '';
-                    
                     if (snapshot.empty) {
-                        list.innerHTML = `<div class="text-center py-6 text-gray-600 text-sm italic">Belum ada ulasan. Jadilah yang pertama!</div>`;
+                        list.innerHTML = `<div class="text-center py-6 text-gray-600 text-sm italic">Belum ada ulasan.</div>`;
                         return;
                     }
 
                     snapshot.forEach((doc) => {
                         const r = doc.data();
                         const starStr = '★'.repeat(r.rating);
+                        let dateStr = r.createdAt ? r.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : "Baru saja";
                         
-                        let dateStr = "Baru saja";
-                        if(r.createdAt) {
-                            dateStr = r.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
-                        }
-
-                        // --- LOGIKA ANTI-PALSU (BARU) ---
+                        // LOGIKA OWNER BADGE
                         let badgeHtml = "";
-                        let finalText = r.text; // Teks asli
-
-                        // 1. Cek apakah Nama sesuai DAN Teks mengandung Kode Rahasia?
-                        if (r.user === OWNER_NAME && r.text.includes(SECRET_CODE)) {
-                            // Jika YA: Tampilkan Badge
+                        if (r.user === OWNER_NAME) {
                             badgeHtml = `<span class="owner-badge"><i class="fas fa-check-circle"></i> OWNER</span>`;
-                            
-                            // 2. Hapus Kode Rahasia dari tampilan agar tidak ketahuan orang
-                            finalText = r.text.replace(SECRET_CODE, "");
                         }
 
                         const item = document.createElement('div');
                         item.className = "comment-group flex gap-4 p-3 rounded-lg hover:bg-[#1f252b] transition relative group";
-                        
                         item.innerHTML = `
                             <img src="${r.avatar || 'https://i.pravatar.cc/150'}" class="w-10 h-10 rounded-full object-cover shrink-0 border border-gray-700">
                             <div class="flex-grow">
@@ -683,7 +606,7 @@
                                     <span class="text-[#00e054] text-xs tracking-tighter ml-2">${starStr}</span>
                                     <span class="text-gray-500 text-[10px] ml-auto">${dateStr}</span>
                                 </div>
-                                <p class="text-gray-300 text-sm leading-relaxed">${finalText}</p>
+                                <p class="text-gray-300 text-sm leading-relaxed">${r.text}</p>
                             </div>
                             <button onclick="deleteReview('${doc.id}', '${r.user}')" class="btn-delete absolute top-2 right-2 text-red-500 hover:text-red-400 bg-black/60 px-2 py-1 rounded text-xs">
                                 <i class="fas fa-trash"></i>
@@ -694,6 +617,8 @@
                 });
             });
         }
+
+        // Start App
         init();
     </script>
 </body>
