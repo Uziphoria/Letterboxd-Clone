@@ -10,6 +10,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
 
     <style>
+        /* --- TEMPEL DI SINI (Di atas </style>) --- */
+        .fade-out-cinematic {
+            opacity: 0 !important;
+            transform: scale(1.1);
+            filter: blur(10px);
+            pointer-events: none;
+            transition: all 1s ease-in-out;
+        }
         /* --- DESIGN SYSTEM (TIDAK BERUBAH) --- */
         :root {
             --bg-dark: #14181c;
@@ -197,7 +205,7 @@
             
             <div class="flex items-center gap-3 cursor-pointer" onclick="window.scrollTo(0,0)">
                 <i class="fas fa-film text-3xl text-[#00e054]"></i>
-                <span class="text-white font-bold text-lg tracking-widest block">THREE'S MOVIE</span>
+                <span class="text-white font-bold text-lg tracking-widest block">CINELOG</span>
             </div>
 
             <div class="flex items-center gap-4">
@@ -335,30 +343,55 @@
 
     <script>
         // --- 1. USER PROFILE (Disimpan Local di Browser Pengunjung) ---
-        let user = JSON.parse(localStorage.getItem('cinelog_user')) || {
-            name: "Pengunjung",
+        let user = {
+            name: "Guest",
             avatar: "https://i.pravatar.cc/150?img=12"
         };
 
-        function updateNav() {
-            document.getElementById('nav-username').innerText = user.name;
-            document.getElementById('nav-avatar').src = user.avatar;
-        }
-
-        function editName() {
-            const newName = prompt("Masukkan nama tampilan baru:", user.name);
-            if (newName && newName.trim() !== "") {
-                user.name = newName;
-                localStorage.setItem('cinelog_user', JSON.stringify(user));
-                updateNav();
+        // Coba ambil data yang tersimpan
+        const savedData = localStorage.getItem('threesmovie_user');
+        if (savedData) {
+            try {
+                user = JSON.parse(savedData);
+            } catch (e) {
+                console.error("Data rusak, reset ke default");
             }
         }
 
+        // Fungsi Update Tampilan Pojok Kanan Atas
+        function updateNav() {
+            if (document.getElementById('nav-username')) {
+                document.getElementById('nav-username').innerText = user.name;
+                document.getElementById('nav-avatar').src = user.avatar;
+            }
+        }
+
+        // Fungsi Simpan Data ke Memori HP/Laptop
+        function saveUser() {
+            localStorage.setItem('cinelog_user', JSON.stringify(user));
+            updateNav();
+        }
+
+        // Fungsi Ganti Nama
+        function editName() {
+            let newName = prompt("Siapa nama panggilanmu?", user.name);
+            if (newName && newName.trim() !== "") {
+                user.name = newName;
+                saveUser(); // LANGSUNG SIMPAN
+                alert("Nama tersimpan: " + newName);
+            } else {
+                // Jika user masih Guest, paksa isi lagi
+                if(user.name === "Guest" || user.name === "Pengunjung") {
+                    setTimeout(() => editName(), 100); // Paksa tanya lagi
+                }
+            }
+        }
+
+        // Fungsi Upload Foto (Limit 20MB)
         function handleProfileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
-            // UBAH DI SINI: Sekarang batasnya 20MB (20 * 1024 * 1024)
             if (file.size > 20 * 1024 * 1024) { 
                 alert("Ukuran file terlalu besar! Maksimal 20MB.");
                 return;
@@ -366,22 +399,9 @@
 
             const reader = new FileReader();
             reader.onloadend = function() {
-                // Simpan hasil gambar ke variable user sementara
-                user.avatar = reader.result; 
-                
-                // COBA SIMPAN KE MEMORI BROWSER
-                try {
-                    localStorage.setItem('threesmovie_user', JSON.stringify(user));
-                    updateNav(); // Update tampilan jika sukses
-                } catch (e) {
-                    // Jika file terlalu besar untuk LocalStorage browser
-                    console.error("Quota Exceeded:", e);
-                    alert("Gagal menyimpan foto! File ini terlalu besar untuk memori browser Anda. Coba gunakan foto di bawah 5MB.");
-                    
-                    // Kembalikan ke avatar lama agar tidak rusak
-                    user = JSON.parse(localStorage.getItem('threesmovie_user')) || { name: "Guest", avatar: "https://i.pravatar.cc/150?img=12" };
-                    updateNav();
-                }
+                user.avatar = reader.result;
+                saveUser(); // LANGSUNG SIMPAN
+                alert("Foto profil berhasil diganti!");
             }
             reader.readAsDataURL(file);
         }
@@ -437,84 +457,52 @@
         
         ];
 
-        // --- 3. LOGIKA WELCOME SCREEN & INIT ---
-
+        // --- 3. INIT APP ---
         function enterApp() {
             const screen = document.getElementById('welcome-screen');
             
-            // 1. Mulai animasi menghilang (Fade Out)
-            screen.style.opacity = '0';
-            screen.style.pointerEvents = 'none'; // Agar tidak bisa diklik lagi saat memudar
+            // AKTIFKAN ANIMASI CSS BARU
+            screen.classList.add('fade-out-cinematic');
             
-            // 2. Tunggu 1 detik sampai benar-benar hilang, baru hapus dari layar
+            // Tunggu 1 detik (sesuai durasi animasi CSS) baru hilangkan total
             setTimeout(() => { 
                 screen.style.display = 'none'; 
                 
-                // 3. LOGIKA BARU: CEK PROFIL SETELAH MASUK
-                // Jika nama masih "Guest", paksa ganti nama
+                // CEK APAKAH USER MASIH GUEST?
+                // Jika ya, tampilkan popup ganti nama
                 if (user.name === "Guest" || user.name === "Pengunjung") {
                     setTimeout(() => {
-                        alert("👋 Selamat Datang di Three's Movie!\n\nSebelum mulai, mohon ganti Nama dan Foto Profil dulu ya.");
-                        editName(); // Langsung buka popup ganti nama
-                    }, 500); // Beri jeda setengah detik biar enak dilihat
+                        alert("👋 Selamat Datang!\n\nMohon ganti Nama & Foto Profil dulu ya agar teman-teman tahu ini kamu.");
+                        editName(); 
+                    }, 500); 
                 }
 
-            }, 1000); // Waktu ini harus sama dengan durasi transisi CSS
+            }, 1000); 
         }
 
         function init() {
-            // Update nama di pojok kanan atas saat web baru dibuka
+            // 1. Load data nama user segera setelah web dibuka
             updateNav(); 
             
-            // Render (Tampilkan) Poster Film
+            // 2. Tampilkan Poster Film
             const grid = document.getElementById('grid-container');
-            // Kosongkan grid dulu biar tidak dobel kalau direfresh
-            grid.innerHTML = ''; 
-
-            movies.forEach(m => {
-                const div = document.createElement('div');
-                div.className = 'poster-wrapper group bg-[#1f252b] cursor-pointer relative';
-                div.onclick = () => openModal(m.id);
-                div.innerHTML = `
-                    <img src="${m.img}" loading="lazy" alt="${m.title}">
-                    <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
-                        <h4 class="text-white font-bold text-xs uppercase tracking-wide">${m.title}</h4>
-                        <p class="text-[#556677] text-[10px] mt-1">${m.year}</p>
-                        <div class="mt-2 text-[#00e054] text-xs"><i class="fas fa-star"></i> ${m.imdb}</div>
-                    </div>
-                `;
-                grid.appendChild(div);
-            });
-        }
-
-        // Jalankan fungsi init saat script selesai dimuat
-        init();
-
-        // --- 3. INIT APP ---
-        function init() {
-            updateNav();
-            const grid = document.getElementById('grid-container');
-            movies.forEach(m => {
-                const div = document.createElement('div');
-                div.className = 'poster-wrapper group bg-[#1f252b] cursor-pointer relative';
-                div.onclick = () => openModal(m.id);
-                div.innerHTML = `
-                    <img src="${m.img}" loading="lazy" alt="${m.title}">
-                    <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
-                        <h4 class="text-white font-bold text-xs uppercase tracking-wide">${m.title}</h4>
-                        <p class="text-[#556677] text-[10px] mt-1">${m.year}</p>
-                        <div class="mt-2 text-[#00e054] text-xs"><i class="fas fa-star"></i> ${m.imdb}</div>
-                    </div>
-                `;
-                grid.appendChild(div);
-            });
-            setTimeout(enterApp, 3500);
-        }
-
-        function enterApp() {
-            const screen = document.getElementById('welcome-screen');
-            screen.style.opacity = '0';
-            setTimeout(() => { screen.style.display = 'none'; }, 1000);
+            if(grid) {
+                grid.innerHTML = ''; // Bersihkan dulu
+                movies.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'poster-wrapper group bg-[#1f252b] cursor-pointer relative';
+                    div.onclick = () => openModal(m.id);
+                    div.innerHTML = `
+                        <img src="${m.img}" loading="lazy" alt="${m.title}">
+                        <div class="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3">
+                            <h4 class="text-white font-bold text-xs uppercase tracking-wide">${m.title}</h4>
+                            <p class="text-[#556677] text-[10px] mt-1">${m.year}</p>
+                            <div class="mt-2 text-[#00e054] text-xs"><i class="fas fa-star"></i> ${m.imdb}</div>
+                        </div>
+                    `;
+                    grid.appendChild(div);
+                });
+            }
         }
 
         // --- 4. MODAL LOGIC ---
