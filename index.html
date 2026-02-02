@@ -7,7 +7,6 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link href="https://fonts.googleapis.com/css2?family=Graphik+Web:wght@400;500;600;700&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet">
 
@@ -29,156 +28,129 @@
             overflow-x: hidden;
         }
 
-        /* --- 2. MOVIE INTRO WELCOME SCREEN (CINEMATIC) --- */
+        /* --- 2. WELCOME SCREEN (LAYER 1 - PALING ATAS) --- */
         #welcome-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            overflow: hidden;
-            background-color: #000;
+            position: fixed; inset: 0; z-index: 100; /* Paling Depan */
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            cursor: pointer; overflow: hidden; background-color: #000;
+            transition: opacity 0.8s ease-in-out, visibility 0.8s;
         }
-
-        /* Background Gambar Bioskop */
         #welcome-bg {
-            position: absolute;
-            inset: -20px;
+            position: absolute; inset: -20px;
             background-image: url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?q=80&w=2070&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
-            filter: brightness(0.3) blur(2px);
-            z-index: -1;
-            animation: bgZoom 10s ease-out forwards;
+            background-size: cover; background-position: center;
+            filter: brightness(0.3) blur(2px); z-index: -1; animation: bgZoom 10s ease-out forwards;
         }
-
-        .welcome-content {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-        }
-        
-        /* Teks Utama Cinematic (Montserrat) */
         .brand-text {
-            font-family: 'Montserrat', sans-serif;
-            font-weight: 900;
-            font-size: 3.5rem;
-            color: white;
-            text-transform: uppercase;
-            letter-spacing: 5px;
-            opacity: 0;
+            font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 3.5rem;
+            color: white; text-transform: uppercase; letter-spacing: 5px; opacity: 0;
             text-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
             animation: cinematicReveal 2.5s cubic-bezier(0.2, 1, 0.3, 1) forwards;
         }
-        
-        .accent-dot { 
-            color: var(--accent); 
-            text-shadow: 0 0 20px var(--accent);
-        }
-
-        .loader-bar {
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--accent), transparent);
-            margin: 30px auto 0;
-            border-radius: 2px;
-            box-shadow: 0 0 10px var(--accent);
-            animation: loadProgress 3.5s ease-in-out forwards;
-        }
-
+        .accent-dot { color: var(--accent); text-shadow: 0 0 20px var(--accent); }
         .tap-hint {
-            margin-top: 1.5rem;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.7rem;
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            color: rgba(255, 255, 255, 0.6);
-            opacity: 0;
-            animation: fadeIn 1s forwards 2s;
+            margin-top: 1.5rem; font-family: 'Montserrat', sans-serif; font-size: 0.7rem;
+            letter-spacing: 4px; text-transform: uppercase; color: rgba(255, 255, 255, 0.6);
+            opacity: 0; animation: fadeIn 1s forwards 2s;
         }
 
-        /* Kelas Animasi Keluar (Fade Out) */
-        .fade-out-cinematic {
-            opacity: 0 !important;
-            transform: scale(1.1);
-            filter: blur(10px);
-            pointer-events: none;
-            transition: all 1s ease-in-out;
+        /* --- 3. LOGIN SCREEN (LAYER 2 - MUNCUL SETELAH WELCOME) --- */
+        #login-screen {
+            position: fixed; inset: 0; z-index: 90; /* Di bawah Welcome, Di atas Main */
+            background-color: #14181c;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            opacity: 0; visibility: hidden; /* Sembunyi dulu */
+            transition: opacity 0.5s ease-in-out, visibility 0.5s;
         }
+        
+        .login-card {
+            background: rgba(31, 37, 43, 0.9); backdrop-filter: blur(10px);
+            padding: 2.5rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1);
+            width: 90%; max-width: 400px; text-align: center;
+            transform: translateY(20px); transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        
+        .avatar-preview {
+            width: 100px; height: 100px; border-radius: 50%; object-fit: cover;
+            border: 3px solid var(--accent); margin: 0 auto 1.5rem;
+            box-shadow: 0 0 20px rgba(0, 224, 84, 0.3);
+            cursor: pointer; transition: transform 0.3s;
+        }
+        .avatar-preview:hover { transform: scale(1.05); }
 
-        @keyframes bgZoom {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
+        .login-input {
+            width: 100%; background: #0c0e11; border: 1px solid #2c3440;
+            color: white; padding: 12px; border-radius: 6px; margin-bottom: 1.5rem;
+            text-align: center; font-family: 'Graphik Web', sans-serif; font-size: 1rem;
         }
-        @keyframes cinematicReveal { 
-            0% { opacity: 0; transform: translateY(30px) scale(0.9); letter-spacing: 0px; } 
-            100% { opacity: 1; transform: translateY(0) scale(1); letter-spacing: 8px; } 
+        .login-input:focus { outline: none; border-color: var(--accent); }
+
+        .btn-enter {
+            background: var(--accent); color: white; font-weight: bold;
+            padding: 12px 30px; border-radius: 30px; letter-spacing: 1px;
+            text-transform: uppercase; transition: all 0.3s; width: 100%;
+            box-shadow: 0 5px 15px rgba(0, 224, 84, 0.4); cursor: pointer;
         }
-        @keyframes loadProgress { 0% { width: 0; opacity: 0;} 20% { opacity: 1; } 100% { width: 150px; opacity: 0; } }
+        .btn-enter:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0, 224, 84, 0.6); background-color: #00c04b; }
+
+        /* --- 4. HELPER ANIMASI --- */
+        .fade-out { opacity: 0 !important; visibility: hidden !important; pointer-events: none; }
+        .fade-in { opacity: 1 !important; visibility: visible !important; }
+        .slide-up { transform: translateY(0) !important; }
+
+        @keyframes bgZoom { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+        @keyframes cinematicReveal { 0% { opacity: 0; transform: translateY(30px); letter-spacing: 0px; } 100% { opacity: 1; transform: translateY(0); letter-spacing: 8px; } }
         @keyframes fadeIn { to { opacity: 1; } }
 
-        /* --- 3. UI COMPONENTS --- */
-        .aurora-bg {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-            background: linear-gradient(-45deg, #14181c, #1b2229, #232a32, #0d2b1d);
-            background-size: 400% 400%; animation: aurora 15s ease infinite;
-        }
-        @keyframes aurora {
-            0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; }
-        }
-
-        .poster-wrapper {
-            position: relative; aspect-ratio: 2/3; border-radius: 6px; overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s, box-shadow 0.2s;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        .poster-wrapper:hover {
-            transform: translateY(-5px); box-shadow: 0 0 0 2px var(--accent); z-index: 10;
-        }
+        /* --- UI COMPONENTS --- */
+        .poster-wrapper { position: relative; aspect-ratio: 2/3; border-radius: 6px; overflow: hidden; transition: transform 0.2s; }
+        .poster-wrapper:hover { transform: translateY(-5px); z-index: 10; box-shadow: 0 0 0 2px var(--accent); }
         .poster-wrapper img { width: 100%; height: 100%; object-fit: cover; }
         
-        /* Modal Style */
-        .modal-backdrop { background-color: rgba(0, 0, 0, 0.9); backdrop-filter: blur(8px); }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #14181c; }
-        ::-webkit-scrollbar-thumb { background: #445566; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
-
-        .star-rating i { cursor: pointer; transition: color 0.2s; }
-        .star-filled { color: var(--accent); }
-        .star-empty { color: #445566; }
-
-        .comment-group:hover .btn-delete { opacity: 1; }
-        .btn-delete { opacity: 0; transition: opacity 0.2s; }
-
-        /* Badge Owner Emas */
+        /* Modal & Badges */
+        .modal-backdrop { background-color: rgba(0, 0, 0, 0.9); }
+        .star-filled { color: var(--accent); } .star-empty { color: #445566; }
+        .liked { color: #E1306C !important; }
+        
+        /* Badge Owner */
         .owner-badge {
-            background: linear-gradient(45deg, #FFD700, #FFA500);
-            color: black; font-size: 0.6rem; padding: 2px 6px;
-            border-radius: 4px; margin-left: 8px; font-weight: 800;
-            letter-spacing: 1px; box-shadow: 0 0 10px rgba(255, 215, 0, 0.4);
-            border: 1px solid #B8860B; vertical-align: middle; display: inline-block;
-        }
-
-        @media (max-width: 640px) {
-            .brand-text { font-size: 2.5rem; letter-spacing: 2px; }
-            @keyframes cinematicReveal { to { letter-spacing: 4px; opacity: 1; transform: scale(1); } }
+            background: linear-gradient(45deg, #FFD700, #FFA500); color: black; 
+            font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 800;
+            border: 1px solid #B8860B; display: inline-block; vertical-align: middle;
+            margin-left: 5px; box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
         }
     </style>
 </head>
 <body class="flex flex-col min-h-screen">
 
-    <div class="aurora-bg"></div>
+    <div class="aurora-bg" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; background: linear-gradient(-45deg, #14181c, #1b2229, #232a32, #0d2b1d); background-size: 400% 400%; animation: aurora 15s ease infinite;"></div>
 
-    <div id="welcome-screen" onclick="enterApp()">
+    <div id="welcome-screen" onclick="goToLogin()">
         <div id="welcome-bg"></div>
-        <div class="welcome-content">
+        <div class="welcome-content" style="position: relative; z-index: 10; text-align: center;">
             <h1 class="brand-text">Three's Movie<span class="accent-dot">.</span></h1>
-            <div class="loader-bar"></div>
-            <p class="tap-hint">Tap to Enter</p>
+            <p class="tap-hint">Tap to Start</p>
+        </div>
+    </div>
+
+    <div id="login-screen">
+        <div class="login-card" id="login-card">
+            <h2 class="text-white text-2xl font-bold mb-6 font-serif tracking-wide">IDENTITAS PENONTON</h2>
+            
+            <div class="relative group mx-auto w-fit mb-6">
+                <img id="login-avatar-preview" src="https://i.pravatar.cc/150?img=12" class="avatar-preview" onclick="document.getElementById('login-file-input').click()">
+                <div class="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition pointer-events-none" style="width: 100px; height: 100px; margin: 0 auto;">
+                    <i class="fas fa-camera text-white"></i>
+                </div>
+                <p class="text-gray-500 text-xs mt-2">Ketuk foto untuk mengganti</p>
+            </div>
+            <input type="file" id="login-file-input" accept="image/*" class="hidden" onchange="previewLoginImage(event)">
+
+            <input type="text" id="login-name-input" class="login-input" placeholder="Siapa nama kamu?" maxlength="20" autocomplete="off">
+
+            <button onclick="finishLogin()" class="btn-enter">
+                MASUK <i class="fas fa-arrow-right ml-2"></i>
+            </button>
         </div>
     </div>
 
@@ -186,24 +158,16 @@
 
     <nav class="sticky top-0 z-40 bg-[#14181c]/95 border-b border-[#2c3440] backdrop-blur-sm">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center relative z-50">
-            
             <div class="flex items-center gap-3 cursor-pointer select-none" onclick="window.scrollTo(0,0)">
                 <i class="fas fa-film text-3xl text-[#00e054]"></i>
                 <span class="text-white font-bold text-lg tracking-widest block">CINELOG</span>
             </div>
-
             <div class="flex items-center gap-4">
-                <div class="text-right block group cursor-pointer select-none" onclick="editName()">
+                <div class="text-right block group cursor-pointer select-none" onclick="openLoginAgain()">
                     <p id="nav-username" class="text-gray-200 font-bold text-sm group-hover:text-[#00e054] transition">Guest</p>
-                    <p class="text-[10px] text-gray-500 uppercase tracking-wider">Ganti Nama</p>
+                    <p class="text-[10px] text-gray-500 uppercase tracking-wider">Profil Saya</p>
                 </div>
-                
-                <div class="relative group cursor-pointer" onclick="document.getElementById('profile-upload').click()">
-                    <img id="nav-avatar" src="https://i.pravatar.cc/150?img=12" class="w-10 h-10 rounded-full object-cover border-2 border-transparent group-hover:border-[#00e054] transition">
-                    <div class="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition">
-                        <i class="fas fa-camera text-white text-xs"></i>
-                    </div>
-                </div>
+                <img id="nav-avatar" src="https://i.pravatar.cc/150?img=12" class="w-10 h-10 rounded-full object-cover border-2 border-transparent group-hover:border-[#00e054] transition cursor-pointer" onclick="openLoginAgain()">
             </div>
         </div>
     </nav>
@@ -213,7 +177,6 @@
             <h2 class="text-white text-xl font-normal tracking-wide">FILM FAVORITE CLASS XI F-3</h2>
             <span class="text-xs text-[#00e054] font-bold">45 JUDUL</span>
         </div>
-
         <div id="grid-container" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-7 gap-4 lg:gap-6">
         </div>
     </main>
@@ -223,69 +186,36 @@
             <a href="https://instagram.com/f3trishua/" target="_blank" class="text-gray-500 hover:text-[#E1306C] text-3xl transition duration-300 inline-block">
                 <i class="fab fa-instagram"></i>
             </a>
-            <p class="text-xs text-gray-600 font-mono tracking-widest uppercase">&copy; 2026 Three's Movie. All Rights Reserved.</p>
-            <p class="text-xs text-gray-700 font-mono tracking-widest uppercase">&copy; By Uziphoria.</p>
+            <p class="text-xs text-gray-600 font-mono tracking-widest uppercase">&copy; 2026 Three's Movie.</p>
         </div>
     </footer>
 
     <div id="movie-modal" class="fixed inset-0 z-[100] hidden modal-backdrop justify-center items-center p-4">
         <div class="bg-[#14181c] w-full max-w-5xl h-[85vh] rounded-xl border border-[#2c3440] shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
-            
-            <button onclick="closeModal()" class="absolute top-4 right-4 z-20 text-gray-400 hover:text-white text-2xl transition">
-                <i class="fas fa-times"></i>
-            </button>
-
+            <button onclick="closeModal()" class="absolute top-4 right-4 z-20 text-gray-400 hover:text-white text-2xl transition"><i class="fas fa-times"></i></button>
             <div class="w-full md:w-[350px] bg-black h-48 md:h-full relative shrink-0">
                 <img id="modal-img" src="" class="w-full h-full object-cover opacity-90">
-                <div class="absolute top-4 left-4 bg-[#f5c518] text-black font-extrabold px-3 py-1 rounded text-xs shadow-lg">
-                    IMDb <span id="modal-imdb"></span>
-                </div>
             </div>
-
             <div class="flex-grow flex flex-col h-full overflow-hidden">
                 <div class="p-6 overflow-y-auto custom-scroll flex-grow">
+                    <h2 id="modal-title" class="text-3xl md:text-4xl font-serif font-bold text-white mb-2">Title</h2>
+                    <div id="modal-genre" class="flex gap-2 mb-4"></div>
+                    <p id="modal-synopsis" class="text-gray-300 text-sm mb-6 border-l-2 border-[#00e054] pl-4">Synopsis...</p>
                     
-                    <div class="mb-6">
-                        <h2 id="modal-title" class="text-3xl md:text-4xl font-serif font-bold text-white mb-2 leading-tight">Title</h2>
-                        <div class="flex flex-wrap items-center gap-3 text-sm text-gray-400">
-                            <span id="modal-year">2024</span>
-                            <span class="w-1 h-1 bg-gray-600 rounded-full"></span>
-                            <span id="modal-director" class="text-white font-medium">Director</span>
-                        </div>
-                        <div id="modal-genre" class="mt-3 flex gap-2"></div>
-                    </div>
-
-                    <div class="border-l-2 border-[#00e054] pl-4 mb-6">
-                        <p id="modal-synopsis" class="text-gray-300 leading-relaxed font-serif text-sm md:text-base">Synopsis here...</p>
-                    </div>
-
-                    <div class="mb-8">
-                        <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Cast</p>
-                        <p id="modal-cast" class="text-sm text-gray-300">Actors</p>
-                    </div>
-
-                    <div class="bg-[#1f252b] rounded-lg p-5 mb-6 border border-[#2c3440]">
+                    <div class="bg-[#1f252b] rounded-lg p-5 mb-6">
                         <div class="flex justify-between items-center mb-3">
-                            <span class="text-xs font-bold text-[#00e054] tracking-widest uppercase">Berikan Rating</span>
+                            <span class="text-xs font-bold text-[#00e054]">RATING</span>
                             <div class="star-rating flex gap-1 text-xl" id="input-stars">
-                                <i class="fas fa-star star-empty" onclick="rate(1)"></i>
-                                <i class="fas fa-star star-empty" onclick="rate(2)"></i>
-                                <i class="fas fa-star star-empty" onclick="rate(3)"></i>
-                                <i class="fas fa-star star-empty" onclick="rate(4)"></i>
-                                <i class="fas fa-star star-empty" onclick="rate(5)"></i>
+                                <i class="fas fa-star star-empty" onclick="rate(1)"></i><i class="fas fa-star star-empty" onclick="rate(2)"></i><i class="fas fa-star star-empty" onclick="rate(3)"></i><i class="fas fa-star star-empty" onclick="rate(4)"></i><i class="fas fa-star star-empty" onclick="rate(5)"></i>
                             </div>
                         </div>
-                        <textarea id="review-text" rows="3" class="w-full bg-[#14181c] text-white text-sm p-3 rounded border border-[#2c3440] focus:border-[#00e054] outline-none transition resize-none placeholder-gray-600" placeholder="Bagaimana pendapat Anda tentang film ini?"></textarea>
-                        <div class="flex justify-end mt-3">
-                            <button id="btn-post" onclick="postReview()" class="bg-[#00e054] hover:bg-green-600 text-white px-6 py-1.5 rounded text-xs font-bold tracking-wider transition uppercase">Posting</button>
-                        </div>
+                        <textarea id="review-text" rows="3" class="w-full bg-[#14181c] text-white text-sm p-3 rounded border border-[#2c3440]" placeholder="Tulis ulasan..."></textarea>
+                        <button id="btn-post" onclick="postReview()" class="bg-[#00e054] text-white px-6 py-1.5 rounded text-xs font-bold mt-3 w-full sm:w-auto">POSTING</button>
                     </div>
 
                     <div>
-                        <h3 class="text-white text-sm font-bold border-b border-[#2c3440] pb-2 mb-4">Ulasan Komunitas</h3>
-                        <div id="comments-list" class="space-y-4">
-                            <div class="text-center py-6 text-gray-600 text-sm animate-pulse">Memuat ulasan...</div>
-                        </div>
+                        <h3 class="text-white text-sm font-bold border-b border-[#2c3440] pb-2 mb-4">ULASAN KOMUNITAS</h3>
+                        <div id="comments-list" class="space-y-4"></div>
                     </div>
                 </div>
             </div>
@@ -294,167 +224,146 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // CONFIG FIREBASE (Sesuai Data Anda)
-        const firebaseConfig = {
-            apiKey: "AIzaSyCNp9zp5rttLA3RzUeiXnFPFniP6h5pFuE",
-            authDomain: "threesmovie.firebaseapp.com",
-            projectId: "threesmovie",
-            storageBucket: "threesmovie.firebasestorage.app",
-            messagingSenderId: "182928045479",
-            appId: "1:182928045479:web:80e632e1cdfd63bd27b282"
-        };
-
+        import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, deleteDoc, doc, serverTimestamp, updateDoc, arrayUnion, arrayRemove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        const firebaseConfig = { apiKey: "AIzaSyCNp9zp5rttLA3RzUeiXnFPFniP6h5pFuE", authDomain: "threesmovie.firebaseapp.com", projectId: "threesmovie", storageBucket: "threesmovie.firebasestorage.app", messagingSenderId: "182928045479", appId: "1:182928045479:web:80e632e1cdfd63bd27b282" };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
-        // Expose ke Window
-        window.db = db;
-        window.collection = collection;
-        window.addDoc = addDoc;
-        window.deleteDoc = deleteDoc;
-        window.doc = doc;
-        window.serverTimestamp = serverTimestamp;
-
-        console.log("Firebase Connected!");
+        window.db = db; window.collection = collection; window.addDoc = addDoc; window.deleteDoc = deleteDoc; window.updateDoc = updateDoc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.doc = doc; window.serverTimestamp = serverTimestamp; window.query = query; window.where = where; window.orderBy = orderBy;
     </script>
 
     <script>
-        // ==========================================
-        // 1. SISTEM PROFIL PENGGUNA (ANTI-RESET)
-        // ==========================================
-        
         let user = { name: "Guest", avatar: "https://i.pravatar.cc/150?img=12" };
+        
+        // ==========================================
+        // 1. TRANSISI HALAMAN (Welcome -> Login -> Main)
+        // ==========================================
+        function goToLogin() {
+            // Animasi: Welcome Hilang
+            document.getElementById('welcome-screen').classList.add('fade-out');
 
-        // Coba ambil data tersimpan (Anti-Reset)
-        const savedData = localStorage.getItem('cinelog_user');
-        if (savedData) {
-            try { user = JSON.parse(savedData); } catch (e) { console.error("Error load user", e); }
+            // Animasi: Login Muncul
+            const login = document.getElementById('login-screen');
+            login.classList.add('fade-in');
+            
+            // Animasi Kartu Naik
+            setTimeout(() => { document.getElementById('login-card').classList.add('slide-up'); }, 100);
+
+            // Cek Data Lama
+            loadUserDataToLogin();
         }
 
-        function updateNav() {
-            if (document.getElementById('nav-username')) {
-                document.getElementById('nav-username').innerText = user.name;
-                document.getElementById('nav-avatar').src = user.avatar;
+        function loadUserDataToLogin() {
+            const savedData = localStorage.getItem('cinelog_user');
+            if (savedData) {
+                try {
+                    user = JSON.parse(savedData);
+                    document.getElementById('login-name-input').value = user.name === "Guest" ? "" : user.name;
+                    document.getElementById('login-avatar-preview').src = user.avatar;
+                } catch(e) {}
             }
         }
 
-        function saveUser() {
-            try {
-                localStorage.setItem('cinelog_user', JSON.stringify(user));
-                updateNav();
-            } catch (e) { alert("Memori penuh. Coba foto yang lebih kecil."); }
-        }
-
-        function editName() {
-            let newName = prompt("Siapa nama panggilanmu?", user.name);
-            if (newName && newName.trim() !== "") {
-                user.name = newName;
-                saveUser();
-                alert("Nama tersimpan: " + newName);
-            } else {
-                if(user.name === "Guest" || user.name === "Pengunjung") {
-                    setTimeout(() => editName(), 100); // Paksa isi nama
-                }
-            }
-        }
-
-        function handleProfileUpload(event) {
+        // Preview Foto saat dipilih di Halaman Login
+        function previewLoginImage(event) {
             const file = event.target.files[0];
             if (!file) return;
-
-            // Batas 20MB
-            if (file.size > 20 * 1024 * 1024) { 
-                alert("Ukuran file terlalu besar! Maksimal 20MB.");
-                return;
-            }
-
+            if (file.size > 20*1024*1024) { alert("File terlalu besar (Max 20MB)"); return; }
+            
             const reader = new FileReader();
             reader.onloadend = function() {
-                user.avatar = reader.result;
-                saveUser();
-                alert("Foto profil berhasil diganti!");
+                document.getElementById('login-avatar-preview').src = reader.result;
+                user.avatar = reader.result; // Simpan sementara
             }
             reader.readAsDataURL(file);
         }
 
-        // ==========================================
-        // 2. DATA FILM (45 JUDUL LENGKAP)
-        // ==========================================
-        const movies = [
-            { id: 1, title: "Jumbo", year: 2025, dir: "Ryan Adriandhy", genre: ["Family", "Animation", "Drama", "Comedy", "Fantasy"], imdb: 8.6, cast: "Prince Poetiray, Quinn Salman, Yusuf Ozkan", img: "https://m.media-amazon.com/images/M/MV5BMjMxODU2YTYtZjFlZC00MDFlLTg0ZmItNDE5NjMxMmU0ZTlmXkEyXkFqcGc@._V1_.jpg", syn: "Don, anak 10 tahun bertubuh gempal yang sering dirundung (di-bully), yang bertualang mencari buku dongeng peninggalan orang tuanya yang dicuri Atta." },
-            { id: 2, title: "Agak Laen", year: 2024, dir: "Mouhadkly Ach", genre: ["Comedy", "Horror"], imdb: 7.6, cast: "Bene Dion Rajagukguk, Oki Rengga, Indra Jegel", img: "https://m.media-amazon.com/images/M/MV5BODg5YzA5MmEtN2NkOC00M2JhLTgzZjktZjg1M2U3ZmEyN2IyXkEyXkFqcGc@._V1_FMjpg_UX528_.jpg", syn: "Empat penjaga rumah hantu pasar malam yang gagal menakuti pengunjung, mencoba merenovasi wahana mereka, namun malah memakan korban jiwa." },
-            { id: 3, title: "Sore: Istri dari Masa Depan", year: 2025, dir: "Yandy Laurens", genre: ["Science Fiction", "Drama", "Fantasy", "Romance"], imdb: 7.7, cast: "Sheila Dara Aisha, Dion Wiyoko", img: "https://a.ltrbxd.com/resized/film-poster/1/2/7/0/8/1/4/1270814-sore-a-wife-from-the-future-0-1000-0-1500-crop.jpg?v=7a31b7c5a8", syn: "Sore, seorang wanita misterius, datang dari masa depan ke masa lalu dengan satu misi - mengubah takdir hidup Jonathan, suaminya." },
-            { id: 4, title: "Stealing Raden Saleh", year: 2022, dir: "Angga Dwimas Sasongko", genre: ["Crime", "Drama"], imdb: 7.3, cast: "Iqbaal Ramadhan, Angga Yunanda", img: "https://a.ltrbxd.com/resized/film-poster/7/4/8/4/1/0/748410-stealing-raden-saleh-0-1000-0-1500-crop.jpg?v=a933bb731e", syn: "Pencurian terbesar abad ini tinggal menghitung hari. Komplotan anak muda amatiran berencana mencuri lukisan sang maestro, Raden Saleh." },
-            { id: 5, title: "Glorious Days", year: 2019, dir: "Riri Riza", genre: ["Drama"], imdb: 7.4, cast: "Maizura, Sheryl Sheinafia", img: "https://a.ltrbxd.com/resized/film-poster/5/2/9/5/6/2/529562-glorious-days-0-1000-0-1500-crop.jpg?v=70f7d56aec", syn: "Reuni geng SMA tahun 90-an yang terpecah akibat insiden tragis. Vina berusaha mengumpulkan kembali anggota Geng Bebas." },
-            { id: 6, title: "5 cm", year: 2012, dir: "Rizal Mantovani", genre: ["Adventure", "Romance", "Drama"], imdb: 7.3, cast: "Herjunot Ali, Raline Shah", img: "https://m.media-amazon.com/images/M/MV5BYzEyM2VlZTgtNGI3MS00NzBiLWJkODItNGE4OWU5M2FmNTg0XkEyXkFqcGc@._V1_.jpg", syn: "Persahabatan lima orang yang jenuh lalu memutuskan mendaki Gunung Semeru untuk mengibarkan sang saka merah putih." },
-            { id: 7, title: "Train To Busan", year: 2016, dir: "Yeon Sang-ho", genre: ["Thriller", "Horror"], imdb: 7.6, cast: "Gong Yoo, Ma Dong-seok", img: "https://a.ltrbxd.com/resized/film-poster/3/3/0/9/1/2/330912-train-to-busan-0-1000-0-1500-crop.jpg?v=c85e151cfe", syn: "Wabah zombie mendadak menginfeksi penumpang kereta cepat KTX dari Seoul ke Busan." },
-            { id: 8, title: "Unlocked", year: 2023, dir: "Kim Tae-joon", genre: ["Thriller"], imdb: 6.4, cast: "Chun Woo-hee, Yim Si-wan", img: "https://m.media-amazon.com/images/M/MV5BNzBhN2IzMmYtOGY5MC00ZDkwLTkxYWUtMDkzZmJmZWFiYmRhXkEyXkFqcGc@._V1_.jpg", syn: "Seorang wanita kehilangan ponselnya yang kemudian ditemukan oleh psikopat yang memasang spyware." },
-            { id: 9, title: "The Call", year: 2020, dir: "Chung-Hyun Lee", genre: ["Thriller", "Mystery"], imdb: 7.1, cast: "Park Shin-hye, Jeon Jong-seo", img: "https://m.media-amazon.com/images/M/MV5BYzZlOGEyZTMtYmIxYS00NmIxLWIwNjYtMzY3Yjg2OThjODU2XkEyXkFqcGc@._V1_.jpg", syn: "Dua wanita terhubung lewat telepon tua di rumah yang sama namun berbeda waktu 20 tahun." },
-            { id: 10, title: "Love Your Enemy", year: 2024, dir: "Park Joon-hwa", genre: ["Drama"], imdb: 7.4, cast: "Ju Ji-hoon, Jung Yu-mi", img: "https://a.ltrbxd.com/resized/film-poster/1/2/9/8/3/1/7/1298317-love-your-enemy-0-1000-0-1500-crop.jpg?v=633a4ce23b", syn: "Sepasang kekasih masa kecil yang terjebak dalam permusuhan keluarga turun-temurun kembali bertemu." },
-            { id: 11, title: "High & Low: The Movie", year: 2016, dir: "Shigeaki Kubo", genre: ["Action"], imdb: 6.4, cast: "AKIRA, Takahiro", img: "https://m.media-amazon.com/images/M/MV5BNDFkY2IwZjgtZmIyMi00MTc5LTgzYzktZDFjNmJkNjFmMTkwXkEyXkFqcGc@._V1_.jpg", syn: "Konflik wilayah SWORD dan pertarungan antar geng berandalan legendaris." },
-            { id: 12, title: "Crows Zero", year: 2007, dir: "Takashi Miike", genre: ["Action", "Crime"], imdb: 7.0, cast: "Shun Oguri, Kyôsuke Yabe", img: "https://m.media-amazon.com/images/M/MV5BNDM1NDI1NDYtZTgzZi00NDFiLTg4MjQtODllY2M1ZDA2YWY5XkEyXkFqcGc@._V1_.jpg", syn: "Pertarungan kekuasaan antar geng siswa di SMA Suzuran, sekolah khusus pria yang terkenal sebagai sarang berandalan." },
-            { id: 13, title: "One Love", year: 2003, dir: "Rick Elgood", genre: ["Romance", "Drama"], imdb: 6.1, cast: "Ky-Mani Marley, Cherine Anderson", img: "https://m.media-amazon.com/images/M/MV5BZjc0OWQ1ZjUtZTNlNy00Mjg4LThkNTItYzk2MmE1MDVhMzU3XkEyXkFqcGc@._V1_.jpg", syn: "Musisi Rasta muda jatuh cinta dengan putri seorang pendeta Pentakosta." },
-            { id: 14, title: "The Sound of Music", year: 1965, dir: "Robert Wise", genre: ["Drama", "Musical"], imdb: 8.1, cast: "Julie Andrews, Christopher Plummer", img: "https://m.media-amazon.com/images/M/MV5BYWJhYmU4MjQtZDJhYi00ZGVjLTlkNTEtNzkzNGVjOWQ3MjcwXkEyXkFqcGc@._V1_.jpg", syn: "Maria, biarawati muda ceria yang menjadi pengasuh tujuh anak duda kaya di Austria." },
-            { id: 15, title: "Passion Play", year: 2010, dir: "Mitch Glazer", genre: ["Drama", "Fantasy"], imdb: 4.5, cast: "Mickey Rourke, Megan Fox", img: "https://a.ltrbxd.com/resized/film-poster/2/5/8/6/3/25863-passion-play-0-1000-0-1500-crop.jpg?v=fd0c2e5271", syn: "Pemain terompet jazz menyelamatkan wanita bersayap dari gangster kejam." },
-            { id: 16, title: "Forrest Gump", year: 1994, dir: "Robert Zemeckis", genre: ["Drama", "Romance"], imdb: 8.8, cast: "Tom Hanks, Robin Wright", img: "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg", syn: "Perjalanan hidup Forrest Gump, pria Alabama dengan IQ rendah namun berhati tulus." },
-            { id: 17, title: "Se7en", year: 1995, dir: "David Fincher", genre: ["Crime", "Mystery"], imdb: 8.6, cast: "Brad Pitt, Morgan Freeman", img: "https://image.tmdb.org/t/p/w500/6yoghtyTpznpBik8EngEmJskVUO.jpg", syn: "Dua detektif memburu pembunuh berantai yang menggunakan tujuh dosa mematikan sebagai motif." },
-            { id: 18, title: "La La Land", year: 2016, dir: "Damien Chazelle", genre: ["Drama", "Romance"], imdb: 8.0, cast: "Ryan Gosling, Emma Stone", img: "https://m.media-amazon.com/images/M/MV5BMzUzNDM2NzM2MV5BMl5BanBnXkFtZTgwNTM3NTg4OTE@._V1_.jpg", syn: "Seorang pianis jazz dan aktris yang bercita-cita tinggi jatuh cinta di Los Angeles." },
-            { id: 19, title: "(500) Days of Summer", year: 2009, dir: "Marc Webb", genre: ["Drama", "Romance"], imdb: 7.6, cast: "Joseph Gordon-Levitt, Zooey Deschanel", img: "https://m.media-amazon.com/images/M/MV5BMTk5MjM4OTU1OV5BMl5BanBnXkFtZTcwODkzNDIzMw@@._V1_.jpg", syn: "Kisah cinta nonlinear tentang Tom yang romantis dan Summer yang tidak percaya cinta sejati." },
-            { id: 20, title: "The Greatest Showman", year: 2017, dir: "Michael Gracey", genre: ["Drama", "Musical"], imdb: 7.5, cast: "Hugh Jackman, Zac Efron", img: "https://m.media-amazon.com/images/M/MV5BMjI1NDYzNzY2Ml5BMl5BanBnXkFtZTgwODQwODczNTM@._V1_.jpg", syn: "Musikal biografi tentang P.T. Barnum yang menciptakan sirkus spektakuler." },
-            { id: 21, title: "Cruella", year: 2021, dir: "Craig Gillespie", genre: ["Comedy", "Crime"], imdb: 7.3, cast: "Emma Stone, Emma Thompson", img: "https://m.media-amazon.com/images/M/MV5BMWY5MjljNjctZjhjZS00MWY0LTgwYzUtZTJiYTVmMmJkM2E0XkEyXkFqcGc@._V1_.jpg", syn: "Asal-usul Estella, gadis yatim piatu berbakat fashion yang bertransformasi menjadi Cruella de Vil." },
-            { id: 22, title: "Mission: Impossible", year: 1996, dir: "Brian De Palma", genre: ["Action", "Thriller"], imdb: 7.2, cast: "Tom Cruise", img: "https://m.media-amazon.com/images/M/MV5BOTI4ZmFlNWItYjkwZC00ZDcyLWIwNTctOGI5MDdlOWI3ZGIzXkEyXkFqcGc@._V1_.jpg", syn: "Ethan Hunt memburu pengkhianat yang menjebaknya atas kematian timnya." },
-            { id: 23, title: "Dead Poets Society", year: 1989, dir: "Peter Weir", genre: ["Drama"], imdb: 8.1, cast: "Robin Williams, Ethan Hawke", img: "https://m.media-amazon.com/images/M/MV5BMDYwNGVlY2ItMWYxMS00YjZiLWE5MTAtYWM5NWQ2ZWJjY2Q3XkEyXkFqcGc@._V1_.jpg", syn: "Guru bahasa Inggris karismatik menginspirasi murid-muridnya untuk berpikir bebas lewat puisi." },
-            { id: 24, title: "The Color Purple", year: 2023, dir: "Blitz Bazawule", genre: ["Drama"], imdb: 6.8, cast: "Fantasia Barrino, Taraji P. Henson", img: "https://m.media-amazon.com/images/M/MV5BYzg2ZGEzZjItZWY3Ni00MTFjLTk3ZmEtZTE1OGFmOTkzM2I4XkEyXkFqcGc@._V1_.jpg", syn: "Kisah emosional wanita Afrika-Amerika yang berjuang melawan penindasan di Georgia awal 1900-an." },
-            { id: 25, title: "White Chicks", year: 2004, dir: "Keenen Ivory Wayans", genre: ["Comedy"], imdb: 5.9, cast: "Marlon Wayans, Shawn Wayans", img: "https://m.media-amazon.com/images/M/MV5BMTY3OTg2OTM3OV5BMl5BanBnXkFtZTYwNzY5OTA3._V1_.jpg", syn: "Dua agen FBI bersaudara menyamar menjadi wanita kulit putih kaya untuk menggagalkan penculikan." },
-            { id: 26, title: "The Maze Runner", year: 2014, dir: "Wes Ball", genre: ["Sci-Fi", "Action"], imdb: 6.8, cast: "Dylan O'Brien, Kaya Scodelario", img: "https://m.media-amazon.com/images/M/MV5BMjUyNTA3MTAyM15BMl5BanBnXkFtZTgwOTEyMTkyMjE@._V1_.jpg", syn: "Thomas terbangun di Glade dan harus memecahkan rahasia labirin raksasa untuk melarikan diri." },
-            { id: 27, title: "Little Miss Sunshine", year: 2006, dir: "Jonathan Dayton", genre: ["Drama", "Comedy"], imdb: 7.8, cast: "Steve Carell, Toni Collette", img: "https://m.media-amazon.com/images/M/MV5BMTgzNTgzODU0NV5BMl5BanBnXkFtZTcwMjEyMjMzMQ@@._V1_.jpg", syn: "Keluarga disfungsional melakukan perjalanan darat mengantar putri bungsu mereka ikut kontes kecantikan." },
-            { id: 28, title: "The Devil Wears Prada", year: 2006, dir: "David Frankel", genre: ["Comedy", "Drama"], imdb: 7.0, cast: "Anne Hathaway, Meryl Streep", img: "https://m.media-amazon.com/images/M/MV5BMjUyNTA3MTAyM15BMl5BanBnXkFtZTgwOTEyMTkyMjE@._V1_.jpg", syn: "Lulusan baru menjadi asisten editor majalah fashion yang kejam dan sinis, Miranda Priestly." },
-            { id: 29, title: "The Help", year: 2011, dir: "Tate Taylor", genre: ["Drama"], imdb: 8.0, cast: "Viola Davis, Emma Stone", img: "https://m.media-amazon.com/images/M/MV5BOWM3NTI3YWEtYjJmMy00M2U5LWI1NzEtZWM3ZDY2ZWNjOGRiXkEyXkFqcGc@._V1_.jpg", syn: "Seorang penulis muda menulis buku tentang kehidupan pelayan kulit hitam di Mississippi tahun 1960-an." },
-            { id: 30, title: "Breaking Bad", year: 2008, dir: "Vince Gilligan", genre: ["Crime", "Drama"], imdb: 9.5, cast: "Bryan Cranston, Aaron Paul", img: "https://m.media-amazon.com/images/M/MV5BMTM5OTMyMjIxOV5BMl5BanBnXkFtZTcwNzU4MjIwNQ@@._V1_.jpg", syn: "Guru kimia yang sakit kanker beralih menjadi produsen meth demi masa depan keluarganya." },
-            { id: 31, title: "Ocean's Eight", year: 2018, dir: "Gary Ross", genre: ["Crime", "Action"], imdb: 6.3, cast: "Sandra Bullock, Cate Blanchett", img: "https://m.media-amazon.com/images/M/MV5BMjAyNDEyMzc4Ml5BMl5BanBnXkFtZTgwMjEzNjM0NTM@._V1_.jpg", syn: "Debbie Ocean memimpin tim wanita untuk mencuri kalung berlian di acara Met Gala." },
-            { id: 32, title: "Pitch Perfect", year: 2012, dir: "Jason Moore", genre: ["Music", "Comedy"], imdb: 7.1, cast: "Anna Kendrick, Rebel Wilson", img: "https://m.media-amazon.com/images/M/MV5BMTcyMTMzNzE5N15BMl5BanBnXkFtZTcwNzg5NjM5Nw@@._V1_.jpg", syn: "Mahasiswi baru bergabung dengan grup a cappella kampus dan membawa energi baru." },
-            { id: 33, title: "Avatar: The Way of Water", year: 2022, dir: "James Cameron", genre: ["Sci-Fi", "Action"], imdb: 7.5, cast: "Sam Worthington, Zoe Saldaña", img: "https://m.media-amazon.com/images/M/MV5BNWI0Y2NkOWEtMmM2OC00MjQ3LWI1YzItZGQxYzQ3NzI4NWZmXkEyXkFqcGc@._V1_.jpg", syn: "Jake Sully dan keluarganya mengungsi ke klan laut untuk menghindari ancaman manusia." },
-            { id: 34, title: "Avengers: Infinity War", year: 2018, dir: "Anthony Russo", genre: ["Action", "Sci-Fi"], imdb: 8.4, cast: "Robert Downey Jr, Chris Hemsworth", img: "https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_.jpg", syn: "Avengers bersatu melawan Thanos yang ingin memusnahkan setengah populasi alam semesta." },
-            { id: 35, title: "Captain America: Civil War", year: 2016, dir: "Anthony Russo", genre: ["Action", "Sci-Fi"], imdb: 7.8, cast: "Chris Evans, Robert Downey Jr", img: "https://m.media-amazon.com/images/M/MV5BMjQ0MTgyNjAxMV5BMl5BanBnXkFtZTgwNjUzMDkyODE@._V1_.jpg", syn: "Konflik internal Avengers tentang pengawasan pemerintah memecah belah tim." },
-            { id: 36, title: "Zootopia 2", year: 2025, dir: "Jared Bush", genre: ["Animation", "Comedy"], imdb: 7.5, cast: "Ginnifer Goodwin, Jason Bateman", img: "https://m.media-amazon.com/images/M/MV5BYjg1Mjc3MjQtMTZjNy00YWVlLWFhMWEtMWI3ZTgxYjJmNmRlXkEyXkFqcGc@._V1_.jpg", syn: "Judy dan Nick kembali beraksi memecahkan misteri baru di Zootopia." },
-            { id: 37, title: "Coco", year: 2017, dir: "Lee Unkrich", genre: ["Animation", "Family"], imdb: 8.4, cast: "Anthony Gonzalez", img: "https://image.tmdb.org/t/p/w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg", syn: "Miguel memasuki dunia orang mati untuk mencari kakek buyutnya dan menjadi musisi." },
-            { id: 38, title: "Nezha: Mo tong nao hai", year: 2025, dir: "Yu Yang", genre: ["Animation", "Action"], imdb: 7.9, cast: "Lü Yanting", img: "https://m.media-amazon.com/images/M/MV5BYjIyMDc3ZmQtZTQyYy00NDhhLTlmMWEtYzM3MDYwNjRmY2NkXkEyXkFqcGc@._V1_FMjpg_UY12004_.jpg", syn: "Pahlawan berapi berusaha mendapatkan kembali wujud fisiknya." },
-            { id: 39, title: "Moana", year: 2016, dir: "Ron Clements", genre: ["Animation", "Adventure"], imdb: 7.9, cast: "Auli'i Cravalho, Dwayne Johnson", img: "https://m.media-amazon.com/images/M/MV5BMjI4MzU5NTExNF5BMl5BanBnXkFtZTgwNzY1MTEwMDI@._V1_.jpg", syn: "Seorang gadis berlayar melintasi lautan untuk menyelamatkan rakyatnya bersama demigod Maui." },
-            { id: 40, title: "Spider-Man: Across the Spider-Verse", year: 2023, dir: "Joaquim Dos Santos", genre: ["Animation", "Action"], imdb: 8.5, cast: "Shameik Moore, Hailee Steinfeld", img: "https://m.media-amazon.com/images/M/MV5BNThiZjA3MjItZGY5Ni00ZmJhLWEwN2EtOTBlYTA4Y2E0M2ZmXkEyXkFqcGc@._V1_.jpg", syn: "Miles Morales menjelajahi multiverse dan bertemu tim Spider-People lainnya." },
-            { id: 41, title: "The Secret World of Arrietty", year: 2010, dir: "Hiromasa Yonebayashi", genre: ["Animation", "Fantasy"], imdb: 7.6, cast: "Mirai Shida", img: "https://m.media-amazon.com/images/M/MV5BMTAxNjk3OTYyODReQTJeQWpwZ15BbWU3MDgyODY2OTY@._V1_.jpg", syn: "Manusia kecil yang tinggal diam-diam di bawah lantai rumah manusia." },
-            { id: 42, title: "Kimi no Nawa", year: 2016, dir: "Makoto Shinkai", genre: ["Animation", "Romance"], imdb: 8.4, cast: "Ryûnosuke Kamiki", img: "https://m.media-amazon.com/images/M/MV5BMjI1ODZkYTgtYTY3Yy00ZTJkLWFkOTgtZDUyYWM4MzQwNjk0XkEyXkFqcGc@._V1_.jpg", syn: "Dua remaja yang bertukar tubuh dan mencoba menyelamatkan desa dari komet." },
-            { id: 43, title: "Tenki No Ko", year: 2019, dir: "Makoto Shinkai", genre: ["Animation", "Romance"], imdb: 7.5, cast: "Kotaro Daigo", img: "https://m.media-amazon.com/images/M/MV5BMmJiYWI4ZjktMzgyZS00MjBiLThmOTYtZWJmOTUzOTFkMTFiXkEyXkFqcGc@._V1_.jpg", syn: "Anak laki-laki yang kabur ke Tokyo berteman dengan gadis yang bisa mengendalikan cuaca." },
-            { id: 44, title: "Suzume no Tojimari", year: 2022, dir: "Makoto Shinkai", genre: ["Animation", "Adventure"], imdb: 7.6, cast: "Nanoka Hara", img: "https://m.media-amazon.com/images/M/MV5BODhkNDhmNzktODFmMC00NDZiLWEzN2UtY2YwYzgzYTVlMWZmXkEyXkFqcGc@._V1_.jpg", syn: "Gadis SMA yang menutup pintu bencana di seluruh Jepang bersama kursi ajaib." },
-            { id: 45, title: "Demon Slayer: Infinity Castle", year: 2025, dir: "Haruo Sotozaki", genre: ["Anime", "Action"], imdb: 8.5, cast: "Natsuki Hanae", img: "https://m.media-amazon.com/images/M/MV5BOGQ3YWUzYjEtMTJiYy00ZjQ0LWI0YjktYjhiNGVhNGExYTM3XkEyXkFqcGc@._V1_.jpg", syn: "Pertempuran terakhir Korps Pembasmi Iblis melawan Muzan di Infinity Castle." }
-        ];
+        // Tombol MASUK ditekan
+        function finishLogin() {
+            const inputName = document.getElementById('login-name-input').value.trim();
+            if (!inputName) { alert("Isi nama kamu dulu ya!"); return; }
 
-        // ==========================================
-        // 3. LOGIKA UTAMA APLIKASI
-        // ==========================================
+            // Simpan Data Valid
+            user.name = inputName;
+            saveUserToStorage();
+            updateNav();
 
-        function enterApp() {
-            const screen = document.getElementById('welcome-screen');
-            screen.classList.add('fade-out-cinematic');
-            
-            setTimeout(() => { 
-                screen.style.display = 'none'; 
-                // Cek Nama (Force)
-                if (user.name === "Guest" || user.name === "Pengunjung") {
-                    setTimeout(() => {
-                        alert("👋 Selamat Datang!\n\nMohon ganti Nama & Foto Profil dulu ya.");
-                        editName(); 
-                    }, 500); 
-                }
-            }, 1000); 
+            // Animasi: Login Hilang -> Masuk Web Utama
+            const login = document.getElementById('login-screen');
+            login.classList.remove('fade-in');
+            login.classList.add('fade-out');
         }
 
+        // Buka Login lagi dari Navbar (Edit Profil)
+        function openLoginAgain() {
+            const login = document.getElementById('login-screen');
+            login.classList.remove('fade-out');
+            login.classList.add('fade-in');
+            loadUserDataToLogin();
+        }
+
+        function saveUserToStorage() {
+            try { localStorage.setItem('cinelog_user', JSON.stringify(user)); } catch(e) { alert("Memori Penuh!"); }
+        }
+        function updateNav() {
+            document.getElementById('nav-username').innerText = user.name;
+            document.getElementById('nav-avatar').src = user.avatar;
+        }
+
+        // ==========================================
+        // 2. DATA FILM (45 JUDUL)
+        // ==========================================
+        const movies = [
+            { id: 1, title: "Jumbo", year: 2025, dir: "Ryan Adriandhy", genre: ["Animation"], imdb: 8.6, cast: "Prince Poetiray", img: "https://m.media-amazon.com/images/M/MV5BMjMxODU2YTYtZjFlZC00MDFlLTg0ZmItNDE5NjMxMmU0ZTlmXkEyXkFqcGc@._V1_.jpg", syn: "Petualangan magis mencari buku dongeng." },
+            { id: 2, title: "Agak Laen", year: 2024, dir: "Mouhadkly Ach", genre: ["Comedy", "Horror"], imdb: 7.6, cast: "Bene Dion", img: "https://m.media-amazon.com/images/M/MV5BODg5YzA5MmEtN2NkOC00M2JhLTgzZjktZjg1M2U3ZmEyN2IyXkEyXkFqcGc@._V1_FMjpg_UX528_.jpg", syn: "Rumah hantu pasar malam yang memakan korban." },
+            { id: 3, title: "Sore: Istri dari Masa Depan", year: 2025, dir: "Yandy Laurens", genre: ["Sci-Fi", "Romance"], imdb: 7.7, cast: "Sheila Dara", img: "https://a.ltrbxd.com/resized/film-poster/1/2/7/0/8/1/4/1270814-sore-a-wife-from-the-future-0-1000-0-1500-crop.jpg?v=7a31b7c5a8", syn: "Istri dari masa depan mengubah takdir suaminya." },
+            { id: 4, title: "Stealing Raden Saleh", year: 2022, dir: "Angga Sasongko", genre: ["Crime"], imdb: 7.3, cast: "Iqbaal Ramadhan", img: "https://a.ltrbxd.com/resized/film-poster/7/4/8/4/1/0/748410-stealing-raden-saleh-0-1000-0-1500-crop.jpg?v=a933bb731e", syn: "Pencurian lukisan legendaris." },
+            { id: 5, title: "Glorious Days", year: 2019, dir: "Riri Riza", genre: ["Drama"], imdb: 7.4, cast: "Maizura", img: "https://a.ltrbxd.com/resized/film-poster/5/2/9/5/6/2/529562-glorious-days-0-1000-0-1500-crop.jpg?v=70f7d56aec", syn: "Reuni geng SMA tahun 90-an." },
+            { id: 6, title: "5 cm", year: 2012, dir: "Rizal Mantovani", genre: ["Adventure"], imdb: 7.3, cast: "Herjunot Ali", img: "https://m.media-amazon.com/images/M/MV5BYzEyM2VlZTgtNGI3MS00NzBiLWJkODItNGE4OWU5M2FmNTg0XkEyXkFqcGc@._V1_.jpg", syn: "Lima sahabat mendaki Semeru." },
+            { id: 7, title: "Train To Busan", year: 2016, dir: "Yeon Sang-ho", genre: ["Horror"], imdb: 7.6, cast: "Gong Yoo", img: "https://a.ltrbxd.com/resized/film-poster/3/3/0/9/1/2/330912-train-to-busan-0-1000-0-1500-crop.jpg?v=c85e151cfe", syn: "Zombie di kereta cepat." },
+            { id: 8, title: "Unlocked", year: 2023, dir: "Kim Tae-joon", genre: ["Thriller"], imdb: 6.4, cast: "Chun Woo-hee", img: "https://m.media-amazon.com/images/M/MV5BNzBhN2IzMmYtOGY5MC00ZDkwLTkxYWUtMDkzZmJmZWFiYmRhXkEyXkFqcGc@._V1_.jpg", syn: "Teror lewat ponsel yang diretas." },
+            { id: 9, title: "The Call", year: 2020, dir: "Chung-Hyun Lee", genre: ["Thriller"], imdb: 7.1, cast: "Park Shin-hye", img: "https://m.media-amazon.com/images/M/MV5BYzZlOGEyZTMtYmIxYS00NmIxLWIwNjYtMzY3Yjg2OThjODU2XkEyXkFqcGc@._V1_.jpg", syn: "Terhubung lewat telepon beda waktu." },
+            { id: 10, title: "Love Your Enemy", year: 2024, dir: "Park Joon-hwa", genre: ["Drama"], imdb: 7.4, cast: "Ju Ji-hoon", img: "https://a.ltrbxd.com/resized/film-poster/1/2/9/8/3/1/7/1298317-love-your-enemy-0-1000-0-1500-crop.jpg?v=633a4ce23b", syn: "Musuh bebuyutan bertemu kembali." },
+            { id: 11, title: "High & Low", year: 2016, dir: "Shigeaki Kubo", genre: ["Action"], imdb: 6.4, cast: "AKIRA", img: "https://m.media-amazon.com/images/M/MV5BNDFkY2IwZjgtZmIyMi00MTc5LTgzYzktZDFjNmJkNjFmMTkwXkEyXkFqcGc@._V1_.jpg", syn: "Pertarungan geng SWORD." },
+            { id: 12, title: "Crows Zero", year: 2007, dir: "Takashi Miike", genre: ["Action"], imdb: 7.0, cast: "Shun Oguri", img: "https://m.media-amazon.com/images/M/MV5BNDM1NDI1NDYtZTgzZi00NDFiLTg4MjQtODllY2M1ZDA2YWY5XkEyXkFqcGc@._V1_.jpg", syn: "Perebutan kekuasaan SMA Suzuran." },
+            { id: 13, title: "One Love", year: 2003, dir: "Rick Elgood", genre: ["Romance"], imdb: 6.1, cast: "Ky-Mani Marley", img: "https://m.media-amazon.com/images/M/MV5BZjc0OWQ1ZjUtZTNlNy00Mjg4LThkNTItYzk2MmE1MDVhMzU3XkEyXkFqcGc@._V1_.jpg", syn: "Cinta musisi Rasta." },
+            { id: 14, title: "Sound of Music", year: 1965, dir: "Robert Wise", genre: ["Musical"], imdb: 8.1, cast: "Julie Andrews", img: "https://m.media-amazon.com/images/M/MV5BYWJhYmU4MjQtZDJhYi00ZGVjLTlkNTEtNzkzNGVjOWQ3MjcwXkEyXkFqcGc@._V1_.jpg", syn: "Pengasuh bernyanyi untuk 7 anak." },
+            { id: 15, title: "Passion Play", year: 2010, dir: "Mitch Glazer", genre: ["Fantasy"], imdb: 4.5, cast: "Megan Fox", img: "https://a.ltrbxd.com/resized/film-poster/2/5/8/6/3/25863-passion-play-0-1000-0-1500-crop.jpg?v=fd0c2e5271", syn: "Wanita bersayap dan musisi jazz." },
+            { id: 16, title: "Forrest Gump", year: 1994, dir: "Robert Zemeckis", genre: ["Drama"], imdb: 8.8, cast: "Tom Hanks", img: "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg", syn: "Hidup luar biasa pria IQ rendah." },
+            { id: 17, title: "Se7en", year: 1995, dir: "David Fincher", genre: ["Crime"], imdb: 8.6, cast: "Brad Pitt", img: "https://image.tmdb.org/t/p/w500/6yoghtyTpznpBik8EngEmJskVUO.jpg", syn: "Pembunuhan 7 dosa mematikan." },
+            { id: 18, title: "La La Land", year: 2016, dir: "Damien Chazelle", genre: ["Romance"], imdb: 8.0, cast: "Ryan Gosling", img: "https://m.media-amazon.com/images/M/MV5BMzUzNDM2NzM2MV5BMl5BanBnXkFtZTgwNTM3NTg4OTE@._V1_.jpg", syn: "Cinta pianis dan aktris." },
+            { id: 19, title: "500 Days of Summer", year: 2009, dir: "Marc Webb", genre: ["Romance"], imdb: 7.6, cast: "Joseph Gordon-Levitt", img: "https://m.media-amazon.com/images/M/MV5BMTk5MjM4OTU1OV5BMl5BanBnXkFtZTcwODkzNDIzMw@@._V1_.jpg", syn: "Bukan kisah cinta biasa." },
+            { id: 20, title: "Greatest Showman", year: 2017, dir: "Michael Gracey", genre: ["Musical"], imdb: 7.5, cast: "Hugh Jackman", img: "https://m.media-amazon.com/images/M/MV5BMjI1NDYzNzY2Ml5BMl5BanBnXkFtZTgwODQwODczNTM@._V1_.jpg", syn: "Sirkus terbesar di dunia." },
+            { id: 21, title: "Cruella", year: 2021, dir: "Craig Gillespie", genre: ["Crime"], imdb: 7.3, cast: "Emma Stone", img: "https://m.media-amazon.com/images/M/MV5BMWY5MjljNjctZjhjZS00MWY0LTgwYzUtZTJiYTVmMmJkM2E0XkEyXkFqcGc@._V1_.jpg", syn: "Asal usul Cruella de Vil." },
+            { id: 22, title: "Mission: Impossible", year: 1996, dir: "Brian De Palma", genre: ["Action"], imdb: 7.2, cast: "Tom Cruise", img: "https://m.media-amazon.com/images/M/MV5BOTI4ZmFlNWItYjkwZC00ZDcyLWIwNTctOGI5MDdlOWI3ZGIzXkEyXkFqcGc@._V1_.jpg", syn: "Agen rahasia dijebak." },
+            { id: 23, title: "Dead Poets Society", year: 1989, dir: "Peter Weir", genre: ["Drama"], imdb: 8.1, cast: "Robin Williams", img: "https://m.media-amazon.com/images/M/MV5BMDYwNGVlY2ItMWYxMS00YjZiLWE5MTAtYWM5NWQ2ZWJjY2Q3XkEyXkFqcGc@._V1_.jpg", syn: "Guru sastra inspiratif." },
+            { id: 24, title: "Color Purple", year: 2023, dir: "Blitz Bazawule", genre: ["Drama"], imdb: 6.8, cast: "Fantasia Barrino", img: "https://m.media-amazon.com/images/M/MV5BYzg2ZGEzZjItZWY3Ni00MTFjLTk3ZmEtZTE1OGFmOTkzM2I4XkEyXkFqcGc@._V1_.jpg", syn: "Perjuangan wanita kulit hitam." },
+            { id: 25, title: "White Chicks", year: 2004, dir: "Keenen Ivory Wayans", genre: ["Comedy"], imdb: 5.9, cast: "Marlon Wayans", img: "https://m.media-amazon.com/images/M/MV5BMTY3OTg2OTM3OV5BMl5BanBnXkFtZTYwNzY5OTA3._V1_.jpg", syn: "Agen FBI menyamar jadi wanita." },
+            { id: 26, title: "Maze Runner", year: 2014, dir: "Wes Ball", genre: ["Sci-Fi"], imdb: 6.8, cast: "Dylan O'Brien", img: "https://m.media-amazon.com/images/M/MV5BMjUyNTA3MTAyM15BMl5BanBnXkFtZTgwOTEyMTkyMjE@._V1_.jpg", syn: "Terjebak di labirin raksasa." },
+            { id: 27, title: "Little Miss Sunshine", year: 2006, dir: "Jonathan Dayton", genre: ["Comedy"], imdb: 7.8, cast: "Steve Carell", img: "https://m.media-amazon.com/images/M/MV5BMTgzNTgzODU0NV5BMl5BanBnXkFtZTcwMjEyMjMzMQ@@._V1_.jpg", syn: "Road trip keluarga aneh." },
+            { id: 28, title: "Devil Wears Prada", year: 2006, dir: "David Frankel", genre: ["Comedy"], imdb: 7.0, cast: "Meryl Streep", img: "https://m.media-amazon.com/images/M/MV5BMjUyNTA3MTAyM15BMl5BanBnXkFtZTgwOTEyMTkyMjE@._V1_.jpg", syn: "Bos majalah fashion kejam." },
+            { id: 29, title: "The Help", year: 2011, dir: "Tate Taylor", genre: ["Drama"], imdb: 8.0, cast: "Viola Davis", img: "https://m.media-amazon.com/images/M/MV5BOWM3NTI3YWEtYjJmMy00M2U5LWI1NzEtZWM3ZDY2ZWNjOGRiXkEyXkFqcGc@._V1_.jpg", syn: "Kisah asisten rumah tangga." },
+            { id: 30, title: "Breaking Bad", year: 2008, dir: "Vince Gilligan", genre: ["Crime"], imdb: 9.5, cast: "Bryan Cranston", img: "https://m.media-amazon.com/images/M/MV5BMTM5OTMyMjIxOV5BMl5BanBnXkFtZTcwNzU4MjIwNQ@@._V1_.jpg", syn: "Guru kimia jadi bandar." },
+            { id: 31, title: "Ocean's Eight", year: 2018, dir: "Gary Ross", genre: ["Crime"], imdb: 6.3, cast: "Sandra Bullock", img: "https://m.media-amazon.com/images/M/MV5BMjAyNDEyMzc4Ml5BMl5BanBnXkFtZTgwMjEzNjM0NTM@._V1_.jpg", syn: "Perampokan Met Gala." },
+            { id: 32, title: "Pitch Perfect", year: 2012, dir: "Jason Moore", genre: ["Music"], imdb: 7.1, cast: "Anna Kendrick", img: "https://m.media-amazon.com/images/M/MV5BMTcyMTMzNzE5N15BMl5BanBnXkFtZTcwNzg5NjM5Nw@@._V1_.jpg", syn: "Grup acapella kampus." },
+            { id: 33, title: "Avatar 2", year: 2022, dir: "James Cameron", genre: ["Sci-Fi"], imdb: 7.5, cast: "Sam Worthington", img: "https://m.media-amazon.com/images/M/MV5BNWI0Y2NkOWEtMmM2OC00MjQ3LWI1YzItZGQxYzQ3NzI4NWZmXkEyXkFqcGc@._V1_.jpg", syn: "Perang di lautan Pandora." },
+            { id: 34, title: "Infinity War", year: 2018, dir: "Russo Brothers", genre: ["Action"], imdb: 8.4, cast: "RDJ", img: "https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_.jpg", syn: "Thanos mengumpulkan batu." },
+            { id: 35, title: "Civil War", year: 2016, dir: "Russo Brothers", genre: ["Action"], imdb: 7.8, cast: "Chris Evans", img: "https://m.media-amazon.com/images/M/MV5BMjQ0MTgyNjAxMV5BMl5BanBnXkFtZTgwNjUzMDkyODE@._V1_.jpg", syn: "Avengers terpecah." },
+            { id: 36, title: "Zootopia 2", year: 2025, dir: "Jared Bush", genre: ["Animation"], imdb: 7.5, cast: "Ginnifer Goodwin", img: "https://m.media-amazon.com/images/M/MV5BYjg1Mjc3MjQtMTZjNy00YWVlLWFhMWEtMWI3ZTgxYjJmNmRlXkEyXkFqcGc@._V1_.jpg", syn: "Kembalinya Judy dan Nick." },
+            { id: 37, title: "Coco", year: 2017, dir: "Lee Unkrich", genre: ["Animation"], imdb: 8.4, cast: "Anthony Gonzalez", img: "https://image.tmdb.org/t/p/w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg", syn: "Dunia orang mati." },
+            { id: 38, title: "Nezha 2", year: 2025, dir: "Yu Yang", genre: ["Animation"], imdb: 7.9, cast: "Lü Yanting", img: "https://m.media-amazon.com/images/M/MV5BYjIyMDc3ZmQtZTQyYy00NDhhLTlmMWEtYzM3MDYwNjRmY2NkXkEyXkFqcGc@._V1_FMjpg_UY12004_.jpg", syn: "Kebangkitan dewa api." },
+            { id: 39, title: "Moana", year: 2016, dir: "Ron Clements", genre: ["Animation"], imdb: 7.9, cast: "Auli'i Cravalho", img: "https://m.media-amazon.com/images/M/MV5BMjI4MzU5NTExNF5BMl5BanBnXkFtZTgwNzY1MTEwMDI@._V1_.jpg", syn: "Petualangan di laut." },
+            { id: 40, title: "Spider-Verse 2", year: 2023, dir: "Joaquim Dos Santos", genre: ["Animation"], imdb: 8.5, cast: "Shameik Moore", img: "https://m.media-amazon.com/images/M/MV5BNThiZjA3MjItZGY5Ni00ZmJhLWEwN2EtOTBlYTA4Y2E0M2ZmXkEyXkFqcGc@._V1_.jpg", syn: "Miles di multiverse." },
+            { id: 41, title: "Arrietty", year: 2010, dir: "Hiromasa Yonebayashi", genre: ["Animation"], imdb: 7.6, cast: "Mirai Shida", img: "https://m.media-amazon.com/images/M/MV5BMTAxNjk3OTYyODReQTJeQWpwZ15BbWU3MDgyODY2OTY@._V1_.jpg", syn: "Manusia kecil." },
+            { id: 42, title: "Kimi no Nawa", year: 2016, dir: "Makoto Shinkai", genre: ["Animation"], imdb: 8.4, cast: "Ryûnosuke Kamiki", img: "https://m.media-amazon.com/images/M/MV5BMjI1ODZkYTgtYTY3Yy00ZTJkLWFkOTgtZDUyYWM4MzQwNjk0XkEyXkFqcGc@._V1_.jpg", syn: "Bertukar tubuh." },
+            { id: 43, title: "Tenki No Ko", year: 2019, dir: "Makoto Shinkai", genre: ["Animation"], imdb: 7.5, cast: "Kotaro Daigo", img: "https://m.media-amazon.com/images/M/MV5BMmJiYWI4ZjktMzgyZS00MjBiLThmOTYtZWJmOTUzOTFkMTFiXkEyXkFqcGc@._V1_.jpg", syn: "Gadis pawang hujan." },
+            { id: 44, title: "Suzume", year: 2022, dir: "Makoto Shinkai", genre: ["Animation"], imdb: 7.6, cast: "Nanoka Hara", img: "https://m.media-amazon.com/images/M/MV5BODhkNDhmNzktODFmMC00NDZiLWEzN2UtY2YwYzgzYTVlMWZmXkEyXkFqcGc@._V1_.jpg", syn: "Menutup pintu bencana." },
+            { id: 45, title: "Demon Slayer", year: 2025, dir: "Haruo Sotozaki", genre: ["Anime"], imdb: 8.5, cast: "Natsuki Hanae", img: "https://m.media-amazon.com/images/M/MV5BOGQ3YWUzYjEtMTJiYy00ZjQ0LWI0YjktYjhiNGVhNGExYTM3XkEyXkFqcGc@._V1_.jpg", syn: "Final Battle di Infinity Castle." }
+        ];
+
         function init() {
-            updateNav(); 
             const grid = document.getElementById('grid-container');
             if(grid) {
-                grid.innerHTML = ''; 
+                grid.innerHTML = '';
                 movies.forEach(m => {
                     const div = document.createElement('div');
                     div.className = 'poster-wrapper group bg-[#1f252b] cursor-pointer relative';
@@ -471,166 +380,123 @@
                 });
             }
         }
+        init();
 
         // ==========================================
-        // 4. MODAL & ULASAN SYSTEM
+        // 3. MODAL, REVIEW & FITUR OWNER
         // ==========================================
-
-        let currentId = null;
-        let userRating = 0;
-        let unsubscribeComments = null;
+        let currentId = null; let userRating = 0; let unsubscribe = null;
 
         function openModal(id) {
             currentId = id;
             const m = movies.find(x => x.id === id);
-            
             document.getElementById('modal-img').src = m.img;
-            document.getElementById('modal-imdb').innerText = m.imdb;
             document.getElementById('modal-title').innerText = m.title;
-            document.getElementById('modal-year').innerText = m.year;
-            document.getElementById('modal-director').innerText = m.dir;
-            document.getElementById('modal-cast').innerText = m.cast;
             document.getElementById('modal-synopsis').innerText = m.syn;
-
-            const genreContainer = document.getElementById('modal-genre');
-            genreContainer.innerHTML = '';
-            m.genre.forEach(g => {
-                const span = document.createElement('span');
-                span.className = "text-[10px] uppercase font-bold text-gray-400 border border-gray-600 px-2 py-0.5 rounded tracking-wide";
-                span.innerText = g;
-                genreContainer.appendChild(span);
-            });
-
-            document.getElementById('review-text').value = '';
-            rate(0);
-            subscribeToComments(id);
-
-            const modal = document.getElementById('movie-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
+            
+            const gDiv = document.getElementById('modal-genre'); gDiv.innerHTML = '';
+            m.genre.forEach(g => gDiv.innerHTML += `<span class="text-[10px] border border-gray-600 px-2 rounded text-gray-400 uppercase">${g}</span>`);
+            
+            document.getElementById('movie-modal').classList.remove('hidden');
+            document.getElementById('movie-modal').classList.add('flex');
+            
+            loadComments(id);
         }
 
         function closeModal() {
-            const modal = document.getElementById('movie-modal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-            document.body.style.overflow = 'auto';
-            if (unsubscribeComments) unsubscribeComments();
+            document.getElementById('movie-modal').classList.add('hidden');
+            document.getElementById('movie-modal').classList.remove('flex');
+            if(unsubscribe) unsubscribe();
         }
 
         function rate(n) {
             userRating = n;
-            const stars = document.querySelectorAll('#input-stars i');
-            stars.forEach((s, idx) => {
-                s.classList.toggle('star-filled', idx < n);
-                s.classList.toggle('star-empty', idx >= n);
+            document.querySelectorAll('#input-stars i').forEach((s,i) => {
+                s.className = i < n ? "fas fa-star star-filled" : "fas fa-star star-empty";
             });
         }
 
         async function postReview() {
-            const text = document.getElementById('review-text').value;
-            if(!text && userRating === 0) {
-                alert("Mohon isi ulasan atau berikan rating."); return;
-            }
+            const txt = document.getElementById('review-text').value;
+            if(!txt && userRating===0) { alert("Isi review dulu!"); return; }
+            if(user.name === "Guest") { alert("Login dulu!"); openLoginAgain(); closeModal(); return; }
 
-            const btn = document.getElementById('btn-post');
-            btn.disabled = true; btn.innerText = "Mengirim...";
-
+            const btn = document.getElementById('btn-post'); btn.innerText = "...";
             try {
+                // Post review (Hashtag akan disimpan ke database apa adanya)
                 await window.addDoc(window.collection(window.db, "reviews"), {
-                    movieId: currentId,
-                    user: user.name,
-                    avatar: user.avatar,
-                    rating: userRating,
-                    text: text,
-                    createdAt: window.serverTimestamp()
+                    movieId: currentId, user: user.name, avatar: user.avatar,
+                    text: txt, rating: userRating, createdAt: window.serverTimestamp(), likedBy: []
                 });
-                document.getElementById('review-text').value = '';
-                rate(0);
-            } catch (e) {
-                console.error("Error:", e);
-                alert("Gagal kirim. Cek internet.");
-            } finally {
-                btn.disabled = false; btn.innerText = "POSTING";
-            }
+                document.getElementById('review-text').value = ''; rate(0);
+            } catch(e) { alert("Gagal post"); }
+            btn.innerText = "POSTING";
         }
 
-        window.deleteReview = async function(docId, reviewerName) {
-            if(reviewerName !== user.name) {
-                alert("Hanya bisa hapus ulasan sendiri!"); return;
-            }
-            if(!confirm("Hapus ulasan ini?")) return;
-            try { await window.deleteDoc(window.doc(window.db, "reviews", docId)); } 
-            catch (e) { alert("Gagal hapus."); }
-        }
+        function loadComments(movieId) {
+            const list = document.getElementById('comments-list'); list.innerHTML = 'Loading...';
+            const q = window.query(window.collection(window.db, "reviews"), window.where("movieId", "==", movieId), window.orderBy("createdAt", "desc"));
+            
+            // --- KONFIGURASI OWNER ---
+            const OWNER_NAME = "Uziphoria";
+            const SECRET_CODE = "#official"; 
 
-        function subscribeToComments(movieId) {
-            const list = document.getElementById('comments-list');
-            list.innerHTML = `<div class="text-center py-6 text-gray-600 text-sm animate-pulse">Memuat ulasan...</div>`;
+            unsubscribe = onSnapshot(q, (snap) => {
+                list.innerHTML = '';
+                if(snap.empty) { list.innerHTML = '<p class="text-gray-600 text-sm">Belum ada ulasan.</p>'; return; }
+                
+                snap.forEach(doc => {
+                    const r = doc.data();
+                    
+                    // --- LOGIKA DETEKSI OWNER & HASHTAG ---
+                    let isOwner = false;
+                    let displayText = r.text;
 
-            // --- PENGATURAN OWNER ---
-            const OWNER_NAME = "Uziphoria"; 
-            const SECRET_CODE = "#rillcuy"; // <--- GANTI KODE RAHASIA DI SINI
-
-            import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then((fs) => {
-                const q = fs.query(
-                    fs.collection(window.db, "reviews"),
-                    fs.where("movieId", "==", movieId),
-                    fs.orderBy("createdAt", "desc")
-                );
-
-                unsubscribeComments = fs.onSnapshot(q, (snapshot) => {
-                    list.innerHTML = '';
-                    if (snapshot.empty) {
-                        list.innerHTML = `<div class="text-center py-6 text-gray-600 text-sm italic">Belum ada ulasan.</div>`;
-                        return;
+                    // 1. Cek apakah ada hashtag rahasia
+                    if (r.text.includes(SECRET_CODE)) {
+                        // 2. Cek apakah usernya benar Owner
+                        if (r.user === OWNER_NAME) {
+                            isOwner = true;
+                        }
+                        // 3. Hapus hashtag dari tampilan (supaya rahasia)
+                        displayText = r.text.replace(SECRET_CODE, "");
                     }
 
-                    snapshot.forEach((doc) => {
-                        const r = doc.data();
-                        const starStr = '★'.repeat(r.rating);
-                        let dateStr = r.createdAt ? r.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : "Baru saja";
-                        
-                        // LOGIKA DETEKSI OWNER VIA HASHTAG
-                        let badgeHtml = "";
-                        let displayText = r.text; // Teks yang akan ditampilkan
-
-                        // Cek apakah di dalam teks ada kode rahasia (misal: #official)
-                        if (r.text.includes(SECRET_CODE)) {
-                            // Cek juga apakah namanya benar (Opsional, biar makin aman)
-                            if (r.user === OWNER_NAME) {
-                                badgeHtml = `<span class="owner-badge"><i class="fas fa-check-circle"></i> OWNER</span>`;
-                            }
-                            // HAPUS kode rahasia dari tampilan agar tidak kelihat orang lain
-                            displayText = r.text.replace(SECRET_CODE, ""); 
-                        }
-
-                        const item = document.createElement('div');
-                        item.className = "comment-group flex gap-4 p-3 rounded-lg hover:bg-[#1f252b] transition relative group";
-                        item.innerHTML = `
-                            <img src="${r.avatar || 'https://i.pravatar.cc/150'}" class="w-10 h-10 rounded-full object-cover shrink-0 border border-gray-700">
-                            <div class="flex-grow">
-                                <div class="flex items-center flex-wrap gap-1 mb-1">
-                                    <span class="text-white font-bold text-sm">${r.user}</span>
-                                    ${badgeHtml}
-                                    <span class="text-[#00e054] text-xs tracking-tighter ml-2">${starStr}</span>
-                                    <span class="text-gray-500 text-[10px] ml-auto">${dateStr}</span>
-                                </div>
-                                <p class="text-gray-300 text-sm leading-relaxed">${displayText}</p>
+                    const likes = r.likedBy || [];
+                    const isLiked = likes.includes(user.name);
+                    
+                    list.innerHTML += `
+                    <div class="flex gap-3 p-3 bg-[#1f252b] rounded-lg relative">
+                        <img src="${r.avatar}" class="w-8 h-8 rounded-full border border-gray-600">
+                        <div class="flex-grow">
+                            <div class="flex items-center gap-2">
+                                <span class="font-bold text-sm text-white">${r.user}</span>
+                                ${isOwner ? '<span class="owner-badge"><i class="fas fa-check-circle"></i> OWNER</span>' : ''}
+                                <span class="text-[#00e054] text-xs">★ ${r.rating}</span>
                             </div>
-                            <button onclick="deleteReview('${doc.id}', '${r.user}')" class="btn-delete absolute top-2 right-2 text-red-500 hover:text-red-400 bg-black/60 px-2 py-1 rounded text-xs">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        `;
-                        list.appendChild(item);
-                    });
+                            <p class="text-gray-300 text-sm mt-1">${displayText}</p>
+                            
+                            <div class="flex gap-4 mt-2">
+                                <button onclick="toggleLike('${doc.id}', ${isLiked})" class="text-xs ${isLiked ? 'liked' : 'text-gray-500'}">
+                                    <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> ${likes.length || ''}
+                                </button>
+                                ${r.user === user.name ? `<button onclick="delRev('${doc.id}')" class="text-xs text-red-500">Hapus</button>` : ''}
+                            </div>
+                        </div>
+                    </div>`;
                 });
             });
         }
 
-        // Start App
-        init();
+        window.toggleLike = async (id, isLiked) => {
+            if(user.name === "Guest") { alert("Login dulu!"); return; }
+            const ref = window.doc(window.db, "reviews", id);
+            await window.updateDoc(ref, { likedBy: isLiked ? window.arrayRemove(user.name) : window.arrayUnion(user.name) });
+        };
+
+        window.delRev = async (id) => {
+            if(confirm("Hapus?")) await window.deleteDoc(window.doc(window.db, "reviews", id));
+        };
     </script>
 </body>
 </html>
