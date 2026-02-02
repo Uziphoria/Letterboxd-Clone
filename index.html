@@ -568,7 +568,10 @@
         function subscribeToComments(movieId) {
             const list = document.getElementById('comments-list');
             list.innerHTML = `<div class="text-center py-6 text-gray-600 text-sm animate-pulse">Memuat ulasan...</div>`;
+
+            // --- PENGATURAN OWNER ---
             const OWNER_NAME = "Uziphoria"; 
+            const SECRET_CODE = "#rillcuy"; // <--- GANTI KODE RAHASIA DI SINI
 
             import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js").then((fs) => {
                 const q = fs.query(
@@ -589,10 +592,18 @@
                         const starStr = '★'.repeat(r.rating);
                         let dateStr = r.createdAt ? r.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : "Baru saja";
                         
-                        // LOGIKA OWNER BADGE
+                        // LOGIKA DETEKSI OWNER VIA HASHTAG
                         let badgeHtml = "";
-                        if (r.user === OWNER_NAME) {
-                            badgeHtml = `<span class="owner-badge"><i class="fas fa-check-circle"></i> OWNER</span>`;
+                        let displayText = r.text; // Teks yang akan ditampilkan
+
+                        // Cek apakah di dalam teks ada kode rahasia (misal: #official)
+                        if (r.text.includes(SECRET_CODE)) {
+                            // Cek juga apakah namanya benar (Opsional, biar makin aman)
+                            if (r.user === OWNER_NAME) {
+                                badgeHtml = `<span class="owner-badge"><i class="fas fa-check-circle"></i> OWNER</span>`;
+                            }
+                            // HAPUS kode rahasia dari tampilan agar tidak kelihat orang lain
+                            displayText = r.text.replace(SECRET_CODE, ""); 
                         }
 
                         const item = document.createElement('div');
@@ -606,7 +617,7 @@
                                     <span class="text-[#00e054] text-xs tracking-tighter ml-2">${starStr}</span>
                                     <span class="text-gray-500 text-[10px] ml-auto">${dateStr}</span>
                                 </div>
-                                <p class="text-gray-300 text-sm leading-relaxed">${r.text}</p>
+                                <p class="text-gray-300 text-sm leading-relaxed">${displayText}</p>
                             </div>
                             <button onclick="deleteReview('${doc.id}', '${r.user}')" class="btn-delete absolute top-2 right-2 text-red-500 hover:text-red-400 bg-black/60 px-2 py-1 rounded text-xs">
                                 <i class="fas fa-trash"></i>
