@@ -335,4 +335,396 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         
-        window.db = db; window.collection = collection; window.addDoc = addDoc; window.deleteDoc = deleteDoc; window.updateDoc = updateDoc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.doc = doc; window.serverTimestamp = serverTimestamp; window.query = query
+        window.db = db; window.collection = collection; window.addDoc = addDoc; window.deleteDoc = deleteDoc; window.updateDoc = updateDoc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.doc = doc; window.serverTimestamp = serverTimestamp; window.query = query; window.where = where; window.orderBy = orderBy; window.limit = limit;
+        window.onSnapshot = onSnapshot; 
+        console.log("Firebase Connected");
+    </script>
+
+    <script>
+        let user = { name: "Guest", avatar: "https://i.pravatar.cc/150?img=12" };
+        let currentId = null; let userRating = 0; let unsubscribe = null;
+
+        const movies = [
+            { id: 1, title: "Jumbo", year: 2025, dir: "Ryan Adriandhy", genre: ["Family", "Animation"], imdb: 8.6, cast: "Prince Poetiray, Quinn Salman", img: "https://m.media-amazon.com/images/M/MV5BMjMxODU2YTYtZjFlZC00MDFlLTg0ZmItNDE5NjMxMmU0ZTlmXkEyXkFqcGc@._V1_.jpg", syn: "Don, anak 10 tahun bertubuh gempal yang sering dirundung, bertualang mencari buku dongeng peninggalan orang tuanya yang dicuri." },
+            { id: 2, title: "Agak Laen", year: 2024, dir: "Mouhadkly Ach", genre: ["Comedy", "Horror"], imdb: 7.6, cast: "Bene Dion, Oki Rengga", img: "https://m.media-amazon.com/images/M/MV5BODg5YzA5MmEtN2NkOC00M2JhLTgzZjktZjg1M2U3ZmEyN2IyXkEyXkFqcGc@._V1_FMjpg_UX528_.jpg", syn: "Empat penjaga rumah hantu pasar malam yang gagal menakuti pengunjung malah menyembunyikan mayat." },
+            { id: 3, title: "Sore: Istri dari Masa Depan", year: 2025, dir: "Yandy Laurens", genre: ["Sci-Fi", "Romance"], imdb: 7.7, cast: "Sheila Dara, Dion Wiyoko", img: "https://a.ltrbxd.com/resized/film-poster/1/2/7/0/8/1/4/1270814-sore-a-wife-from-the-future-0-1000-0-1500-crop.jpg?v=7a31b7c5a8", syn: "Wanita misterius dari masa depan datang untuk mengubah takdir suaminya, Jonathan." },
+            { id: 4, title: "Stealing Raden Saleh", year: 2022, dir: "Angga Dwimas Sasongko", genre: ["Crime", "Drama"], imdb: 7.3, cast: "Iqbaal Ramadhan, Angga Yunanda", img: "https://a.ltrbxd.com/resized/film-poster/7/4/8/4/1/0/748410-stealing-raden-saleh-0-1000-0-1500-crop.jpg?v=a933bb731e", syn: "Komplotan anak muda berencana mencuri lukisan legendaris Raden Saleh dari Istana Negara." },
+            { id: 5, title: "Glorious Days", year: 2019, dir: "Riri Riza", genre: ["Drama"], imdb: 7.4, cast: "Maizura, Sheryl Sheinafia", img: "https://a.ltrbxd.com/resized/film-poster/5/2/9/5/6/2/529562-glorious-days-0-1000-0-1500-crop.jpg?v=70f7d56aec", syn: "Reuni geng SMA tahun 90-an yang terpecah akibat insiden tragis, membawa nostalgia." },
+            { id: 6, title: "5 cm", year: 2012, dir: "Rizal Mantovani", genre: ["Adventure", "Drama"], imdb: 7.3, cast: "Herjunot Ali, Raline Shah", img: "https://m.media-amazon.com/images/M/MV5BYzEyM2VlZTgtNGI3MS00NzBiLWJkODItNGE4OWU5M2FmNTg0XkEyXkFqcGc@._V1_.jpg", syn: "Lima sahabat mendaki Gunung Semeru untuk menguji persahabatan dan cinta mereka." },
+            { id: 7, title: "Train To Busan", year: 2016, dir: "Yeon Sang-ho", genre: ["Horror", "Action"], imdb: 7.6, cast: "Gong Yoo, Ma Dong-seok", img: "https://a.ltrbxd.com/resized/film-poster/3/3/0/9/1/2/330912-train-to-busan-0-1000-0-1500-crop.jpg?v=c85e151cfe", syn: "Seorang ayah berjuang melindungi putrinya saat wabah zombie menyerang kereta cepat ke Busan." },
+            { id: 8, title: "Unlocked", year: 2023, dir: "Kim Tae-joon", genre: ["Thriller"], imdb: 6.4, cast: "Chun Woo-hee, Yim Si-wan", img: "https://m.media-amazon.com/images/M/MV5BNzBhN2IzMmYtOGY5MC00ZDkwLTkxYWUtMDkzZmJmZWFiYmRhXkEyXkFqcGc@._V1_.jpg", syn: "Hidup seorang wanita hancur setelah ponselnya diretas oleh psikopat yang mengawasi setiap geraknya." },
+            { id: 9, title: "The Call", year: 2020, dir: "Chung-Hyun Lee", genre: ["Thriller", "Mystery"], imdb: 7.1, cast: "Park Shin-hye, Jeon Jong-seo", img: "https://m.media-amazon.com/images/M/MV5BYzZlOGEyZTMtYmIxYS00NmIxLWIwNjYtMzY3Yjg2OThjODU2XkEyXkFqcGc@._V1_.jpg", syn: "Dua wanita terhubung lewat telepon tua di rumah yang sama namun berbeda waktu 20 tahun." },
+            { id: 10, title: "Love Your Enemy", year: 2024, dir: "Park Joon-hwa", genre: ["Drama"], imdb: 7.4, cast: "Ju Ji-hoon, Jung Yu-mi", img: "https://a.ltrbxd.com/resized/film-poster/1/2/9/8/3/1/7/1298317-love-your-enemy-0-1000-0-1500-crop.jpg?v=633a4ce23b", syn: "Musuh bebuyutan masa kecil bertemu kembali di tengah konflik keluarga turun temurun." },
+            { id: 11, title: "High & Low: The Movie", year: 2016, dir: "Shigeaki Kubo", genre: ["Action"], imdb: 6.4, cast: "AKIRA, Takahiro", img: "https://m.media-amazon.com/images/M/MV5BNDFkY2IwZjgtZmIyMi00MTc5LTgzYzktZDFjNmJkNjFmMTkwXkEyXkFqcGc@._V1_.jpg", syn: "Konflik wilayah SWORD dan pertarungan antar geng berandalan legendaris di Jepang." },
+            { id: 12, title: "Crows Zero", year: 2007, dir: "Takashi Miike", genre: ["Action"], imdb: 7.0, cast: "Shun Oguri, Kyôsuke Yabe", img: "https://m.media-amazon.com/images/M/MV5BNDM1NDI1NDYtZTgzZi00NDFiLTg4MjQtODllY2M1ZDA2YWY5XkEyXkFqcGc@._V1_.jpg", syn: "Genji Takiya masuk ke SMA Suzuran untuk menaklukkan sekolah yang penuh preman." },
+            { id: 13, title: "One Love", year: 2003, dir: "Rick Elgood", genre: ["Romance"], imdb: 6.1, cast: "Ky-Mani Marley, Cherine Anderson", img: "https://m.media-amazon.com/images/M/MV5BZjc0OWQ1ZjUtZTNlNy00Mjg4LThkNTItYzk2MmE1MDVhMzU3XkEyXkFqcGc@._V1_.jpg", syn: "Kisah cinta terlarang antara musisi Rasta dan putri pendeta konservatif." },
+            { id: 14, title: "The Sound of Music", year: 1965, dir: "Robert Wise", genre: ["Musical", "Drama"], imdb: 8.1, cast: "Julie Andrews, Christopher Plummer", img: "https://m.media-amazon.com/images/M/MV5BYWJhYmU4MjQtZDJhYi00ZGVjLTlkNTEtNzkzNGVjOWQ3MjcwXkEyXkFqcGc@._V1_.jpg", syn: "Seorang biarawati menjadi pengasuh 7 anak kapten Von Trapp dan membawa musik ke rumah mereka." },
+            { id: 15, title: "Passion Play", year: 2010, dir: "Mitch Glazer", genre: ["Drama", "Fantasy"], imdb: 4.5, cast: "Mickey Rourke, Megan Fox", img: "https://a.ltrbxd.com/resized/film-poster/2/5/8/6/3/25863-passion-play-0-1000-0-1500-crop.jpg?v=fd0c2e5271", syn: "Seorang musisi jazz menyelamatkan wanita bersayap dari gangster sirkus." },
+            { id: 16, title: "Forrest Gump", year: 1994, dir: "Robert Zemeckis", genre: ["Drama"], imdb: 8.8, cast: "Tom Hanks", img: "https://image.tmdb.org/t/p/w500/arw2vcBveWOVZr6pxd9XTd1TdQa.jpg", syn: "Perjalanan hidup Forrest Gump, pria lugu yang tanpa sadar terlibat dalam momen bersejarah AS." },
+            { id: 17, title: "Se7en", year: 1995, dir: "David Fincher", genre: ["Crime", "Mystery"], imdb: 8.6, cast: "Brad Pitt, Morgan Freeman", img: "https://image.tmdb.org/t/p/w500/6yoghtyTpznpBik8EngEmJskVUO.jpg", syn: "Dua detektif memburu pembunuh berantai yang menggunakan tujuh dosa mematikan sebagai motif." },
+            { id: 18, title: "La La Land", year: 2016, dir: "Damien Chazelle", genre: ["Romance", "Musical"], imdb: 8.0, cast: "Ryan Gosling, Emma Stone", img: "https://m.media-amazon.com/images/M/MV5BMzUzNDM2NzM2MV5BMl5BanBnXkFtZTgwNTM3NTg4OTE@._V1_.jpg", syn: "Kisah cinta pianis jazz dan aktris yang bercita-cita tinggi di Los Angeles." },
+            { id: 19, title: "(500) Days of Summer", year: 2009, dir: "Marc Webb", genre: ["Romance", "Drama"], imdb: 7.6, cast: "Joseph Gordon-Levitt, Zooey Deschanel", img: "https://m.media-amazon.com/images/M/MV5BMTk5MjM4OTU1OV5BMl5BanBnXkFtZTcwODkzNDIzMw@@._V1_.jpg", syn: "Kisah cinta nonlinear tentang Tom yang romantis dan Summer yang tidak percaya cinta sejati." },
+            { id: 20, title: "The Greatest Showman", year: 2017, dir: "Michael Gracey", genre: ["Musical", "Drama"], imdb: 7.5, cast: "Hugh Jackman, Zac Efron", img: "https://m.media-amazon.com/images/M/MV5BMjI1NDYzNzY2Ml5BMl5BanBnXkFtZTgwODQwODczNTM@._V1_.jpg", syn: "Musikal biografi tentang P.T. Barnum yang menciptakan sirkus spektakuler." },
+            { id: 21, title: "Cruella", year: 2021, dir: "Craig Gillespie", genre: ["Comedy", "Crime"], imdb: 7.3, cast: "Emma Stone, Emma Thompson", img: "https://m.media-amazon.com/images/M/MV5BMWY5MjljNjctZjhjZS00MWY0LTgwYzUtZTJiYTVmMmJkM2E0XkEyXkFqcGc@._V1_.jpg", syn: "Asal-usul Estella, gadis yatim piatu berbakat fashion yang bertransformasi menjadi Cruella de Vil." },
+            { id: 22, title: "Mission: Impossible", year: 1996, dir: "Brian De Palma", genre: ["Action"], imdb: 7.2, cast: "Tom Cruise", img: "https://m.media-amazon.com/images/M/MV5BOTI4ZmFlNWItYjkwZC00ZDcyLWIwNTctOGI5MDdlOWI3ZGIzXkEyXkFqcGc@._V1_.jpg", syn: "Ethan Hunt memburu pengkhianat yang menjebaknya atas kematian timnya." },
+            { id: 23, title: "Dead Poets Society", year: 1989, dir: "Peter Weir", genre: ["Drama"], imdb: 8.1, cast: "Robin Williams, Ethan Hawke", img: "https://m.media-amazon.com/images/M/MV5BMDYwNGVlY2ItMWYxMS00YjZiLWE5MTAtYWM5NWQ2ZWJjY2Q3XkEyXkFqcGc@._V1_.jpg", syn: "Guru bahasa Inggris karismatik menginspirasi murid-muridnya untuk berpikir bebas lewat puisi." },
+            { id: 24, title: "The Color Purple", year: 2023, dir: "Blitz Bazawule", genre: ["Drama"], imdb: 6.8, cast: "Fantasia Barrino", img: "https://m.media-amazon.com/images/M/MV5BYzg2ZGEzZjItZWY3Ni00MTFjLTk3ZmEtZTE1OGFmOTkzM2I4XkEyXkFqcGc@._V1_.jpg", syn: "Kisah emosional wanita Afrika-Amerika yang berjuang melawan penindasan di Georgia awal 1900-an." },
+            { id: 25, title: "White Chicks", year: 2004, dir: "Keenen Ivory Wayans", genre: ["Comedy"], imdb: 5.9, cast: "Marlon Wayans, Shawn Wayans", img: "https://m.media-amazon.com/images/M/MV5BMTY3OTg2OTM3OV5BMl5BanBnXkFtZTYwNzY5OTA3._V1_.jpg", syn: "Dua agen FBI bersaudara menyamar menjadi wanita kulit putih kaya untuk menggagalkan penculikan." },
+            { id: 26, title: "The Maze Runner", year: 2014, dir: "Wes Ball", genre: ["Sci-Fi", "Action"], imdb: 6.8, cast: "Dylan O'Brien, Kaya Scodelario", img: "https://m.media-amazon.com/images/M/MV5BMjUyNTA3MTAyM15BMl5BanBnXkFtZTgwOTEyMTkyMjE@._V1_.jpg", syn: "Thomas terbangun di Glade dan harus memecahkan rahasia labirin raksasa untuk melarikan diri." },
+            { id: 27, title: "Little Miss Sunshine", year: 2006, dir: "Jonathan Dayton", genre: ["Comedy"], imdb: 7.8, cast: "Steve Carell, Toni Collette", img: "https://m.media-amazon.com/images/M/MV5BMTgzNTgzODU0NV5BMl5BanBnXkFtZTcwMjEyMjMzMQ@@._V1_.jpg", syn: "Keluarga disfungsional melakukan perjalanan darat mengantar putri bungsu mereka ikut kontes kecantikan." },
+            { id: 28, title: "The Devil Wears Prada", year: 2006, dir: "David Frankel", genre: ["Comedy", "Drama"], imdb: 7.0, cast: "Anne Hathaway, Meryl Streep", img: "https://m.media-amazon.com/images/M/MV5BMjUyNTA3MTAyM15BMl5BanBnXkFtZTgwOTEyMTkyMjE@._V1_.jpg", syn: "Lulusan baru menjadi asisten editor majalah fashion yang kejam dan sinis, Miranda Priestly." },
+            { id: 29, title: "The Help", year: 2011, dir: "Tate Taylor", genre: ["Drama"], imdb: 8.0, cast: "Viola Davis, Emma Stone", img: "https://m.media-amazon.com/images/M/MV5BMTM5OTMyMjIxOV5BMl5BanBnXkFtZTcwNzU4MjIwNQ@@._V1_.jpg", syn: "Seorang penulis muda menulis buku tentang kehidupan pelayan kulit hitam di Mississippi tahun 1960-an." },
+            { id: 30, title: "Breaking Bad", year: 2008, dir: "Vince Gilligan", genre: ["Crime"], imdb: 9.5, cast: "Bryan Cranston, Aaron Paul", img: "https://m.media-amazon.com/images/M/MV5BMzU5ZGYzNmQtMTdhYy00OGRiLTg0NmQtYjVjNzliZTg1ZGE4XkEyXkFqcGc@._V1_.jpg", syn: "Guru kimia yang sakit kanker beralih menjadi produsen meth demi masa depan keluarganya." },
+            { id: 31, title: "Ocean's Eight", year: 2018, dir: "Gary Ross", genre: ["Crime", "Action"], imdb: 6.3, cast: "Sandra Bullock, Cate Blanchett", img: "https://m.media-amazon.com/images/M/MV5BMjAyNDEyMzc4Ml5BMl5BanBnXkFtZTgwMjEzNjM0NTM@._V1_.jpg", syn: "Debbie Ocean memimpin tim wanita untuk mencuri kalung berlian di acara Met Gala." },
+            { id: 32, title: "Pitch Perfect", year: 2012, dir: "Jason Moore", genre: ["Music"], imdb: 7.1, cast: "Anna Kendrick, Rebel Wilson", img: "https://m.media-amazon.com/images/M/MV5BMTcyMTMzNzE5N15BMl5BanBnXkFtZTcwNzg5NjM5Nw@@._V1_.jpg", syn: "Mahasiswi baru bergabung dengan grup a cappella kampus dan membawa energi baru." },
+            { id: 33, title: "Avatar: The Way of Water", year: 2022, dir: "James Cameron", genre: ["Sci-Fi", "Action"], imdb: 7.5, cast: "Sam Worthington, Zoe Saldaña", img: "https://m.media-amazon.com/images/M/MV5BNWI0Y2NkOWEtMmM2OC00MjQ3LWI1YzItZGQxYzQ3NzI4NWZmXkEyXkFqcGc@._V1_.jpg", syn: "Jake Sully dan keluarganya mengungsi ke klan laut untuk menghindari ancaman manusia." },
+            { id: 34, title: "Avengers: Infinity War", year: 2018, dir: "Anthony Russo", genre: ["Action", "Sci-Fi"], imdb: 8.4, cast: "Robert Downey Jr, Chris Hemsworth", img: "https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_.jpg", syn: "Avengers bersatu melawan Thanos yang ingin memusnahkan setengah populasi alam semesta." },
+            { id: 35, title: "Captain America: Civil War", year: 2016, dir: "Anthony Russo", genre: ["Action", "Sci-Fi"], imdb: 7.8, cast: "Chris Evans, Robert Downey Jr", img: "https://m.media-amazon.com/images/M/MV5BMjQ0MTgyNjAxMV5BMl5BanBnXkFtZTgwNjUzMDkyODE@._V1_.jpg", syn: "Konflik internal Avengers tentang pengawasan pemerintah memecah belah tim." },
+            { id: 36, title: "Zootopia 2", year: 2025, dir: "Jared Bush", genre: ["Animation", "Comedy"], imdb: 7.5, cast: "Ginnifer Goodwin, Jason Bateman", img: "https://m.media-amazon.com/images/M/MV5BYjg1Mjc3MjQtMTZjNy00YWVlLWFhMWEtMWI3ZTgxYjJmNmRlXkEyXkFqcGc@._V1_.jpg", syn: "Judy dan Nick kembali beraksi memecahkan misteri baru di Zootopia." },
+            { id: 37, title: "Coco", year: 2017, dir: "Lee Unkrich", genre: ["Animation", "Family"], imdb: 8.4, cast: "Anthony Gonzalez", img: "https://image.tmdb.org/t/p/w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg", syn: "Miguel memasuki dunia orang mati untuk mencari kakek buyutnya dan menjadi musisi." },
+            { id: 38, title: "Nezha: Mo tong nao hai", year: 2025, dir: "Yu Yang", genre: ["Animation", "Action"], imdb: 7.9, cast: "Lü Yanting", img: "https://m.media-amazon.com/images/M/MV5BYjIyMDc3ZmQtZTQyYy00NDhhLTlmMWEtYzM3MDYwNjRmY2NkXkEyXkFqcGc@._V1_FMjpg_UY12004_.jpg", syn: "Pahlawan berapi berusaha mendapatkan kembali wujud fisiknya." },
+            { id: 39, title: "Moana", year: 2016, dir: "Ron Clements", genre: ["Animation", "Adventure"], imdb: 7.9, cast: "Auli'i Cravalho, Dwayne Johnson", img: "https://m.media-amazon.com/images/M/MV5BMjI4MzU5NTExNF5BMl5BanBnXkFtZTgwNzY1MTEwMDI@._V1_.jpg", syn: "Seorang gadis berlayar melintasi lautan untuk menyelamatkan rakyatnya bersama demigod Maui." },
+            { id: 40, title: "Spider-Man: Across the Spider-Verse", year: 2023, dir: "Joaquim Dos Santos", genre: ["Animation", "Action"], imdb: 8.5, cast: "Shameik Moore, Hailee Steinfeld", img: "https://m.media-amazon.com/images/M/MV5BNThiZjA3MjItZGY5Ni00ZmJhLWEwN2EtOTBlYTA4Y2E0M2ZmXkEyXkFqcGc@._V1_.jpg", syn: "Miles Morales menjelajahi multiverse dan bertemu tim Spider-People lainnya." },
+            { id: 41, title: "The Secret World of Arrietty", year: 2010, dir: "Hiromasa Yonebayashi", genre: ["Animation", "Fantasy"], imdb: 7.6, cast: "Mirai Shida", img: "https://m.media-amazon.com/images/M/MV5BMTAxNjk3OTYyODReQTJeQWpwZ15BbWU3MDgyODY2OTY@._V1_.jpg", syn: "Manusia kecil yang tinggal diam-diam di bawah lantai rumah manusia." },
+            { id: 42, title: "Kimi no Nawa", year: 2016, dir: "Makoto Shinkai", genre: ["Animation", "Romance"], imdb: 8.4, cast: "Ryûnosuke Kamiki", img: "https://m.media-amazon.com/images/M/MV5BMjI1ODZkYTgtYTY3Yy00ZTJkLWFkOTgtZDUyYWM4MzQwNjk0XkEyXkFqcGc@._V1_.jpg", syn: "Dua remaja yang bertukar tubuh dan mencoba menyelamatkan desa dari komet." },
+            { id: 43, title: "Tenki No Ko", year: 2019, dir: "Makoto Shinkai", genre: ["Animation", "Romance"], imdb: 7.5, cast: "Kotaro Daigo", img: "https://m.media-amazon.com/images/M/MV5BMmJiYWI4ZjktMzgyZS00MjBiLThmOTYtZWJmOTUzOTFkMTFiXkEyXkFqcGc@._V1_.jpg", syn: "Anak laki-laki yang kabur ke Tokyo berteman dengan gadis yang bisa mengendalikan cuaca." },
+            { id: 44, title: "Suzume no Tojimari", year: 2022, dir: "Makoto Shinkai", genre: ["Animation", "Adventure"], imdb: 7.6, cast: "Nanoka Hara", img: "https://m.media-amazon.com/images/M/MV5BODhkNDhmNzktODFmMC00NDZiLWEzN2UtY2YwYzgzYTVlMWZmXkEyXkFqcGc@._V1_.jpg", syn: "Gadis SMA yang menutup pintu bencana di seluruh Jepang bersama kursi ajaib." },
+            { id: 45, title: "Demon Slayer: Infinity Castle", year: 2025, dir: "Haruo Sotozaki", genre: ["Anime", "Action"], imdb: 8.5, cast: "Natsuki Hanae", img: "https://m.media-amazon.com/images/M/MV5BOGQ3YWUzYjEtMTJiYy00ZjQ0LWI0YjktYjhiNGVhNGExYTM3XkEyXkFqcGc@._V1_.jpg", syn: "Pertempuran terakhir Korps Pembasmi Iblis melawan Muzan di Infinity Castle." }
+        ];
+
+        // --- APP FUNCTIONS ---
+        function init() {
+            // THEME CHECK
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon();
+
+            const grid = document.getElementById('grid-container');
+            if(grid) {
+                grid.innerHTML = '';
+                movies.forEach(m => {
+                    const div = document.createElement('div');
+                    // Note: 'bg-[var(--bg-card)]' and text variables applied via CSS or classes below
+                    div.className = 'poster-aspect glass-card rounded-xl overflow-hidden cursor-pointer relative group border border-[var(--glass-border)]';
+                    div.onclick = () => openModal(m.id);
+                    div.innerHTML = `
+                        <img src="${m.img}" loading="lazy" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
+                        
+                        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
+                            <h4 class="text-white font-bold text-sm leading-tight drop-shadow-md">${m.title}</h4>
+                            <div class="flex items-center gap-2 mt-1">
+                                <span class="text-[10px] text-gray-300 font-mono">${m.year}</span>
+                                <span class="text-[10px] text-white flex items-center gap-1"><i class="fas fa-star text-[8px]"></i> ${m.imdb}</span>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(div);
+                });
+            }
+            loadRunningReviews();
+            loadUserDataToLogin();
+            setTimeout(() => {
+            autoEnter();
+            }, 1300); // 2500 artinya 2.5 detik (bisa diubah)
+        }
+        
+        // Theme Logic
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            
+            // Animate Icon
+            const icon = document.getElementById('theme-icon');
+            icon.classList.add('icon-spin');
+            setTimeout(() => icon.classList.remove('icon-spin'), 500);
+            
+            updateThemeIcon();
+        }
+
+        function autoEnter() {
+            // 1. Hilangkan Welcome Screen
+            const welcome = document.getElementById('welcome-screen');
+            welcome.classList.add('fade-out');
+            setTimeout(() => { welcome.classList.add('hidden'); }, 500);
+
+            // 2. Cek apakah user sudah pernah login sebelumnya
+            const savedUser = localStorage.getItem('cinelog_user');
+            let isGuest = true;
+    
+            if (savedUser) {
+            const parsed = JSON.parse(savedUser);
+            if (parsed.name !== "Guest") isGuest = false;
+        }
+
+    // 3. Jika masih Guest, baru munculkan Login Screen
+    // Jika sudah ada nama, Login Screen TIDAK muncul (langsung lihat film)
+    if (isGuest) {
+        const login = document.getElementById('login-screen');
+        login.classList.remove('invisible', 'hidden');
+        requestAnimationFrame(() => {
+            login.classList.remove('opacity-0');
+            document.getElementById('login-card').classList.remove('translate-y-10');
+        });
+    }
+}
+
+        function updateThemeIcon() {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const icon = document.getElementById('theme-icon');
+            icon.className = isDark ? 'fas fa-sun text-xs' : 'fas fa-moon text-xs';
+        }
+        window.toggleTheme = toggleTheme;
+
+        // Navigation Logic
+        function goToLogin() {
+            document.getElementById('welcome-screen').classList.add('fade-out');
+            setTimeout(() => { document.getElementById('welcome-screen').classList.add('hidden'); }, 500);
+            
+            const login = document.getElementById('login-screen');
+            login.classList.remove('invisible', 'hidden');
+            requestAnimationFrame(() => {
+                login.classList.remove('opacity-0');
+                document.getElementById('login-card').classList.remove('translate-y-10');
+            });
+        }
+
+        function previewLoginImage(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                document.getElementById('login-avatar-preview').src = reader.result;
+                user.avatar = reader.result;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function finishLogin() {
+            const inputName = document.getElementById('login-name-input').value.trim();
+            if (!inputName) { alert("Siapa nama kamu?"); return; }
+            user.name = inputName;
+            localStorage.setItem('cinelog_user', JSON.stringify(user));
+            
+            updateNav();
+            const login = document.getElementById('login-screen');
+            login.classList.add('opacity-0');
+            setTimeout(() => { login.classList.add('hidden'); }, 500);
+        }
+
+        function openLoginAgain() {
+            const login = document.getElementById('login-screen');
+            login.classList.remove('hidden', 'invisible', 'opacity-0');
+            document.getElementById('login-card').classList.remove('translate-y-10');
+            loadUserDataToLogin();
+        }
+
+        function loadUserDataToLogin() {
+            const savedData = localStorage.getItem('cinelog_user');
+            if (savedData) {
+                user = JSON.parse(savedData);
+                document.getElementById('login-name-input').value = user.name === "Guest" ? "" : user.name;
+                document.getElementById('login-avatar-preview').src = user.avatar;
+                updateNav();
+            }
+        }
+
+        function updateNav() {
+            document.getElementById('nav-username').innerText = user.name;
+            document.getElementById('nav-avatar').src = user.avatar;
+        }
+
+        // Modal Logic
+        function openModal(id) {
+            currentId = id;
+            const m = movies.find(x => x.id === id);
+            
+            document.getElementById('modal-img').src = m.img;
+            document.getElementById('modal-imdb').innerText = m.imdb;
+            document.getElementById('modal-title').innerText = m.title;
+            document.getElementById('modal-year').innerText = m.year;
+            document.getElementById('modal-director').innerText = m.dir;
+            document.getElementById('modal-cast').innerText = m.cast;
+            document.getElementById('modal-synopsis').innerText = m.syn;
+            
+            const gDiv = document.getElementById('modal-genre'); gDiv.innerHTML = '';
+            m.genre.forEach(g => gDiv.innerHTML += `<span class="text-[10px] bg-[var(--bg-body)] px-2 py-1 rounded text-[var(--text-secondary)] border border-[var(--glass-border)] uppercase tracking-wide">${g}</span>`);
+            
+            const modal = document.getElementById('movie-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            
+            const content = document.getElementById('modal-content');
+            content.classList.remove('modal-exit');
+            content.classList.add('modal-enter-active');
+
+            loadComments(id);
+        }
+
+        function closeModal() {
+            const content = document.getElementById('modal-content');
+            content.classList.remove('modal-enter-active');
+            content.classList.add('modal-exit');
+            
+            setTimeout(() => {
+                document.getElementById('movie-modal').classList.add('hidden');
+                document.getElementById('movie-modal').classList.remove('flex');
+                document.body.style.overflow = 'auto';
+            }, 300);
+            
+            if(unsubscribe) unsubscribe();
+        }
+
+        // Rating & Review
+        function rate(n) {
+            userRating = n;
+            const stars = document.querySelectorAll('#input-stars i');
+            stars.forEach((s, i) => {
+                if (i < n) {
+                    s.className = "fas fa-star text-[var(--text-primary)] cursor-pointer transition transform scale-110";
+                } else {
+                    s.className = "far fa-star text-[var(--text-secondary)] cursor-pointer transition";
+                }
+            });
+        }
+
+        async function postReview() {
+            const txt = document.getElementById('review-text').value;
+            if(!txt && userRating===0) { alert("Berikan rating atau ulasan!"); return; }
+            if(user.name === "Guest") { openLoginAgain(); closeModal(); return; }
+
+            const btn = document.getElementById('btn-post'); 
+            const originalText = btn.innerText;
+            btn.innerText = "Mengirim...";
+            
+            try {
+                await window.addDoc(window.collection(window.db, "reviews"), {
+                    movieId: currentId, user: user.name, avatar: user.avatar,
+                    text: txt, rating: userRating, createdAt: window.serverTimestamp(), likedBy: []
+                });
+                document.getElementById('review-text').value = ''; rate(0);
+            } catch(e) { console.error(e); alert("Error posting review"); }
+            btn.innerText = originalText;
+        }
+
+        function loadComments(movieId) {
+            const list = document.getElementById('comments-list'); list.innerHTML = '<div class="text-center py-4 text-[var(--text-secondary)] text-xs">Memuat...</div>';
+            if(!window.onSnapshot) return;
+
+            const q = window.query(window.collection(window.db, "reviews"), window.where("movieId", "==", movieId), window.orderBy("createdAt", "desc"));
+            
+            const OWNER_NAME = "Uziphoria";
+            const SECRET_CODE = "#official"; 
+
+            unsubscribe = window.onSnapshot(q, (snap) => {
+                list.innerHTML = '';
+                if(snap.empty) { list.innerHTML = '<p class="text-[var(--text-secondary)] text-xs text-center italic">Belum ada ulasan.</p>'; return; }
+                
+                snap.forEach(doc => {
+                    const r = doc.data();
+                    let isOwner = false;
+                    let displayText = r.text;
+                    if (r.text.includes(SECRET_CODE)) {
+                        if (r.user === OWNER_NAME) { isOwner = true; }
+                        displayText = r.text.replace(SECRET_CODE, "");
+                    }
+                    const likes = r.likedBy || [];
+                    const isLiked = likes.includes(user.name);
+                    
+                    list.innerHTML += `
+                    <div class="glass-panel p-4 rounded-xl relative group border border-[var(--glass-border)] bg-[var(--bg-card)]">
+                        <div class="flex items-start gap-3">
+                            <img src="${r.avatar}" class="w-8 h-8 rounded-full object-cover border border-[var(--glass-border)]">
+                            <div class="flex-grow">
+                                <div class="flex justify-between items-start">
+                                    <div class="flex flex-col">
+                                        <div class="flex items-center gap-2">
+                                            <span class="font-bold text-sm text-[var(--text-primary)]">${r.user}</span>
+                                            ${isOwner ? `
+                                            <div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20">
+                                                <i class="fas fa-check-circle text-blue-500 text-[10px]"></i>
+                                                <span class="text-[9px] font-bold text-blue-500 uppercase tracking-wider">Owner</span>
+                                            </div>` : ''}
+                                        </div>
+                                        <div class="flex text-[var(--text-secondary)] text-[10px] mt-0.5">
+                                            ${Array(r.rating).fill('<i class="fas fa-star"></i>').join('')}
+                                        </div>
+                                    </div>
+                                    <button onclick="toggleLike('${doc.id}', ${isLiked})" class="text-xs ${isLiked ? 'text-red-500' : 'text-[var(--text-secondary)] hover:text-red-500'} transition flex items-center gap-1 bg-[var(--bg-body)] px-2 py-1 rounded-full border border-[var(--glass-border)]">
+                                        <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> ${likes.length || 0}
+                                    </button>
+                                </div>
+                                <p class="text-[var(--text-secondary)] text-sm mt-2 font-light leading-relaxed">${displayText}</p>
+                            </div>
+                        </div>
+                        ${r.user === user.name ? `<button onclick="delRev('${doc.id}')" class="absolute bottom-4 right-4 z-20 text-[12px] text-red-500 hover:text-red-600 transition p-2 bg-[var(--bg-body)] rounded-full border border-[var(--glass-border)]"><i class="fas fa-trash"></i></button>` : ''}
+                    </div>`;
+                });
+            });
+        }
+
+        // Marquee Logic (Horizontal Scroll)
+        function loadRunningReviews() {
+            const track = document.getElementById('running-track');
+            if(!window.query) return;
+
+            const q = window.query(window.collection(window.db, "reviews"), window.orderBy("createdAt", "desc"), window.limit(8));
+
+            window.onSnapshot(q, (snap) => {
+                if(snap.empty) return;
+                let htmlContent = '';
+                snap.forEach(doc => {
+                    const r = doc.data();
+                    const movie = movies.find(m => m.id === r.movieId);
+                    const title = movie ? movie.title : "Film";
+                    let txt = r.text.replace("#official", "");
+                    if(txt.length > 40) txt = txt.substring(0, 40) + "...";
+
+                    htmlContent += `
+                        <div class="glass-panel px-4 py-2 rounded-full flex items-center gap-3 w-[280px] cursor-pointer hover:bg-[var(--glass-border)] transition border border-[var(--glass-border)]" onclick="openModal(${r.movieId})">
+                            <img src="${r.avatar}" class="w-6 h-6 rounded-full border border-[var(--glass-border)]">
+                            <div class="flex-grow overflow-hidden">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold text-[var(--text-primary)] truncate max-w-[80px]">${title}</span>
+                                    <span class="text-[10px] text-[var(--text-secondary)]"><i class="fas fa-star text-[var(--text-primary)]"></i> ${r.rating}</span>
+                                </div>
+                                <p class="text-[10px] text-[var(--text-secondary)] truncate">${txt}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                track.innerHTML = htmlContent + htmlContent; 
+            });
+        }
+
+        // Global Helpers
+        window.toggleLike = async (id, isLiked) => {
+            if(user.name === "Guest") { alert("Login dulu!"); return; }
+            const ref = window.doc(window.db, "reviews", id);
+            await window.updateDoc(ref, { likedBy: isLiked ? window.arrayRemove(user.name) : window.arrayUnion(user.name) });
+        };
+        window.delRev = async (id) => {
+            if(confirm("Hapus ulasan ini?")) await window.deleteDoc(window.doc(window.db, "reviews", id));
+        };
+        
+        window.goToLogin = goToLogin;
+        window.previewLoginImage = previewLoginImage;
+        window.finishLogin = finishLogin;
+        window.openLoginAgain = openLoginAgain;
+        window.openModal = openModal;
+        window.closeModal = closeModal;
+        window.rate = rate;
+        window.postReview = postReview;
+
+        document.addEventListener("DOMContentLoaded", init);
+    </script>
+    
+    <style>
+        @keyframes scrollText { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+    </style>
+</body>
+</html>
