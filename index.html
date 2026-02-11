@@ -370,6 +370,9 @@
     <button onclick="closeModal()" class="absolute top-5 right-5 z-30 w-10 h-10 rounded-full bg-black/30 border border-white/20 text-white flex items-center justify-center hover:bg-white/20 hover:scale-110 transition duration-300 backdrop-blur-md">
         <i class="fas fa-times"></i>
     </button>
+    <button onclick="shareMovie()" class="absolute top-5 right-16 z-30 w-10 h-10 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 flex items-center justify-center hover:bg-blue-500 hover:text-white transition duration-300 backdrop-blur-md">
+    <i class="fas fa-share-alt"></i>
+</button>
 
     <div class="w-full md:w-[400px] h-64 md:h-full relative shrink-0">
         <img id="modal-img" src="" class="w-full h-full object-cover opacity-85">
@@ -537,7 +540,7 @@
             loadUserDataToLogin();
             setTimeout(() => {
             autoEnter();
-            }, 1300); // 2500 artinya 2.5 detik (bisa diubah)
+            }, 1000); // 2500 artinya 2.5 detik (bisa diubah)
         }
         
         // Theme Logic
@@ -616,16 +619,40 @@
         }
 
         function finishLogin() {
-            const inputName = document.getElementById('login-name-input').value.trim();
-            if (!inputName) { alert("Siapa nama kamu?"); return; }
-            user.name = inputName;
-            localStorage.setItem('cinelog_user', JSON.stringify(user));
-            
-            updateNav();
-            const login = document.getElementById('login-screen');
-            login.classList.add('opacity-0');
-            setTimeout(() => { login.classList.add('hidden'); }, 500);
+    const inputName = document.getElementById('login-name-input').value.trim();
+    if (!inputName) { alert("Siapa nama kamu?"); return; }
+
+    // --- PROTEKSI OWNER ---
+    // Jika ada yang mencoba pakai nama keramat "Uziphoria"
+    if (inputName.toLowerCase() === "uziphoria") {
+        // Minta password rahasia
+        const pass = prompt("Masukkan Kode Akses Owner:");
+        
+        // Ganti '1234' dengan password rahasia yang kamu mau
+        if (pass !== "AZIPANGESTU2009") { 
+            alert("Password Salah! Anda bukan Owner.");
+            return; // Batalkan login
         }
+        
+        // Jika benar, beri tanda khusus
+        user.isOwner = true;
+    } else {
+        user.isOwner = false;
+    }
+    // -----------------------
+
+    user.name = inputName; // Simpan nama (bisa Uziphoria kalau password benar)
+    
+    // Simpan ke localStorage
+    localStorage.setItem('cinelog_user', JSON.stringify(user));
+    
+    updateNav();
+    const login = document.getElementById('login-screen');
+    login.classList.add('opacity-0');
+    setTimeout(() => { login.classList.add('hidden'); }, 500);
+
+    // Opsional: Simpan ke database jika perlu (kode sinkronisasi sebelumnya)
+}
 
         function openLoginAgain() {
             const login = document.getElementById('login-screen');
@@ -724,60 +751,81 @@
         }
 
         function loadComments(movieId) {
-            const list = document.getElementById('comments-list'); list.innerHTML = '<div class="text-center py-4 text-[var(--text-secondary)] text-xs">Memuat...</div>';
-            if(!window.onSnapshot) return;
+    const list = document.getElementById('comments-list'); 
+    list.innerHTML = '<div class="text-center py-4 text-[var(--text-secondary)] text-xs">Memuat...</div>';
+    
+    if(!window.onSnapshot) return;
 
-            const q = window.query(window.collection(window.db, "reviews"), window.where("movieId", "==", movieId), window.orderBy("createdAt", "desc"));
-            
-            const OWNER_NAME = "Uziphoria";
-            const SECRET_CODE = "#official"; 
+    // Query ke database
+    const q = window.query(window.collection(window.db, "reviews"), window.where("movieId", "==", movieId), window.orderBy("createdAt", "desc"));
+    
+    // Matikan listener lama jika ada (supaya tidak numpuk)
+    if (unsubscribe) unsubscribe();
 
-            unsubscribe = window.onSnapshot(q, (snap) => {
-                list.innerHTML = '';
-                if(snap.empty) { list.innerHTML = '<p class="text-[var(--text-secondary)] text-xs text-center italic">Belum ada ulasan.</p>'; return; }
-                
-                snap.forEach(doc => {
-                    const r = doc.data();
-                    let isOwner = false;
-                    let displayText = r.text;
-                    if (r.text.includes(SECRET_CODE)) {
-                        if (r.user === OWNER_NAME) { isOwner = true; }
-                        displayText = r.text.replace(SECRET_CODE, "");
-                    }
-                    const likes = r.likedBy || [];
-                    const isLiked = likes.includes(user.name);
-                    
-                    list.innerHTML += `
-                    <div class="glass-panel p-4 rounded-xl relative group border border-[var(--glass-border)] bg-[var(--bg-card)]">
-                        <div class="flex items-start gap-3">
-                            <img src="${r.avatar}" class="w-8 h-8 rounded-full object-cover border border-[var(--glass-border)]">
-                            <div class="flex-grow">
-                                <div class="flex justify-between items-start">
-                                    <div class="flex flex-col">
-                                        <div class="flex items-center gap-2">
-                                            <span class="font-bold text-sm text-[var(--text-primary)]">${r.user}</span>
-                                            ${isOwner ? `
-                                            <div class="flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-500/10 border border-blue-500/20">
-                                                <i class="fas fa-check-circle text-blue-500 text-[10px]"></i>
-                                                <span class="text-[9px] font-bold text-blue-500 uppercase tracking-wider">Owner</span>
-                                            </div>` : ''}
-                                        </div>
-                                        <div class="flex text-[var(--text-secondary)] text-[10px] mt-0.5">
-                                            ${Array(r.rating).fill('<i class="fas fa-star"></i>').join('')}
-                                        </div>
-                                    </div>
-                                    <button onclick="toggleLike('${doc.id}', ${isLiked})" class="text-xs ${isLiked ? 'text-red-500' : 'text-[var(--text-secondary)] hover:text-red-500'} transition flex items-center gap-1 bg-[var(--bg-body)] px-2 py-1 rounded-full border border-[var(--glass-border)]">
-                                        <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> ${likes.length || 0}
-                                    </button>
-                                </div>
-                                <p class="text-[var(--text-secondary)] text-sm mt-2 font-light leading-relaxed">${displayText}</p>
-                            </div>
-                        </div>
-                        ${r.user === user.name ? `<button onclick="delRev('${doc.id}')" class="absolute bottom-4 right-4 z-20 text-[12px] text-red-500 hover:text-red-600 transition p-2 bg-[var(--bg-body)] rounded-full border border-[var(--glass-border)]"><i class="fas fa-trash"></i></button>` : ''}
-                    </div>`;
-                });
-            });
+    unsubscribe = window.onSnapshot(q, (snap) => {
+        list.innerHTML = '';
+        if(snap.empty) { 
+            list.innerHTML = '<p class="text-gray-500 text-xs text-center italic">Belum ada ulasan.</p>'; 
+            return; 
         }
+        
+        snap.forEach(doc => {
+            const r = doc.data();
+            const likes = r.likedBy || [];
+            const isLiked = user.name !== "Guest" && likes.includes(user.name);
+
+            // --- LOGIKA OWNER ---
+            // 1. Cek apakah komentar ini dari "Uziphoria"
+            const isOfficialComment = r.user === "Uziphoria"; 
+
+            // 2. Cek apakah tombol hapus boleh muncul
+            // Boleh jika: (Komentar sendiri) ATAU (Yang login adalah Owner Asli "Uziphoria" dengan password benar)
+            // Catatan: user.isOwner diset true saat login pakai password tadi
+            const isOwnerLoggedIn = (user.name === "Uziphoria" && user.isOwner === true);
+            const canDelete = (r.user === user.name) || isOwnerLoggedIn;
+            // --------------------
+
+            list.innerHTML += `
+            <div class="glass-panel p-4 rounded-xl border ${isOfficialComment ? 'border-purple-500/50 shadow-[0_0_15px_rgba(124,58,237,0.2)] bg-purple-900/10' : 'border-white/10 bg-white/5'} relative group">
+                <div class="flex items-start gap-3">
+                    
+                    <div class="relative shrink-0">
+                        <img src="${r.avatar}" class="w-8 h-8 rounded-full object-cover border border-white/10">
+                        ${isOfficialComment ? '<div class="absolute -bottom-1 -right-1 bg-white rounded-full text-[10px] text-blue-500 w-3.5 h-3.5 flex items-center justify-center shadow-sm"><i class="fas fa-check-circle"></i></div>' : ''}
+                    </div>
+
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-start">
+                            <div class="flex flex-col">
+                                <div class="flex items-center gap-2">
+                                    <span class="font-bold text-sm ${isOfficialComment ? 'text-purple-300' : 'text-gray-200'}">${r.user}</span>
+                                    
+                                    ${isOfficialComment ? '<span class="text-[8px] bg-purple-500 text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(168,85,247,0.5)]">Owner</span>' : ''}
+                                </div>
+                                
+                                <div class="flex text-[10px] mt-0.5 text-yellow-500">
+                                    ${Array(r.rating).fill('<i class="fas fa-star"></i>').join('')}
+                                </div>
+                            </div>
+
+                            <button onclick="toggleLike('${doc.id}', ${isLiked})" class="text-xs ${isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'} transition flex items-center gap-1 bg-black/20 px-2 py-1 rounded-full border border-white/5">
+                                <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> ${likes.length || 0}
+                            </button>
+                        </div>
+
+                        <p class="text-gray-300 text-sm mt-2 font-light leading-relaxed">${r.text}</p>
+                    </div>
+                </div>
+                
+                ${canDelete ? `
+                    <button onclick="delRev('${doc.id}')" class="absolute bottom-4 right-4 z-20 text-[10px] text-red-400/70 hover:text-red-500 transition p-2 bg-black/40 rounded-full border border-white/10 hover:bg-white/10">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                ` : ''}
+            </div>`;
+        });
+    });
+}
 
         // Marquee Logic (Horizontal Scroll)
         function loadRunningReviews() {
