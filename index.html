@@ -807,76 +807,105 @@
 
         function loadComments(movieId) {
     const list = document.getElementById('comments-list'); 
-    list.innerHTML = '<div class="text-center py-4 text-[var(--text-secondary)] text-xs">Memuat...</div>';
+    list.innerHTML = '<div class="text-center py-4 text-[var(--text-secondary)] text-xs animate-pulse">Memuat diskusi...</div>';
     
-    if(!window.onSnapshot) return;
-
-    // Query ke database
-    const q = window.query(window.collection(window.db, "reviews"), window.where("movieId", "==", movieId), window.orderBy("createdAt", "desc"));
-    
-    // Matikan listener lama jika ada (supaya tidak numpuk)
+    // Matikan listener lama
     if (unsubscribe) unsubscribe();
+
+    const q = window.query(window.collection(window.db, "reviews"), window.where("movieId", "==", movieId), window.orderBy("createdAt", "desc"));
 
     unsubscribe = window.onSnapshot(q, (snap) => {
         list.innerHTML = '';
         if(snap.empty) { 
-            list.innerHTML = '<p class="text-gray-500 text-xs text-center italic">Belum ada ulasan.</p>'; 
+            list.innerHTML = '<div class="text-center py-8"><i class="far fa-comment-dots text-4xl text-white/20 mb-3"></i><p class="text-gray-500 text-xs">Jadilah yang pertama berkomentar!</p></div>'; 
             return; 
         }
         
         snap.forEach(doc => {
             const r = doc.data();
+            const revId = doc.id;
             const likes = r.likedBy || [];
+            const replies = r.replies || []; // Ambil array balasan
             const isLiked = user.name !== "Guest" && likes.includes(user.name);
+            
+            // Cek Owner & Delete Permission (Induk)
+            const isOwnerComment = r.user === "Uziphoria"; 
+            const canDelete = (r.user === user.name) || (user.name === "Uziphoria" && user.isOwner);
 
-            // --- LOGIKA OWNER ---
-            // 1. Cek apakah komentar ini dari "Uziphoria"
-            const isOfficialComment = r.user === "Uziphoria"; 
-
-            // 2. Cek apakah tombol hapus boleh muncul
-            // Boleh jika: (Komentar sendiri) ATAU (Yang login adalah Owner Asli "Uziphoria" dengan password benar)
-            // Catatan: user.isOwner diset true saat login pakai password tadi
-            const isOwnerLoggedIn = (user.name === "Uziphoria" && user.isOwner === true);
-            const canDelete = (r.user === user.name) || isOwnerLoggedIn;
-            // --------------------
-
-            list.innerHTML += `
-            <div class="glass-panel p-4 rounded-xl border ${isOfficialComment ? 'border-purple-500/50 shadow-[0_0_15px_rgba(124,58,237,0.2)] bg-purple-900/10' : 'border-white/10 bg-white/5'} relative group">
-                <div class="flex items-start gap-3">
+            // --- GENERATE HTML UNTUK BALASAN (LOOPING) ---
+            let repliesHTML = '';
+            if (replies.length > 0) {
+                repliesHTML = `<div class="mt-4 space-y-3 pl-4 border-l-2 border-white/10">`;
+                
+                replies.forEach((rep) => {
+                    const isOwnerReply = rep.user === "Uziphoria";
+                    // Format waktu simpel untuk balasan
+                    const repTime = new Date(rep.createdAt).toLocaleDateString('id-ID', {day:'numeric', month:'short'});
                     
+                    repliesHTML += `
+                        <div class="flex items-start gap-2 relative group/reply animate-[modal-enter_0.3s_ease]">
+                            <img src="${rep.avatar}" class="w-6 h-6 rounded-full border border-white/10 mt-1">
+                            
+                            <div class="bg-black/30 rounded-lg p-2.5 pr-4 border ${isOwnerReply ? 'border-purple-500/50 shadow-[0_0_10px_rgba(168,85,247,0.2)]' : 'border-white/5'}">
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <span class="text-xs font-bold ${isOwnerReply ? 'text-purple-300' : 'text-gray-300'}">${rep.user}</span>
+                                    ${isOwnerReply ? '<i class="fas fa-check-circle text-[8px] text-blue-400"></i>' : ''}
+                                    <span class="text-[8px] text-gray-600 ml-1">${repTime}</span>
+                                </div>
+                                <p class="text-xs text-gray-300 leading-snug">${rep.text}</p>
+                            </div>
+                        </div>
+                    `;
+                });
+                repliesHTML += `</div>`;
+            }
+
+            // --- HTML UTAMA (INDUK) ---
+            list.innerHTML += `
+            <div class="glass-panel p-4 rounded-xl border ${isOwnerComment ? 'border-purple-500/50 bg-purple-900/10' : 'border-white/10 bg-white/5'} relative group mb-4">
+                
+                <div class="flex items-start gap-3">
                     <div class="relative shrink-0">
-                        <img src="${r.avatar}" class="w-8 h-8 rounded-full object-cover border border-white/10">
-                        ${isOfficialComment ? '<div class="absolute -bottom-1 -right-1 bg-white rounded-full text-[10px] text-blue-500 w-3.5 h-3.5 flex items-center justify-center shadow-sm"><i class="fas fa-check-circle"></i></div>' : ''}
+                        <img src="${r.avatar}" class="w-9 h-9 rounded-full object-cover border border-white/10">
+                        ${isOwnerComment ? '<div class="absolute -bottom-1 -right-1 bg-white rounded-full text-[10px] text-blue-500 w-3.5 h-3.5 flex items-center justify-center"><i class="fas fa-check-circle"></i></div>' : ''}
                     </div>
 
                     <div class="flex-grow">
                         <div class="flex justify-between items-start">
-                            <div class="flex flex-col">
-                                <div class="flex items-center gap-2">
-                                    <span class="font-bold text-sm ${isOfficialComment ? 'text-purple-300' : 'text-gray-200'}">${r.user}</span>
-                                    
-                                    ${isOfficialComment ? '<span class="text-[8px] bg-purple-500 text-white px-1.5 py-0.5 rounded font-bold uppercase tracking-wider shadow-[0_0_10px_rgba(168,85,247,0.5)]">Owner</span>' : ''}
-                                </div>
-                                
-                                <div class="flex text-[10px] mt-0.5 text-yellow-500">
-                                    ${Array(r.rating).fill('<i class="fas fa-star"></i>').join('')}
-                                </div>
+                            <div>
+                                <span class="font-bold text-sm ${isOwnerComment ? 'text-purple-300' : 'text-gray-200'}">${r.user}</span>
+                                ${isOwnerComment ? '<span class="text-[8px] bg-purple-600 text-white px-1 rounded ml-1">OWNER</span>' : ''}
+                                <div class="flex text-[8px] text-yellow-500 mt-0.5">${Array(r.rating).fill('<i class="fas fa-star"></i>').join('')}</div>
                             </div>
-
-                            <button onclick="toggleLike('${doc.id}', ${isLiked})" class="text-xs ${isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'} transition flex items-center gap-1 bg-black/20 px-2 py-1 rounded-full border border-white/5">
-                                <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> ${likes.length || 0}
-                            </button>
                         </div>
 
                         <p class="text-gray-300 text-sm mt-2 font-light leading-relaxed">${r.text}</p>
+                        
+                        <div class="flex items-center gap-4 mt-3">
+                            <button onclick="toggleLike('${revId}', ${isLiked})" class="text-xs ${isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'} transition flex items-center gap-1">
+                                <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> ${likes.length || 0}
+                            </button>
+                            
+                            <button onclick="toggleReplyForm('${revId}')" class="text-xs text-gray-500 hover:text-white transition flex items-center gap-1">
+                                <i class="far fa-comment-alt"></i> Balas
+                            </button>
+
+                            ${canDelete ? `<button onclick="delRev('${revId}')" class="text-xs text-red-500/50 hover:text-red-500 ml-auto"><i class="fas fa-trash"></i></button>` : ''}
+                        </div>
                     </div>
                 </div>
-                
-                ${canDelete ? `
-                    <button onclick="delRev('${doc.id}')" class="absolute bottom-4 right-4 z-20 text-[10px] text-red-400/70 hover:text-red-500 transition p-2 bg-black/40 rounded-full border border-white/10 hover:bg-white/10">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                ` : ''}
+
+                ${repliesHTML}
+
+                <div id="reply-box-${revId}" class="hidden mt-3 pl-12 animate-[modal-enter_0.3s_ease]">
+                    <div class="flex gap-2">
+                        <input type="text" id="reply-input-${revId}" class="w-full bg-black/40 border border-white/10 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/30 placeholder-gray-600" placeholder="Tulis balasan..." onkeydown="if(event.key === 'Enter') submitReply('${revId}')">
+                        <button onclick="submitReply('${revId}')" class="bg-white/10 hover:bg-white/20 text-white p-2 rounded-lg transition border border-white/10">
+                            <i class="fas fa-paper-plane text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+
             </div>`;
         });
     });
@@ -914,6 +943,55 @@
                 });
                 track.innerHTML = htmlContent + htmlContent; 
             });
+        }
+
+// --- FITUR BALAS KOMENTAR ---
+
+        // 1. Toggle Form (Munculkan/Sembunyikan kotak input)
+        window.toggleReplyForm = function(revId) {
+            const box = document.getElementById(`reply-box-${revId}`);
+            box.classList.toggle('hidden');
+            
+            // Fokus ke input jika dibuka
+            if (!box.classList.contains('hidden')) {
+                setTimeout(() => document.getElementById(`reply-input-${revId}`).focus(), 100);
+            }
+        }
+
+        // 2. Submit Balasan ke Firebase
+        window.submitReply = async function(revId) {
+            if(user.name === "Guest") { alert("Login dulu untuk membalas!"); return; }
+            
+            const input = document.getElementById(`reply-input-${revId}`);
+            const text = input.value.trim();
+            
+            if (!text) return;
+
+            try {
+                const docRef = window.doc(window.db, "reviews", revId);
+                
+                // Buat objek balasan
+                const newReply = {
+                    user: user.name,
+                    avatar: user.avatar,
+                    text: text,
+                    createdAt: new Date().toISOString(), // Pakai ISO String biar mudah disimpan di array
+                    isOwner: user.isOwner || false
+                };
+
+                // Update dokumen review: Push ke dalam array 'replies'
+                await window.updateDoc(docRef, {
+                    replies: window.arrayUnion(newReply)
+                });
+
+                // Reset & Tutup
+                input.value = '';
+                document.getElementById(`reply-box-${revId}`).classList.add('hidden');
+                
+            } catch(e) {
+                console.error(e);
+                alert("Gagal mengirim balasan.");
+            }
         }
 
         // Global Helpers
