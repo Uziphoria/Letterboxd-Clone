@@ -193,6 +193,7 @@
         /* Icon Animation for Toggle */
         .icon-spin { animation: spin 0.5s ease-in-out; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
 
         /* --- EFEK LIQUID GLASS ULTIMATE --- */
 #modal-content {
@@ -320,6 +321,53 @@
                 <span>Diary</span>
             </div>
         </div>
+
+        <div id="announcement-banner" class="hidden max-w-2xl mx-auto mb-12 relative group animate-[modal-enter_0.5s_ease]">
+    <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
+    
+    <div class="glass-panel p-6 rounded-2xl border border-purple-500/30 relative flex items-start gap-4 shadow-2xl">
+        <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0 animate-pulse">
+            <i class="fas fa-bullhorn text-purple-400"></i>
+        </div>
+        <div class="flex-grow">
+            <h4 class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">Official Announcement</h4>
+            <p id="announcement-text" class="text-sm text-[var(--text-primary)] leading-relaxed font-medium">
+                </p>
+            <p id="announcement-date" class="text-[9px] text-[var(--text-secondary)] mt-2 font-mono opacity-70"></p>
+        </div>
+        <button onclick="closeAnnouncement()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+</div>
+
+<div id="admin-floating-btn" class="fixed bottom-6 right-6 z-50 hidden">
+    <button onclick="openAdminModal()" class="w-14 h-14 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/40 flex items-center justify-center hover:scale-110 transition-transform duration-300 border border-white/20">
+        <i class="fas fa-magic text-xl animate-spin-slow"></i>
+    </button>
+</div>
+
+<div id="admin-modal" class="fixed inset-0 z-[110] hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div class="glass-panel w-full max-w-md p-8 rounded-3xl border border-purple-500/30 relative">
+        <h3 class="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <i class="fas fa-crown text-yellow-400"></i> Owner Panel
+        </h3>
+        
+        <textarea id="admin-input-text" rows="4" class="w-full bg-black/40 border border-white/10 rounded-xl p-4 text-white focus:outline-none focus:border-purple-500 transition mb-4" placeholder="Tulis titah paduka raja di sini..."></textarea>
+        
+        <div class="flex gap-3">
+            <button onclick="postAnnouncement()" class="flex-1 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-purple-500/20">
+                POSTING
+            </button>
+            <button onclick="clearAnnouncement()" class="px-4 py-3 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-xl border border-red-500/30 transition">
+                HAPUS
+            </button>
+            <button onclick="document.getElementById('admin-modal').classList.add('hidden')" class="px-4 py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl transition">
+                BATAL
+            </button>
+        </div>
+    </div>
+</div>
 
         <div class="flex items-center justify-between mb-8 pb-4 border-b border-[var(--glass-border)]">
             <span class="text-[var(--text-primary)] text-sm font-bold tracking-widest uppercase">Koleksi Film</span>
@@ -513,6 +561,7 @@
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeIcon();
+            listenAnnouncement();
 
             const grid = document.getElementById('grid-container');
             if(grid) {
@@ -649,6 +698,7 @@
     updateNav();
     const login = document.getElementById('login-screen');
     login.classList.add('opacity-0');
+    document.getElementById('admin-floating-btn').classList.remove('hidden');
     setTimeout(() => { login.classList.add('hidden'); }, 500);
 
     // Opsional: Simpan ke database jika perlu (kode sinkronisasi sebelumnya)
@@ -668,6 +718,11 @@
                 document.getElementById('login-name-input').value = user.name === "Guest" ? "" : user.name;
                 document.getElementById('login-avatar-preview').src = user.avatar;
                 updateNav();
+
+                // [TAMBAHAN] Cek status owner saat reload
+                if (user.isOwner) {
+                    document.getElementById('admin-floating-btn').classList.remove('hidden');
+                }
             }
         }
 
@@ -881,6 +936,86 @@
         window.postReview = postReview;
 
         document.addEventListener("DOMContentLoaded", init);
+
+        // --- FITUR PENGUMUMAN ---
+        
+        // 1. Memuat Pengumuman dari Firebase
+        function listenAnnouncement() {
+            // Ambil 1 pengumuman terbaru
+            const q = window.query(window.collection(window.db, "announcements"), window.orderBy("createdAt", "desc"), window.limit(1));
+            
+            window.onSnapshot(q, (snap) => {
+                const banner = document.getElementById('announcement-banner');
+                
+                if (snap.empty) {
+                    banner.classList.add('hidden');
+                    return;
+                }
+
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    
+                    // Cek apakah pengumuman "aktif" (Isinya tidak kosong)
+                    if (data.text && data.text.trim() !== "") {
+                        document.getElementById('announcement-text').innerHTML = data.text.replace(/\n/g, "<br>");
+                        
+                        // Format tanggal simpel
+                        if(data.createdAt) {
+                            const date = data.createdAt.toDate();
+                            document.getElementById('announcement-date').innerText = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+                        }
+                        
+                        banner.classList.remove('hidden');
+                    } else {
+                        banner.classList.add('hidden');
+                    }
+                });
+            });
+        }
+
+        // 2. Fungsi Admin: Buka Modal
+        window.openAdminModal = function() {
+            document.getElementById('admin-modal').classList.remove('hidden');
+            document.getElementById('admin-modal').classList.add('flex');
+        }
+
+        // 3. Fungsi Admin: Posting
+        window.postAnnouncement = async function() {
+            const txt = document.getElementById('admin-input-text').value;
+            if(!txt) return alert("Isi dulu teksnya, Paduka!");
+
+            try {
+                // Kita tambahkan dokumen baru ke koleksi 'announcements'
+                await window.addDoc(window.collection(window.db, "announcements"), {
+                    text: txt,
+                    createdAt: window.serverTimestamp(),
+                    author: user.name
+                });
+                alert("Titah berhasil disebarkan!");
+                document.getElementById('admin-modal').classList.add('hidden');
+                document.getElementById('admin-input-text').value = "";
+            } catch(e) {
+                console.error(e);
+                alert("Gagal memposting: " + e.message);
+            }
+        }
+
+        // 4. Fungsi Admin: Hapus Pengumuman (Sebenarnya memposting text kosong agar hilang)
+        window.clearAnnouncement = async function() {
+            if(!confirm("Hapus pengumuman yang sedang tayang?")) return;
+            try {
+                await window.addDoc(window.collection(window.db, "announcements"), {
+                    text: "", // Teks kosong akan menyembunyikan banner
+                    createdAt: window.serverTimestamp()
+                });
+                document.getElementById('admin-modal').classList.add('hidden');
+            } catch(e) { console.error(e); }
+        }
+
+        // 5. User menutup banner sementara (lokal)
+        window.closeAnnouncement = function() {
+            document.getElementById('announcement-banner').classList.add('hidden');
+        }
     </script>
     
     <style>
