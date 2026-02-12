@@ -362,27 +362,6 @@
     </div>
 </footer>
 
-<div id="announcement-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
-    <div class="absolute inset-0 bg-black/90 backdrop-blur-sm transition-opacity" onclick="closeAnnouncement()"></div>
-    
-    <div class="relative w-full max-w-lg transform transition-all scale-100">
-        <div class="glass-panel border border-yellow-500/30 bg-black/80 p-8 rounded-[32px] text-center shadow-[0_0_50px_rgba(234,179,8,0.15)] relative overflow-hidden">
-            
-            <div class="w-16 h-16 mx-auto bg-yellow-500 rounded-full flex items-center justify-center shadow-lg mb-6 animate-bounce text-black text-2xl">
-                <i class="fas fa-bullhorn"></i>
-            </div>
-
-            <h3 class="text-2xl font-black text-yellow-500 uppercase tracking-widest mb-2 font-['Space_Grotesk']">Announcement</h3>
-            
-            <p id="announcement-text" class="text-gray-300 text-lg leading-relaxed font-light mb-8">Loading...</p>
-
-            <button onclick="closeAnnouncement()" class="px-8 py-3 rounded-full bg-yellow-500 text-black font-bold text-xs uppercase tracking-widest hover:bg-white transition-all shadow-lg">
-                Mengerti
-            </button>
-        </div>
-    </div>
-</div>
-
     <div id="movie-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity" onclick="closeModal()"></div>
         
@@ -556,14 +535,6 @@
                     `;
                     grid.appendChild(div);
                 });
-        checkAnnouncement();
-
-    // [TAMBAHAN] Tampilkan Tombol Admin jika Owner
-    // Pastikan user.isOwner sudah diset di login/localStorage
-    const savedUser = JSON.parse(localStorage.getItem('cinelog_user'));
-    if (savedUser && savedUser.name === "Uziphoria" && savedUser.isOwner) {
-        document.getElementById('admin-controls').classList.remove('hidden');
-    }
             }
             loadRunningReviews();
             loadUserDataToLogin();
@@ -910,50 +881,6 @@
         window.postReview = postReview;
 
         document.addEventListener("DOMContentLoaded", init);
-
-        // --- FITUR PENGUMUMAN OTOMATIS ---
-
-function checkAnnouncement() {
-    console.log("Memeriksa pengumuman..."); // Cek di Console apakah ini muncul
-
-    // 1. Ambil data dari Firebase
-    const docRef = window.doc(window.db, "settings", "announcement");
-    
-    window.onSnapshot(docRef, (doc) => {
-        if (doc.exists()) {
-            const data = doc.data();
-            console.log("Data Pengumuman:", data); // Cek data di Console
-
-            // 2. Cek apakah statusnya AKTIF
-            if (data.active === true && data.text) {
-                // Isi teks ke dalam HTML
-                document.getElementById('announcement-text').innerHTML = data.text;
-                
-                // 3. PAKSA MUNCULKAN POPUP
-                const modal = document.getElementById('announcement-modal');
-                modal.classList.remove('hidden'); // Hapus class hidden
-                modal.classList.add('flex');    // Tambah class flex
-            } else {
-                // Jika tidak aktif, sembunyikan
-                closeAnnouncement();
-            }
-        } else {
-            console.log("Belum ada pengumuman di database.");
-        }
-    });
-}
-
-function closeAnnouncement() {
-    const modal = document.getElementById('announcement-modal');
-    modal.classList.add('hidden');
-    modal.classList.remove('flex');
-}
-
-// Panggil fungsi ini AGAR JALAN OTOMATIS
-// Masukkan baris ini di dalam fungsi init() atau biarkan di luar agar langsung jalan
-document.addEventListener("DOMContentLoaded", () => {
-    checkAnnouncement();
-});
     </script>
     
     <style>
