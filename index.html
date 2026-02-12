@@ -362,6 +362,39 @@
     </div>
 </footer>
 
+    <div id="announcement-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity" onclick="closeAnnouncement()"></div>
+    
+    <div class="relative w-full max-w-lg transform transition-all scale-100 rotate-0">
+        <div class="glass-panel border-2 border-yellow-500/30 bg-gradient-to-br from-yellow-900/40 to-black/80 p-8 rounded-[32px] text-center shadow-[0_0_50px_rgba(234,179,8,0.2)] relative overflow-hidden">
+            
+            <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-yellow-400 to-transparent opacity-50"></div>
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-yellow-500/20 blur-[50px] rounded-full pointer-events-none"></div>
+
+            <div class="w-16 h-16 mx-auto bg-gradient-to-tr from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-lg mb-6 animate-bounce">
+                <i class="fas fa-bullhorn text-2xl text-black"></i>
+            </div>
+
+            <h3 class="text-2xl font-black text-yellow-500 uppercase tracking-widest mb-2 font-['Space_Grotesk']">Announcement</h3>
+            <div class="h-0.5 w-12 bg-yellow-500/50 mx-auto mb-6"></div>
+
+            <p id="announcement-text" class="text-gray-200 text-lg leading-relaxed font-light mb-8">
+                Loading...
+            </p>
+
+            <button onclick="closeAnnouncement()" class="px-8 py-3 rounded-full bg-yellow-500 text-black font-bold text-sm uppercase tracking-widest hover:bg-yellow-400 hover:scale-105 transition-all shadow-lg shadow-yellow-500/20">
+                Mengerti
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="admin-controls" class="fixed bottom-6 left-6 z-50 hidden">
+    <button onclick="openAdminPanel()" class="w-12 h-12 rounded-full bg-red-600 text-white shadow-[0_0_20px_rgba(220,38,38,0.5)] flex items-center justify-center hover:scale-110 transition-transform border border-white/20">
+        <i class="fas fa-cog fa-spin-hover"></i>
+    </button>
+</div>
+
     <div id="movie-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-md transition-opacity" onclick="closeModal()"></div>
         
@@ -535,6 +568,14 @@
                     `;
                     grid.appendChild(div);
                 });
+        checkAnnouncement();
+
+    // [TAMBAHAN] Tampilkan Tombol Admin jika Owner
+    // Pastikan user.isOwner sudah diset di login/localStorage
+    const savedUser = JSON.parse(localStorage.getItem('cinelog_user'));
+    if (savedUser && savedUser.name === "Uziphoria" && savedUser.isOwner) {
+        document.getElementById('admin-controls').classList.remove('hidden');
+    }
             }
             loadRunningReviews();
             loadUserDataToLogin();
@@ -881,6 +922,72 @@
         window.postReview = postReview;
 
         document.addEventListener("DOMContentLoaded", init);
+
+        // --- FITUR ADMIN ANNOUNCEMENT ---
+
+// 1. Cek Pengumuman saat website dibuka
+function checkAnnouncement() {
+    const docRef = window.doc(window.db, "settings", "announcement");
+    
+    // Dengarkan perubahan realtime (jadi kalau kamu update, user langsung lihat tanpa refresh!)
+    window.onSnapshot(docRef, (doc) => {
+        if (doc.exists()) {
+            const data = doc.data();
+            // Hanya tampilkan jika statusnya 'active' dan pesannya ada
+            if (data.active && data.text) {
+                document.getElementById('announcement-text').innerHTML = data.text; // Support HTML (Bold/Italic)
+                
+                // Cek apakah user sudah pernah menutup pengumuman ini (Session storage)
+                // Hapus baris di bawah ini jika ingin SELALU muncul setiap refresh
+                const seen = sessionStorage.getItem('seen_announce_' + data.updatedAt); 
+                if (!seen) {
+                    const modal = document.getElementById('announcement-modal');
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
+            } else {
+                closeAnnouncement();
+            }
+        }
+    });
+}
+
+// 2. Tutup Pengumuman
+function closeAnnouncement() {
+    document.getElementById('announcement-modal').classList.add('hidden');
+    document.getElementById('announcement-modal').classList.remove('flex');
+    
+    // Tandai sudah dibaca (opsional)
+    // sessionStorage.setItem('seen_announce', 'true');
+}
+
+// 3. Panel Admin (Membuat/Menghapus Pengumuman)
+async function openAdminPanel() {
+    if (!user.isOwner) return; // Keamanan ganda
+
+    const currentText = document.getElementById('announcement-text').innerText;
+    const newText = prompt("Tulis Pengumuman Baru (Kosongkan untuk menghapus):", currentText === "Loading..." ? "" : currentText);
+
+    if (newText !== null) {
+        const isActive = newText.trim().length > 0; // Jika teks ada, aktifkan. Jika kosong, matikan.
+        
+        try {
+            await window.updateDoc(window.doc(window.db, "settings", "announcement"), {
+                text: newText,
+                active: isActive,
+                updatedAt: Date.now() // Timestamp unik agar user melihat lagi jika ada update baru
+            });
+            alert(isActive ? "Pengumuman Diterbitkan!" : "Pengumuman Dihapus!");
+        } catch (e) {
+            // Jika dokumen belum ada, buat baru
+            await window.setDoc(window.doc(window.db, "settings", "announcement"), {
+                text: newText,
+                active: isActive,
+                updatedAt: Date.now()
+            });
+        }
+    }
+}
     </script>
     
     <style>
