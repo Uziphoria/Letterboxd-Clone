@@ -1094,14 +1094,20 @@
 
         // 4. Fungsi Admin: Hapus Pengumuman (Sebenarnya memposting text kosong agar hilang)
         window.clearAnnouncement = async function() {
-            if(!confirm("Hapus pengumuman yang sedang tayang?")) return;
-            try {
-                await window.addDoc(window.collection(window.db, "announcements"), {
-                    text: "", // Teks kosong akan menyembunyikan banner
-                    createdAt: window.serverTimestamp()
-                });
-                document.getElementById('admin-modal').classList.add('hidden');
-            } catch(e) { console.error(e); }
+    // Validasi ganda: Cek di script juga
+    if (!user.isOwner) return; 
+
+    if(!confirm("Hapus pengumuman ini secara permanen dari Database?")) return;
+    
+    try {
+        // Kita timpa dengan text kosong agar banner hilang di semua orang
+        await window.addDoc(window.collection(window.db, "announcements"), {
+            text: "", 
+            createdAt: window.serverTimestamp(),
+            author: user.name
+        });
+        // Tidak perlu hide manual, listener akan otomatis menghilangkan banner
+    } catch(e) { console.error(e); }
         }
 
         // 5. User menutup banner sementara (lokal)
