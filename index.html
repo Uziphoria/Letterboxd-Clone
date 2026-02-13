@@ -325,38 +325,39 @@
         <div id="announcement-banner" class="hidden max-w-2xl mx-auto mb-12 relative group animate-[modal-enter_0.5s_ease]">
     <div class="absolute -inset-0.5 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
     
-    <div class="glass-panel p-5 rounded-2xl border border-purple-500/30 relative shadow-2xl overflow-hidden">
+    <div class="glass-panel p-6 rounded-2xl border border-purple-500/30 relative shadow-2xl overflow-hidden">
         
-        <div class="absolute top-0 right-0 p-4 opacity-10 pointer-events-none">
-            <i class="fas fa-bullhorn text-6xl text-white"></i>
+        <div class="absolute -top-4 -right-4 p-4 opacity-5 pointer-events-none transform rotate-12">
+            <i class="fas fa-bullhorn text-8xl text-white"></i>
         </div>
 
-        <div class="flex items-center gap-3 mb-3 border-b border-white/10 pb-3">
-            <div class="relative">
-                <img id="ann_avatar" src="" class="w-10 h-10 rounded-full object-cover border-2 border-purple-400 shadow-lg">
+        <div class="flex items-center gap-3 mb-4 border-b border-white/10 pb-3 relative z-10">
+            <div class="relative shrink-0">
+                <img id="ann_avatar" src="https://ui-avatars.com/api/?name=Admin" class="w-10 h-10 rounded-full object-cover border-2 border-purple-400 shadow-lg bg-black">
                 <div class="absolute -bottom-1 -right-1 bg-blue-500 text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full border border-black">
                     <i class="fas fa-check"></i>
                 </div>
             </div>
             
-            <div>
+            <div class="flex-grow">
                 <div class="flex items-center gap-2">
                     <h4 id="ann_author" class="text-sm font-bold text-white tracking-wide">Admin</h4>
                     <span class="px-1.5 py-0.5 bg-purple-600 text-[8px] font-bold text-white rounded uppercase tracking-wider shadow-[0_0_10px_rgba(147,51,234,0.5)]">
                         Owner
                     </span>
                 </div>
-                <p id="ann_date" class="text-[10px] text-gray-400 font-mono"></p>
+                <p id="ann_date" class="text-[10px] text-gray-400 font-mono mt-0.5">Baru saja</p>
             </div>
 
-            <button id="btn-ann-delete" onclick="clearAnnouncement()" class="hidden ml-auto text-red-500 hover:text-red-400 transition bg-black/30 w-8 h-8 rounded-full flex items-center justify-center border border-red-500/30 hover:scale-110 z-20 cursor-pointer">
-                <i class="fas fa-trash"></i>
+            <button id="btn-ann-delete" onclick="clearAnnouncement()" class="hidden text-red-400 hover:text-red-200 transition bg-red-500/10 hover:bg-red-500/30 w-8 h-8 rounded-full flex items-center justify-center border border-red-500/20">
+                <i class="fas fa-trash text-xs"></i>
             </button>
         </div>
 
-        <div class="relative z-10">
-            <p id="ann_text" class="text-sm text-gray-200 leading-relaxed font-light">
-                </p>
+        <div class="relative z-10 pl-1">
+            <p id="ann_text" class="text-sm md:text-base text-gray-100 leading-relaxed font-light drop-shadow-sm whitespace-pre-line">
+                Memuat pengumuman...
+            </p>
         </div>
     </div>
         </div>
