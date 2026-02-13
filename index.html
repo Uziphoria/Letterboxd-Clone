@@ -837,58 +837,23 @@
 
         // [UPDATE] FUNGSI KIRIM REVIEW (KOMPATIBEL DENGAN SISTEM PROFIL)
         window.postReview = async function() {
-            // Cek Login
-            if (!user || user.name === "Guest") {
-                alert("Login dulu baru bisa komen!");
-                const loginScreen = document.getElementById('login-screen');
-                if(loginScreen) {
-                    // Tutup modal film biar loginnya kelihatan
-                    document.getElementById('movie-modal').classList.add('hidden');
-                    document.getElementById('movie-modal').classList.remove('flex');
-                    // Buka login
-                    loginScreen.classList.remove('hidden', 'invisible', 'opacity-0');
-                }
-                return;
-            }
-
             const txt = document.getElementById('review-text').value;
-            
-            if (!txt && userRating === 0) { 
-                alert("Isi rating atau komentar dulu ya!"); 
-                return; 
-            }
+            if(!txt && userRating===0) { alert("Berikan rating atau ulasan!"); return; }
+            if(user.name === "Guest") { openLoginAgain(); closeModal(); return; }
 
-            const btn = document.getElementById('btn-post');
+            const btn = document.getElementById('btn-post'); 
             const originalText = btn.innerText;
             btn.innerText = "Mengirim...";
-            btn.disabled = true;
             
             try {
-                // Kirim Data Lengkap
                 await window.addDoc(window.collection(window.db, "reviews"), {
-                    movieId: currentId,
-                    user: user.name, 
-                    avatar: user.avatar || "https://i.pravatar.cc/150?img=12",
-                    isOwner: user.isOwner || false,
-                    text: txt, 
-                    rating: userRating, 
-                    createdAt: window.serverTimestamp(), 
-                    likedBy: [],
-                    replies: [] 
+                    movieId: currentId, user: user.name, avatar: user.avatar,
+                    text: txt, rating: userRating, createdAt: window.serverTimestamp(), likedBy: []
                 });
-
-                // Reset
-                document.getElementById('review-text').value = '';
-                rate(0);
-
-            } catch(e) { 
-                console.error(e); 
-                alert("Gagal mengirim: " + e.message); 
-            }
-
+                document.getElementById('review-text').value = ''; rate(0);
+            } catch(e) { console.error(e); alert("Error posting review"); }
             btn.innerText = originalText;
-            btn.disabled = false;
-                        }
+        }
             
         function loadComments(movieId) {
     const list = document.getElementById('comments-list'); 
