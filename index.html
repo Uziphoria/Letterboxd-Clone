@@ -492,16 +492,18 @@
 </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, deleteDoc, doc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        
-        const firebaseConfig = { apiKey: "AIzaSyCNp9zp5rttLA3RzUeiXnFPFniP6h5pFuE", authDomain: "threesmovie.firebaseapp.com", projectId: "threesmovie", storageBucket: "threesmovie.firebasestorage.app", messagingSenderId: "182928045479", appId: "1:182928045479:web:80e632e1cdfd63bd27b282" };
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        
-        window.db = db; window.collection = collection; window.addDoc = addDoc; window.deleteDoc = deleteDoc; window.updateDoc = updateDoc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.doc = doc; window.serverTimestamp = serverTimestamp; window.query = query; window.where = where; window.orderBy = orderBy; window.limit = limit;
-        window.onSnapshot = onSnapshot; 
-        console.log("Firebase Connected");
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot, query, where, orderBy, deleteDoc, doc, serverTimestamp, updateDoc, arrayUnion, arrayRemove, limit, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = { apiKey: "AIzaSyCNp9zp5rttLA3RzUeiXnFPFniP6h5pFuE", authDomain: "threesmovie.firebaseapp.com", projectId: "threesmovie", storageBucket: "threesmovie.firebasestorage.app", messagingSenderId: "182928045479", appId: "1:182928045479:web:80e632e1cdfd63bd27b282" };
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Tambahkan window.setDoc dan window.getDoc di sini:
+window.db = db; window.collection = collection; window.addDoc = addDoc; window.deleteDoc = deleteDoc; window.updateDoc = updateDoc; window.arrayUnion = arrayUnion; window.arrayRemove = arrayRemove; window.doc = doc; window.serverTimestamp = serverTimestamp; window.query = query; window.where = where; window.orderBy = orderBy; window.limit = limit; 
+window.setDoc = setDoc; window.getDoc = getDoc; // <--- INI PENTING
+window.onSnapshot = onSnapshot; 
+console.log("Firebase Connected");
     </script>
 
     <script>
@@ -668,47 +670,92 @@
             reader.readAsDataURL(file);
         }
 
-        function finishLogin() {
+        async function finishLogin() {
     const inputName = document.getElementById('login-name-input').value.trim();
     if (!inputName) { alert("Siapa nama kamu?"); return; }
+
+    const btn = document.querySelector('#login-card button');
+    const originalText = btn.innerText;
+    btn.innerText = "Mengecek Database..."; // Efek loading
 
     // --- PROTEKSI OWNER ---
     if (inputName.toLowerCase() === "uziphoria") {
         const pass = prompt("Masukkan Kode Akses Owner:");
-        
-        // GANTI PASSWORD SESUAI KEINGINAN ANDA
         if (pass !== "AZIPANGESTU2009") { 
             alert("Password Salah! Anda bukan Owner.");
+            btn.innerText = originalText;
             return; 
         }
         user.isOwner = true;
     } else {
         user.isOwner = false;
     }
-    // -----------------------
 
-    user.name = inputName; 
-    localStorage.setItem('cinelog_user', JSON.stringify(user));
-    
-    updateNav();
+    user.name = inputName;
 
-    // --- PERBAIKAN DI SINI ---
-    // Dulu: Langsung remove('hidden') tanpa cek
-    // Sekarang: Cek dulu apakah dia Owner?
-    if (user.isOwner) {
-        document.getElementById('admin-floating-btn').classList.remove('hidden');
-        // Munculkan juga tombol hapus announcement jika ada
+    try {
+        // 1. Cek apakah user ini sudah ada di Database Firebase?
+        const userRef = window.doc(window.db, "users", user.name.toLowerCase()); // Pakai huruf kecil biar tidak duplikat
+        const userSnap = await window.getDoc(userRef);
+
+        if (userSnap.exists()) {
+            // JIKA AKUN ADA DI DATABASE
+            const data = userSnap.data();
+            
+            // Logika: Jika user TIDAK upload foto baru saat login ini, 
+            // maka pakai foto lama dari database (Sinkronisasi)
+            const currentPreview = document.getElementById('login-avatar-preview').src;
+            const isDefaultAvatar = currentPreview.includes("pravatar.cc"); // Cek apakah masih avatar bawaan
+            
+            if (isDefaultAvatar && data.avatar) {
+                user.avatar = data.avatar; // AMBIL FOTO DARI DATABASE (HP)
+                console.log("Foto disinkronkan dari database!");
+            } else {
+                // Jika user upload foto baru di laptop, update database
+                await window.setDoc(userRef, { 
+                    name: user.name,
+                    avatar: user.avatar,
+                    lastLogin: window.serverTimestamp()
+                }, { merge: true });
+            }
+        } else {
+            // JIKA AKUN BARU (Belum ada di database)
+            // Simpan data baru ke database
+            await window.setDoc(userRef, { 
+                name: user.name,
+                avatar: user.avatar,
+                createdAt: window.serverTimestamp()
+            });
+        }
+
+        // 2. Simpan ke LocalStorage (Biar tetap login kalau di-refresh)
+        localStorage.setItem('cinelog_user', JSON.stringify(user));
+        
+        updateNav();
+
+        // 3. Atur tombol Admin/Owner
+        const adminBtn = document.getElementById('admin-floating-btn');
         const closeBtn = document.getElementById('btn-close-announcement');
-        if(closeBtn) closeBtn.classList.remove('hidden');
-    } else {
-        // Jika bukan owner, pastikan tombol tetap sembunyi
-        document.getElementById('admin-floating-btn').classList.add('hidden');
-    }
-    // -------------------------
 
-    const login = document.getElementById('login-screen');
-    login.classList.add('opacity-0');
-    setTimeout(() => { login.classList.add('hidden'); }, 500);
+        if (user.isOwner) {
+            if(adminBtn) adminBtn.classList.remove('hidden');
+            if(closeBtn) closeBtn.classList.remove('hidden');
+        } else {
+            if(adminBtn) adminBtn.classList.add('hidden');
+            if(closeBtn) closeBtn.classList.add('hidden');
+        }
+
+        // 4. Tutup Layar Login
+        const login = document.getElementById('login-screen');
+        login.classList.add('opacity-0');
+        setTimeout(() => { login.classList.add('hidden'); }, 500);
+
+    } catch (e) {
+        console.error("Error login:", e);
+        alert("Gagal sinkronisasi: " + e.message);
+    }
+    
+    btn.innerText = originalText;
 }
 
         function openLoginAgain() {
