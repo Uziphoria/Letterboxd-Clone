@@ -484,17 +484,26 @@
                 <p id="modal-cast" class="text-sm text-white font-medium tracking-wide drop-shadow-sm">Actors</p>
             </div>
 
-            <div class="bg-black/20 rounded-2xl p-6 border border-white/10 backdrop-blur-sm shadow-inner">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Berikan Rating</span>
-                    <div class="flex gap-2 text-xl" id="input-stars">
-                        <i class="far fa-star text-gray-500 cursor-pointer hover:text-[#F5C518] transition" onclick="rate(1)"></i>
-                        <i class="far fa-star text-gray-500 cursor-pointer hover:text-[#F5C518] transition" onclick="rate(2)"></i>
-                        <i class="far fa-star text-gray-500 cursor-pointer hover:text-[#F5C518] transition" onclick="rate(3)"></i>
-                        <i class="far fa-star text-gray-500 cursor-pointer hover:text-[#F5C518] transition" onclick="rate(4)"></i>
-                        <i class="far fa-star text-gray-500 cursor-pointer hover:text-[#F5C518] transition" onclick="rate(5)"></i>
-                    </div>
-                </div>
+            <<div class="bg-black/20 rounded-2xl p-6 border border-white/10 backdrop-blur-sm shadow-inner mb-6">
+    <div class="flex justify-between items-center mb-4">
+        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Berikan Rating</span>
+        <div class="flex gap-2 text-xl" id="input-stars">
+            <i class="far fa-star text-gray-500 cursor-pointer hover:text-yellow-400 transition" onclick="rate(1)"></i>
+            <i class="far fa-star text-gray-500 cursor-pointer hover:text-yellow-400 transition" onclick="rate(2)"></i>
+            <i class="far fa-star text-gray-500 cursor-pointer hover:text-yellow-400 transition" onclick="rate(3)"></i>
+            <i class="far fa-star text-gray-500 cursor-pointer hover:text-yellow-400 transition" onclick="rate(4)"></i>
+            <i class="far fa-star text-gray-500 cursor-pointer hover:text-yellow-400 transition" onclick="rate(5)"></i>
+        </div>
+    </div>
+    
+    <textarea id="review-text" rows="2" class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-white/30 focus:bg-black/40 transition mb-4 placeholder-gray-500 shadow-inner" placeholder="Tulis pendapatmu..."></textarea>
+    
+    <div class="flex justify-end">
+        <button id="btn-post" onclick="postReview()" class="px-6 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]">
+            Kirim Ulasan
+        </button>
+    </div>
+            </div>
                 <textarea id="review-text" rows="2" class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-white/30 focus:bg-black/40 transition mb-4 placeholder-gray-500 shadow-inner" placeholder="Tulis pendapatmu..."></textarea>
                 <div class="flex justify-end">
                     <button id="btn-post" onclick="postReview()" class="px-6 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]">
@@ -754,31 +763,28 @@
 
         // Modal Logic
         function openModal(id) {
-            currentId = id;
-            const m = movies.find(x => x.id === id);
-            
-            document.getElementById('modal-img').src = m.img;
-            document.getElementById('modal-imdb').innerText = m.imdb;
-            document.getElementById('modal-title').innerText = m.title;
-            document.getElementById('modal-year').innerText = m.year;
-            document.getElementById('modal-director').innerText = m.dir;
-            document.getElementById('modal-cast').innerText = m.cast;
-            document.getElementById('modal-synopsis').innerText = m.syn;
-            
-            const gDiv = document.getElementById('modal-genre'); gDiv.innerHTML = '';
-            m.genre.forEach(g => gDiv.innerHTML += `<span class="text-[10px] bg-[var(--bg-body)] px-2 py-1 rounded text-[var(--text-secondary)] border border-[var(--glass-border)] uppercase tracking-wide">${g}</span>`);
-            
-            const modal = document.getElementById('movie-modal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.body.style.overflow = 'hidden';
-            
-            const content = document.getElementById('modal-content');
-            content.classList.remove('modal-exit');
-            content.classList.add('modal-enter-active');
+            window.openModal = function(id) {
+    currentId = id; 
+    
+    // --- [TAMBAHKAN/PASTIKAN BAGIAN INI ADA] ---
+    userRating = 0;           // Reset variabel rating
+    rate(0);                  // Reset tampilan bintang jadi kosong
+    document.getElementById('review-text').value = ""; // Kosongkan text area
+    // ------------------------------------------
 
-            loadComments(id);
-        }
+    const m = movies.find(x => x.id === id);
+    
+    // ... (kode lainnya biarkan saja, seperti set src gambar, judul, dll) ...
+    document.getElementById('modal-img').src = m.img;
+    // ... dst ...
+
+    const modal = document.getElementById('movie-modal');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    
+    // ...
+    loadComments(id);
+            }
 
         function closeModal() {
             const content = document.getElementById('modal-content');
@@ -808,24 +814,75 @@
         }
 
         async function postReview() {
-            const txt = document.getElementById('review-text').value;
-            if(!txt && userRating===0) { alert("Berikan rating atau ulasan!"); return; }
-            if(user.name === "Guest") { openLoginAgain(); closeModal(); return; }
-
-            const btn = document.getElementById('btn-post'); 
-            const originalText = btn.innerText;
-            btn.innerText = "Mengirim...";
-            
-            try {
-                await window.addDoc(window.collection(window.db, "reviews"), {
-                    movieId: currentId, user: user.name, avatar: user.avatar,
-                    text: txt, rating: userRating, createdAt: window.serverTimestamp(), likedBy: []
-                });
-                document.getElementById('review-text').value = ''; rate(0);
-            } catch(e) { console.error(e); alert("Error posting review"); }
-            btn.innerText = originalText;
+            // [UPDATE] FUNGSI BINTANG (WARNA KUNING)
+        window.rate = function(n) {
+            userRating = n;
+            const stars = document.querySelectorAll('#input-stars i');
+            stars.forEach((s, i) => {
+                // Jika urutan bintang kurang dari n, kasih warna kuning (yellow-400)
+                if (i < n) {
+                    s.className = "fas fa-star text-yellow-400 cursor-pointer transition transform scale-110"; 
+                } else {
+                    s.className = "far fa-star text-gray-500 cursor-pointer transition"; 
+                }
+            });
         }
 
+        // [UPDATE] FUNGSI KIRIM REVIEW (KOMPATIBEL DENGAN SISTEM PROFIL)
+        window.postReview = async function() {
+            // Cek Login
+            if (!user || user.name === "Guest") {
+                alert("Login dulu baru bisa komen!");
+                const loginScreen = document.getElementById('login-screen');
+                if(loginScreen) {
+                    // Tutup modal film biar loginnya kelihatan
+                    document.getElementById('movie-modal').classList.add('hidden');
+                    document.getElementById('movie-modal').classList.remove('flex');
+                    // Buka login
+                    loginScreen.classList.remove('hidden', 'invisible', 'opacity-0');
+                }
+                return;
+            }
+
+            const txt = document.getElementById('review-text').value;
+            
+            if (!txt && userRating === 0) { 
+                alert("Isi rating atau komentar dulu ya!"); 
+                return; 
+            }
+
+            const btn = document.getElementById('btn-post');
+            const originalText = btn.innerText;
+            btn.innerText = "Mengirim...";
+            btn.disabled = true;
+            
+            try {
+                // Kirim Data Lengkap
+                await window.addDoc(window.collection(window.db, "reviews"), {
+                    movieId: currentId,
+                    user: user.name, 
+                    avatar: user.avatar || "https://i.pravatar.cc/150?img=12",
+                    isOwner: user.isOwner || false,
+                    text: txt, 
+                    rating: userRating, 
+                    createdAt: window.serverTimestamp(), 
+                    likedBy: [],
+                    replies: [] 
+                });
+
+                // Reset
+                document.getElementById('review-text').value = '';
+                rate(0);
+
+            } catch(e) { 
+                console.error(e); 
+                alert("Gagal mengirim: " + e.message); 
+            }
+
+            btn.innerText = originalText;
+            btn.disabled = false;
+                        }
+            
         function loadComments(movieId) {
     const list = document.getElementById('comments-list'); 
     list.innerHTML = '<div class="text-center py-4 text-[var(--text-secondary)] text-xs animate-pulse">Memuat diskusi...</div>';
