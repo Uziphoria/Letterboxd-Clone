@@ -673,41 +673,42 @@
     if (!inputName) { alert("Siapa nama kamu?"); return; }
 
     // --- PROTEKSI OWNER ---
-    // Jika ada yang mencoba pakai nama keramat "Uziphoria"
     if (inputName.toLowerCase() === "uziphoria") {
-        // Minta password rahasia
         const pass = prompt("Masukkan Kode Akses Owner:");
         
-        // Ganti '1234' dengan password rahasia yang kamu mau
+        // GANTI PASSWORD SESUAI KEINGINAN ANDA
         if (pass !== "AZIPANGESTU2009") { 
             alert("Password Salah! Anda bukan Owner.");
-            return; // Batalkan login
+            return; 
         }
-        
-        // Jika benar, beri tanda khusus
         user.isOwner = true;
     } else {
         user.isOwner = false;
     }
     // -----------------------
 
-    user.name = inputName; // Simpan nama (bisa Uziphoria kalau password benar)
-    
-    // Simpan ke localStorage
+    user.name = inputName; 
     localStorage.setItem('cinelog_user', JSON.stringify(user));
     
     updateNav();
+
+    // --- PERBAIKAN DI SINI ---
+    // Dulu: Langsung remove('hidden') tanpa cek
+    // Sekarang: Cek dulu apakah dia Owner?
+    if (user.isOwner) {
+        document.getElementById('admin-floating-btn').classList.remove('hidden');
+        // Munculkan juga tombol hapus announcement jika ada
+        const closeBtn = document.getElementById('btn-close-announcement');
+        if(closeBtn) closeBtn.classList.remove('hidden');
+    } else {
+        // Jika bukan owner, pastikan tombol tetap sembunyi
+        document.getElementById('admin-floating-btn').classList.add('hidden');
+    }
+    // -------------------------
+
     const login = document.getElementById('login-screen');
     login.classList.add('opacity-0');
-    document.getElementById('admin-floating-btn').classList.remove('hidden');
     setTimeout(() => { login.classList.add('hidden'); }, 500);
-
-    const closeBtn = document.getElementById('btn-close-announcement');
-    if (user.isOwner) {
-        closeBtn.classList.remove('hidden');
-    } else {
-        closeBtn.classList.add('hidden');
-    }
 }
 
         function openLoginAgain() {
@@ -718,19 +719,28 @@
         }
 
         function loadUserDataToLogin() {
-            const savedData = localStorage.getItem('cinelog_user');
-            if (savedData) {
-                user = JSON.parse(savedData);
-                document.getElementById('login-name-input').value = user.name === "Guest" ? "" : user.name;
-                document.getElementById('login-avatar-preview').src = user.avatar;
-                updateNav();
+    const savedData = localStorage.getItem('cinelog_user');
+    if (savedData) {
+        user = JSON.parse(savedData);
+        document.getElementById('login-name-input').value = user.name === "Guest" ? "" : user.name;
+        document.getElementById('login-avatar-preview').src = user.avatar;
+        updateNav();
 
-                // [TAMBAHAN] Cek status owner saat reload
-                if (user.isOwner) {
-                    document.getElementById('admin-floating-btn').classList.remove('hidden');
-                }
-            }
+        // --- PERBAIKAN DI SINI ---
+        // Cek status owner saat reload
+        if (user.isOwner) {
+            document.getElementById('admin-floating-btn').classList.remove('hidden');
+             // Cek tombol close announcement juga
+            const closeBtn = document.getElementById('btn-close-announcement');
+            if(closeBtn) closeBtn.classList.remove('hidden');
+        } else {
+            // Pastikan tersembunyi untuk user biasa
+            document.getElementById('admin-floating-btn').classList.add('hidden');
+            const closeBtn = document.getElementById('btn-close-announcement');
+            if(closeBtn) closeBtn.classList.add('hidden');
         }
+    }
+}
 
         function updateNav() {
             document.getElementById('nav-username').innerText = user.name;
