@@ -484,17 +484,24 @@
                 <p id="modal-cast" class="text-sm text-white font-medium tracking-wide drop-shadow-sm">Actors</p>
             </div>
 
-            <div class="bg-black/20 rounded-2xl p-6 border border-white/10 backdrop-blur-sm shadow-inner mb-6">
-    <div class="flex justify-between items-center mb-4">
-        <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Berikan Rating</span>
-        <div class="flex gap-2 text-xl" id="input-stars">
-            <i class="far fa-star text-gray-500 cursor-pointer hover:text-yellow-400 transition" onclick="rate(1)"></i>
-            <i class="far fa-star text-gray-500 cursor-pointer hover:text-yellow-400 transition" onclick="rate(2)"></i>
-            <i class="far fa-star text-gray-500 cursor-pointer hover:text-yellow-400 transition" onclick="rate(3)"></i>
-            <i class="far fa-star text-gray-500 cursor-pointer hover:text-yellow-400 transition" onclick="rate(4)"></i>
-            <i class="far fa-star text-gray-500 cursor-pointer hover:text-yellow-400 transition" onclick="rate(5)"></i>
-        </div>
-    </div>
+            <div class="bg-black/20 rounded-2xl p-6 border border-white/10 backdrop-blur-sm shadow-inner">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-widest">Berikan Rating</span>
+                    <div class="flex gap-2 text-xl" id="input-stars">
+                        <i class="far fa-star text-gray-500 cursor-pointer hover:text-[#F5C518] transition" onclick="rate(1)"></i>
+                        <i class="far fa-star text-gray-500 cursor-pointer hover:text-[#F5C518] transition" onclick="rate(2)"></i>
+                        <i class="far fa-star text-gray-500 cursor-pointer hover:text-[#F5C518] transition" onclick="rate(3)"></i>
+                        <i class="far fa-star text-gray-500 cursor-pointer hover:text-[#F5C518] transition" onclick="rate(4)"></i>
+                        <i class="far fa-star text-gray-500 cursor-pointer hover:text-[#F5C518] transition" onclick="rate(5)"></i>
+                    </div>
+                </div>
+                <textarea id="review-text" rows="2" class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-white/30 focus:bg-black/40 transition mb-4 placeholder-gray-500 shadow-inner" placeholder="Tulis pendapatmu..."></textarea>
+                <div class="flex justify-end">
+                    <button id="btn-post" onclick="postReview()" class="px-6 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                        Kirim Ulasan
+                    </button>
+                </div>
+            </div>
     
     <textarea id="review-text" rows="2" class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-white/30 focus:bg-black/40 transition mb-4 placeholder-gray-500 shadow-inner" placeholder="Tulis pendapatmu..."></textarea>
     
