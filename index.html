@@ -770,28 +770,31 @@
 
         // Modal Logic
         function openModal(id) {
-            window.openModal = function(id) {
-    currentId = id; 
-    
-    // --- [TAMBAHKAN/PASTIKAN BAGIAN INI ADA] ---
-    userRating = 0;           // Reset variabel rating
-    rate(0);                  // Reset tampilan bintang jadi kosong
-    document.getElementById('review-text').value = ""; // Kosongkan text area
-    // ------------------------------------------
+            currentId = id;
+            const m = movies.find(x => x.id === id);
+            
+            document.getElementById('modal-img').src = m.img;
+            document.getElementById('modal-imdb').innerText = m.imdb;
+            document.getElementById('modal-title').innerText = m.title;
+            document.getElementById('modal-year').innerText = m.year;
+            document.getElementById('modal-director').innerText = m.dir;
+            document.getElementById('modal-cast').innerText = m.cast;
+            document.getElementById('modal-synopsis').innerText = m.syn;
+            
+            const gDiv = document.getElementById('modal-genre'); gDiv.innerHTML = '';
+            m.genre.forEach(g => gDiv.innerHTML += `<span class="text-[10px] bg-[var(--bg-body)] px-2 py-1 rounded text-[var(--text-secondary)] border border-[var(--glass-border)] uppercase tracking-wide">${g}</span>`);
+            
+            const modal = document.getElementById('movie-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+            
+            const content = document.getElementById('modal-content');
+            content.classList.remove('modal-exit');
+            content.classList.add('modal-enter-active');
 
-    const m = movies.find(x => x.id === id);
-    
-    // ... (kode lainnya biarkan saja, seperti set src gambar, judul, dll) ...
-    document.getElementById('modal-img').src = m.img;
-    // ... dst ...
-
-    const modal = document.getElementById('movie-modal');
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    
-    // ...
-    loadComments(id);
-            }
+            loadComments(id);
+        }
 
         function closeModal() {
             const content = document.getElementById('modal-content');
