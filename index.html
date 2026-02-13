@@ -335,7 +335,8 @@
                 </p>
             <p id="announcement-date" class="text-[9px] text-[var(--text-secondary)] mt-2 font-mono opacity-70"></p>
         </div>
-        <button onclick="closeAnnouncement()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
+        
+        <button id="btn-close-announcement" onclick="closeAnnouncement()" class="hidden text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
             <i class="fas fa-times"></i>
         </button>
     </div>
@@ -701,7 +702,12 @@
     document.getElementById('admin-floating-btn').classList.remove('hidden');
     setTimeout(() => { login.classList.add('hidden'); }, 500);
 
-    // Opsional: Simpan ke database jika perlu (kode sinkronisasi sebelumnya)
+    const closeBtn = document.getElementById('btn-close-announcement');
+    if (user.isOwner) {
+        closeBtn.classList.remove('hidden');
+    } else {
+        closeBtn.classList.add('hidden');
+    }
 }
 
         function openLoginAgain() {
@@ -1015,41 +1021,68 @@
 
         document.addEventListener("DOMContentLoaded", init);
 
+        // --- [TAMBAHAN BARU] FUNGSI KONTROL AKSES OWNER ---
+function checkOwnerAccess() {
+    const adminBtn = document.getElementById('admin-floating-btn');
+    const closeBtn = document.getElementById('btn-close-announcement');
+    
+    if (user.isOwner) {
+        // Jika Owner: Munculkan tombol Admin & Tombol Close Pengumuman
+        if(adminBtn) adminBtn.classList.remove('hidden');
+        if(closeBtn) closeBtn.classList.remove('hidden');
+    } else {
+        // Jika Guest/User Biasa: Sembunyikan tombol-tombol sakti
+        if(adminBtn) adminBtn.classList.add('hidden');
+        if(closeBtn) closeBtn.classList.add('hidden');
+    }
+}
+
         // --- FITUR PENGUMUMAN ---
         
         // 1. Memuat Pengumuman dari Firebase
         function listenAnnouncement() {
-            // Ambil 1 pengumuman terbaru
-            const q = window.query(window.collection(window.db, "announcements"), window.orderBy("createdAt", "desc"), window.limit(1));
+    // Ambil 1 pengumuman terbaru
+    const q = window.query(window.collection(window.db, "announcements"), window.orderBy("createdAt", "desc"), window.limit(1));
+    
+    window.onSnapshot(q, (snap) => {
+        const banner = document.getElementById('announcement-banner');
+        const closeBtn = document.getElementById('btn-close-announcement');
+        
+        if (snap.empty) {
+            banner.classList.add('hidden');
+            return;
+        }
+
+        snap.forEach(doc => {
+            const data = doc.data();
             
-            window.onSnapshot(q, (snap) => {
-                const banner = document.getElementById('announcement-banner');
+            // Cek apakah ada isinya
+            if (data.text && data.text.trim() !== "") {
+                // 1. ISI KONTEN
+                document.getElementById('announcement-text').innerHTML = data.text.replace(/\n/g, "<br>");
                 
-                if (snap.empty) {
-                    banner.classList.add('hidden');
-                    return;
+                if(data.createdAt) {
+                    const date = data.createdAt.toDate();
+                    document.getElementById('announcement-date').innerText = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+                }
+                
+                // 2. MUNCULKAN BANNER UTAMA (Untuk Semua Orang)
+                banner.classList.remove('hidden');
+
+                // 3. LOGIKA TOMBOL X (Hanya untuk Owner)
+                if (user.isOwner) {
+                    closeBtn.classList.remove('hidden'); // Owner bisa lihat X
+                } else {
+                    closeBtn.classList.add('hidden');    // Guest tidak bisa lihat X
                 }
 
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    
-                    // Cek apakah pengumuman "aktif" (Isinya tidak kosong)
-                    if (data.text && data.text.trim() !== "") {
-                        document.getElementById('announcement-text').innerHTML = data.text.replace(/\n/g, "<br>");
-                        
-                        // Format tanggal simpel
-                        if(data.createdAt) {
-                            const date = data.createdAt.toDate();
-                            document.getElementById('announcement-date').innerText = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
-                        }
-                        
-                        banner.classList.remove('hidden');
-                    } else {
-                        banner.classList.add('hidden');
-                    }
-                });
-            });
-        }
+            } else {
+                // Jika teks kosong, sembunyikan banner
+                banner.classList.add('hidden');
+            }
+        });
+    });
+}
 
         // 2. Fungsi Admin: Buka Modal
         window.openAdminModal = function() {
