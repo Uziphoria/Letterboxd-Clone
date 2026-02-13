@@ -335,8 +335,8 @@
                 </p>
             <p id="announcement-date" class="text-[9px] text-[var(--text-secondary)] mt-2 font-mono opacity-70"></p>
         </div>
-        <button onclick="closeAnnouncement()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
-            <i class="fas fa-times"></i>
+        <button id="btn-ann-delete" onclick="clearAnnouncement()" class="hidden ml-auto text-red-500 hover:text-red-400 transition bg-black/30 w-8 h-8 rounded-full flex items-center justify-center border border-red-500/30 hover:scale-110">
+    <i class="fas fa-trash"></i>
         </button>
     </div>
 </div>
