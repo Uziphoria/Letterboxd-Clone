@@ -1019,38 +1019,52 @@
         
         // 1. Memuat Pengumuman dari Firebase
         function listenAnnouncement() {
-            // Ambil 1 pengumuman terbaru
-            const q = window.query(window.collection(window.db, "announcements"), window.orderBy("createdAt", "desc"), window.limit(1));
-            
-            window.onSnapshot(q, (snap) => {
-                const banner = document.getElementById('announcement-banner');
-                
-                if (snap.empty) {
-                    banner.classList.add('hidden');
-                    return;
-                }
-
-                snap.forEach(doc => {
-                    const data = doc.data();
-                    
-                    // Cek apakah pengumuman "aktif" (Isinya tidak kosong)
-                    if (data.text && data.text.trim() !== "") {
-                        document.getElementById('announcement-text').innerHTML = data.text.replace(/\n/g, "<br>");
-                        
-                        // Format tanggal simpel
-                        if(data.createdAt) {
-                            const date = data.createdAt.toDate();
-                            document.getElementById('announcement-date').innerText = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
-                        }
-                        
-                        banner.classList.remove('hidden');
-                    } else {
-                        banner.classList.add('hidden');
-                    }
-                });
-            });
+    const q = window.query(window.collection(window.db, "announcements"), window.orderBy("createdAt", "desc"), window.limit(1));
+    
+    window.onSnapshot(q, (snap) => {
+        const banner = document.getElementById('announcement-banner');
+        
+        if (snap.empty) {
+            banner.classList.add('hidden');
+            return;
         }
 
+        snap.forEach(doc => {
+            const data = doc.data();
+            
+            // Cek apakah teks ada isinya
+            if (data.text && data.text.trim() !== "") {
+                // Isi Konten
+                document.getElementById('ann_text').innerHTML = data.text.replace(/\n/g, "<br>");
+                document.getElementById('ann_author').innerText = data.author || "Admin";
+                
+                const defaultImg = "https://ui-avatars.com/api/?name=Admin&background=random";
+                document.getElementById('ann_avatar').src = data.avatar || defaultImg;
+                
+                if(data.createdAt) {
+                    const date = data.createdAt.toDate();
+                    const options = { weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                    document.getElementById('ann_date').innerText = date.toLocaleDateString('id-ID', options);
+                }
+                
+                // --- LOGIKA PROTEKSI TOMBOL HAPUS ---
+                const btnDelete = document.getElementById('btn-ann-delete');
+                if (user.isOwner) {
+                    // Jika Owner: Munculkan tombol sampah
+                    btnDelete.classList.remove('hidden');
+                } else {
+                    // Jika Rakyat Biasa: Sembunyikan tombol (Mereka WAJIB baca)
+                    btnDelete.classList.add('hidden');
+                }
+                // -------------------------------------
+
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        });
+    });
+            }
         // 2. Fungsi Admin: Buka Modal
         window.openAdminModal = function() {
             document.getElementById('admin-modal').classList.remove('hidden');
