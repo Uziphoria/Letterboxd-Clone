@@ -1038,13 +1038,14 @@
 
         // --- FITUR PENGUMUMAN ---
         
-        // 1. Memuat Pengumuman dari Firebase
         function listenAnnouncement() {
+    // Ambil data terbaru
     const q = window.query(window.collection(window.db, "announcements"), window.orderBy("createdAt", "desc"), window.limit(1));
     
     window.onSnapshot(q, (snap) => {
         const banner = document.getElementById('announcement-banner');
         
+        // 1. Jika data kosong, sembunyikan banner
         if (snap.empty) {
             banner.classList.add('hidden');
             return;
@@ -1053,44 +1054,39 @@
         snap.forEach(doc => {
             const data = doc.data();
             
-            // Cek apakah teks ada isinya
+            // 2. Cek apakah teks valid (tidak kosong)
             if (data.text && data.text.trim() !== "") {
                 
-                // 1. Isi Konten
+                // ISI TEKS (Bagian Krusial)
                 const txtElem = document.getElementById('ann_text');
-                if(txtElem) txtElem.innerHTML = data.text.replace(/\n/g, "<br>");
+                if (txtElem) {
+                    txtElem.innerHTML = data.text; // Masukkan teks ke HTML
+                } else {
+                    console.error("Error: Element ID 'ann_text' tidak ditemukan di HTML!");
+                }
                 
-                const authElem = document.getElementById('ann_author');
-                if(authElem) authElem.innerText = data.author || "Admin";
-
-                const avElem = document.getElementById('ann_avatar');
-                if(avElem) avElem.src = data.avatar || "https://ui-avatars.com/api/?name=Admin&background=random";
+                // Isi Author & Avatar
+                document.getElementById('ann_author').innerText = data.author || "Admin";
+                document.getElementById('ann_avatar').src = data.avatar || "https://ui-avatars.com/api/?name=Admin";
                 
+                // Isi Tanggal
                 if(data.createdAt) {
                     const date = data.createdAt.toDate();
                     const options = { weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-                    const dateElem = document.getElementById('ann_date');
-                    if(dateElem) dateElem.innerText = date.toLocaleDateString('id-ID', options);
+                    document.getElementById('ann_date').innerText = date.toLocaleDateString('id-ID', options);
                 }
                 
-                // --- LOGIKA PROTEKSI TOMBOL HAPUS (ANTI ERROR) ---
+                // Cek Tombol Hapus (Owner Only)
                 const btnDelete = document.getElementById('btn-ann-delete');
-                
-                // Kita cek dulu apakah elemen tombolnya ADA di HTML
                 if (btnDelete) {
                     if (user && user.isOwner) {
-                        // Jika Owner: Munculkan tombol sampah
                         btnDelete.classList.remove('hidden');
                     } else {
-                        // Jika Rakyat Biasa: Sembunyikan
                         btnDelete.classList.add('hidden');
                     }
-                } else {
-                    console.warn("Tombol delete announcement tidak ditemukan di HTML");
                 }
-                // -------------------------------------
 
-                // TAMPILKAN BANNER
+                // TAMPILKAN
                 banner.classList.remove('hidden');
                 
             } else {
