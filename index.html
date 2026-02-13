@@ -676,14 +676,16 @@ console.log("Firebase Connected");
 
     const btn = document.querySelector('#login-card button');
     const originalText = btn.innerText;
-    btn.innerText = "Mengecek Database..."; // Efek loading
+    btn.innerText = "Sinkronisasi..."; // Indikator loading
+    btn.disabled = true;
 
-    // --- PROTEKSI OWNER ---
+    // --- 1. PROTEKSI OWNER ---
     if (inputName.toLowerCase() === "uziphoria") {
         const pass = prompt("Masukkan Kode Akses Owner:");
         if (pass !== "AZIPANGESTU2009") { 
-            alert("Password Salah! Anda bukan Owner.");
+            alert("Password Salah!");
             btn.innerText = originalText;
+            btn.disabled = false;
             return; 
         }
         user.isOwner = true;
@@ -692,51 +694,55 @@ console.log("Firebase Connected");
     }
 
     user.name = inputName;
-
+    
+    // --- 2. LOGIKA SINKRONISASI DATABASE ---
     try {
-        // 1. Cek apakah user ini sudah ada di Database Firebase?
-        const userRef = window.doc(window.db, "users", user.name.toLowerCase()); // Pakai huruf kecil biar tidak duplikat
-        const userSnap = await window.getDoc(userRef);
+        const docId = user.name.toLowerCase().replace(/\s+/g, '-'); // Buat ID unik (azip-pangestu)
+        const userRef = window.doc(window.db, "users", docId);
+        const fileInput = document.getElementById('login-file-input');
 
-        if (userSnap.exists()) {
-            // JIKA AKUN ADA DI DATABASE
-            const data = userSnap.data();
-            
-            // Logika: Jika user TIDAK upload foto baru saat login ini, 
-            // maka pakai foto lama dari database (Sinkronisasi)
-            const currentPreview = document.getElementById('login-avatar-preview').src;
-            const isDefaultAvatar = currentPreview.includes("pravatar.cc"); // Cek apakah masih avatar bawaan
-            
-            if (isDefaultAvatar && data.avatar) {
-                user.avatar = data.avatar; // AMBIL FOTO DARI DATABASE (HP)
-                console.log("Foto disinkronkan dari database!");
-            } else {
-                // Jika user upload foto baru di laptop, update database
-                await window.setDoc(userRef, { 
-                    name: user.name,
-                    avatar: user.avatar,
-                    lastLogin: window.serverTimestamp()
-                }, { merge: true });
-            }
-        } else {
-            // JIKA AKUN BARU (Belum ada di database)
-            // Simpan data baru ke database
+        // A. JIKA USER UPLOAD FOTO BARU DI SINI
+        if (fileInput.files.length > 0) {
+            console.log("Upload foto baru ke database...");
+            // user.avatar sudah berisi base64 dari fungsi previewLoginImage
             await window.setDoc(userRef, { 
                 name: user.name,
                 avatar: user.avatar,
-                createdAt: window.serverTimestamp()
-            });
+                isOwner: user.isOwner,
+                lastLogin: window.serverTimestamp()
+            }, { merge: true });
+        } 
+        
+        // B. JIKA TIDAK UPLOAD FOTO (Login biasa di device baru)
+        else {
+            console.log("Mencari data di database...");
+            const docSnap = await window.getDoc(userRef);
+            
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.avatar) {
+                    console.log("Foto ditemukan! Menggunakan foto dari database.");
+                    user.avatar = data.avatar; // UPDATE FOTO LOKAL DARI DB
+                }
+            } else {
+                // User baru pertama kali login dan tidak upload foto
+                console.log("User baru, menyimpan data default.");
+                await window.setDoc(userRef, { 
+                    name: user.name,
+                    avatar: user.avatar, // Foto default
+                    createdAt: window.serverTimestamp()
+                });
+            }
         }
 
-        // 2. Simpan ke LocalStorage (Biar tetap login kalau di-refresh)
+        // --- 3. SIMPAN KE MEMORI BROWSER (LocalStorage) ---
         localStorage.setItem('cinelog_user', JSON.stringify(user));
+        updateNav(); // Update tampilan navbar
         
-        updateNav();
-
-        // 3. Atur tombol Admin/Owner
+        // --- 4. ATUR TOMBOL KHUSUS OWNER ---
         const adminBtn = document.getElementById('admin-floating-btn');
         const closeBtn = document.getElementById('btn-close-announcement');
-
+        
         if (user.isOwner) {
             if(adminBtn) adminBtn.classList.remove('hidden');
             if(closeBtn) closeBtn.classList.remove('hidden');
@@ -745,17 +751,18 @@ console.log("Firebase Connected");
             if(closeBtn) closeBtn.classList.add('hidden');
         }
 
-        // 4. Tutup Layar Login
+        // --- 5. TUTUP LOGIN ---
         const login = document.getElementById('login-screen');
         login.classList.add('opacity-0');
         setTimeout(() => { login.classList.add('hidden'); }, 500);
 
     } catch (e) {
-        console.error("Error login:", e);
-        alert("Gagal sinkronisasi: " + e.message);
+        console.error("Error Sync:", e);
+        alert("Gagal sinkronisasi data: " + e.message);
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
     }
-    
-    btn.innerText = originalText;
 }
 
         function openLoginAgain() {
