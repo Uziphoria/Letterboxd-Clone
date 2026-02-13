@@ -323,44 +323,23 @@
         </div>
 
         <div id="announcement-banner" class="hidden max-w-2xl mx-auto mb-12 relative group animate-[modal-enter_0.5s_ease]">
-    <div class="absolute -inset-0.5 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-2xl blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
+    <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000"></div>
     
-    <div class="glass-panel p-6 rounded-2xl border border-purple-500/30 relative shadow-2xl overflow-hidden">
-        
-        <div class="absolute -top-4 -right-4 p-4 opacity-5 pointer-events-none transform rotate-12">
-            <i class="fas fa-bullhorn text-8xl text-white"></i>
+    <div class="glass-panel p-6 rounded-2xl border border-purple-500/30 relative flex items-start gap-4 shadow-2xl">
+        <div class="w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center shrink-0 animate-pulse">
+            <i class="fas fa-bullhorn text-purple-400"></i>
         </div>
-
-        <div class="flex items-center gap-3 mb-4 border-b border-white/10 pb-3 relative z-10">
-            <div class="relative shrink-0">
-                <img id="ann_avatar" src="https://ui-avatars.com/api/?name=Admin" class="w-10 h-10 rounded-full object-cover border-2 border-purple-400 shadow-lg bg-black">
-                <div class="absolute -bottom-1 -right-1 bg-blue-500 text-white text-[8px] w-4 h-4 flex items-center justify-center rounded-full border border-black">
-                    <i class="fas fa-check"></i>
-                </div>
-            </div>
-            
-            <div class="flex-grow">
-                <div class="flex items-center gap-2">
-                    <h4 id="ann_author" class="text-sm font-bold text-white tracking-wide">Admin</h4>
-                    <span class="px-1.5 py-0.5 bg-purple-600 text-[8px] font-bold text-white rounded uppercase tracking-wider shadow-[0_0_10px_rgba(147,51,234,0.5)]">
-                        Owner
-                    </span>
-                </div>
-                <p id="ann_date" class="text-[10px] text-gray-400 font-mono mt-0.5">Baru saja</p>
-            </div>
-
-            <button id="btn-ann-delete" onclick="clearAnnouncement()" class="hidden text-red-400 hover:text-red-200 transition bg-red-500/10 hover:bg-red-500/30 w-8 h-8 rounded-full flex items-center justify-center border border-red-500/20">
-                <i class="fas fa-trash text-xs"></i>
-            </button>
+        <div class="flex-grow">
+            <h4 class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-1">Official Announcement</h4>
+            <p id="announcement-text" class="text-sm text-[var(--text-primary)] leading-relaxed font-medium">
+                </p>
+            <p id="announcement-date" class="text-[9px] text-[var(--text-secondary)] mt-2 font-mono opacity-70"></p>
         </div>
-
-        <div class="relative z-10 pl-1">
-            <p id="ann_text" class="text-sm md:text-base text-gray-100 leading-relaxed font-light drop-shadow-sm whitespace-pre-line">
-                Memuat pengumuman...
-            </p>
-        </div>
+        <button onclick="closeAnnouncement()" class="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition">
+            <i class="fas fa-times"></i>
+        </button>
     </div>
-        </div>
+</div>
 
 <div id="admin-floating-btn" class="fixed bottom-6 right-6 z-50 hidden">
     <button onclick="openAdminModal()" class="w-14 h-14 rounded-full bg-gradient-to-tr from-purple-600 to-indigo-600 text-white shadow-lg shadow-purple-500/40 flex items-center justify-center hover:scale-110 transition-transform duration-300 border border-white/20">
@@ -495,22 +474,6 @@
                         <i class="far fa-star text-gray-500 cursor-pointer hover:text-[#F5C518] transition" onclick="rate(5)"></i>
                     </div>
                 </div>
-                <textarea id="review-text" rows="2" class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-white/30 focus:bg-black/40 transition mb-4 placeholder-gray-500 shadow-inner" placeholder="Tulis pendapatmu..."></textarea>
-                <div class="flex justify-end">
-                    <button id="btn-post" onclick="postReview()" class="px-6 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                        Kirim Ulasan
-                    </button>
-                </div>
-            </div>
-    
-    <textarea id="review-text" rows="2" class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-white/30 focus:bg-black/40 transition mb-4 placeholder-gray-500 shadow-inner" placeholder="Tulis pendapatmu..."></textarea>
-    
-    <div class="flex justify-end">
-        <button id="btn-post" onclick="postReview()" class="px-6 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(255,255,255,0.1)] hover:shadow-[0_0_20px_rgba(255,255,255,0.4)]">
-            Kirim Ulasan
-        </button>
-    </div>
-            </div>
                 <textarea id="review-text" rows="2" class="w-full bg-black/30 border border-white/10 rounded-xl p-4 text-white text-sm focus:outline-none focus:border-white/30 focus:bg-black/40 transition mb-4 placeholder-gray-500 shadow-inner" placeholder="Tulis pendapatmu..."></textarea>
                 <div class="flex justify-end">
                     <button id="btn-post" onclick="postReview()" class="px-6 py-2 rounded-full bg-white/10 border border-white/20 text-white text-xs font-bold uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)]">
@@ -824,22 +787,6 @@
         }
 
         async function postReview() {
-            // [UPDATE] FUNGSI BINTANG (WARNA KUNING)
-        window.rate = function(n) {
-            userRating = n;
-            const stars = document.querySelectorAll('#input-stars i');
-            stars.forEach((s, i) => {
-                // Jika urutan bintang kurang dari n, kasih warna kuning (yellow-400)
-                if (i < n) {
-                    s.className = "fas fa-star text-yellow-400 cursor-pointer transition transform scale-110"; 
-                } else {
-                    s.className = "far fa-star text-gray-500 cursor-pointer transition"; 
-                }
-            });
-        }
-
-        // [UPDATE] FUNGSI KIRIM REVIEW (KOMPATIBEL DENGAN SISTEM PROFIL)
-        window.postReview = async function() {
             const txt = document.getElementById('review-text').value;
             if(!txt && userRating===0) { alert("Berikan rating atau ulasan!"); return; }
             if(user.name === "Guest") { openLoginAgain(); closeModal(); return; }
@@ -857,7 +804,7 @@
             } catch(e) { console.error(e); alert("Error posting review"); }
             btn.innerText = originalText;
         }
-            
+
         function loadComments(movieId) {
     const list = document.getElementById('comments-list'); 
     list.innerHTML = '<div class="text-center py-4 text-[var(--text-secondary)] text-xs animate-pulse">Memuat diskusi...</div>';
@@ -1070,73 +1017,40 @@
 
         // --- FITUR PENGUMUMAN ---
         
+        // 1. Memuat Pengumuman dari Firebase
         function listenAnnouncement() {
-    const q = window.query(window.collection(window.db, "announcements"), window.orderBy("createdAt", "desc"), window.limit(1));
-    
-    window.onSnapshot(q, (snap) => {
-        const banner = document.getElementById('announcement-banner');
-        
-        if (snap.empty) {
-            banner.classList.add('hidden');
-            return;
+            // Ambil 1 pengumuman terbaru
+            const q = window.query(window.collection(window.db, "announcements"), window.orderBy("createdAt", "desc"), window.limit(1));
+            
+            window.onSnapshot(q, (snap) => {
+                const banner = document.getElementById('announcement-banner');
+                
+                if (snap.empty) {
+                    banner.classList.add('hidden');
+                    return;
+                }
+
+                snap.forEach(doc => {
+                    const data = doc.data();
+                    
+                    // Cek apakah pengumuman "aktif" (Isinya tidak kosong)
+                    if (data.text && data.text.trim() !== "") {
+                        document.getElementById('announcement-text').innerHTML = data.text.replace(/\n/g, "<br>");
+                        
+                        // Format tanggal simpel
+                        if(data.createdAt) {
+                            const date = data.createdAt.toDate();
+                            document.getElementById('announcement-date').innerText = date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+                        }
+                        
+                        banner.classList.remove('hidden');
+                    } else {
+                        banner.classList.add('hidden');
+                    }
+                });
+            });
         }
 
-        snap.forEach(doc => {
-            const data = doc.data();
-            
-            // Cek apakah teks ada isinya
-            if (data.text && data.text.trim() !== "") {
-                
-                // 1. Isi Teks
-                const txtElem = document.getElementById('ann_text');
-                if(txtElem) txtElem.innerHTML = data.text.replace(/\n/g, "<br>");
-                
-                // 2. Isi Nama Pengirim
-                const authorName = data.author || "Admin";
-                const authElem = document.getElementById('ann_author');
-                if(authElem) authElem.innerText = authorName;
-
-                // 3. LOGIKA AVATAR (YANG DIPERBAIKI)
-                // Jika data.avatar ada, pakai itu. 
-                // Jika TIDAK ADA, buat inisial dari nama pengirim (misal Uziphoria -> UZ)
-                const avElem = document.getElementById('ann_avatar');
-                if(avElem) {
-                    if (data.avatar && data.avatar.trim() !== "") {
-                        avElem.src = data.avatar;
-                    } else {
-                        // Fallback pintar: Pakai nama Author untuk bikin avatar
-                        avElem.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(authorName)}&background=random&color=fff`;
-                    }
-                }
-                
-                // 4. Isi Tanggal
-                if(data.createdAt) {
-                    const date = data.createdAt.toDate();
-                    const options = { weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-                    const dateElem = document.getElementById('ann_date');
-                    if(dateElem) dateElem.innerText = date.toLocaleDateString('id-ID', options);
-                }
-                
-                // 5. Cek Tombol Hapus (Hanya Owner)
-                const btnDelete = document.getElementById('btn-ann-delete');
-                if (btnDelete) {
-                    // Cek apakah user yang login sekarang adalah Owner
-                    if (window.user && window.user.isOwner) {
-                        btnDelete.classList.remove('hidden');
-                    } else {
-                        btnDelete.classList.add('hidden');
-                    }
-                }
-
-                // TAMPILKAN BANNER
-                banner.classList.remove('hidden');
-                
-            } else {
-                banner.classList.add('hidden');
-            }
-        });
-    });
-                        }
         // 2. Fungsi Admin: Buka Modal
         window.openAdminModal = function() {
             document.getElementById('admin-modal').classList.remove('hidden');
@@ -1145,63 +1059,35 @@
 
         // 3. Fungsi Admin: Posting
         window.postAnnouncement = async function() {
-    const txt = document.getElementById('admin-input-text').value;
-    if(!txt) return alert("Isi dulu teksnya, Paduka!");
+            const txt = document.getElementById('admin-input-text').value;
+            if(!txt) return alert("Isi dulu teksnya, Paduka!");
 
-    try {
-        // --- PERBAIKAN LOGIKA PENGAMBILAN FOTO ---
-        let currentAvatar = user.avatar;
+            try {
+                // Kita tambahkan dokumen baru ke koleksi 'announcements'
+                await window.addDoc(window.collection(window.db, "announcements"), {
+                    text: txt,
+                    createdAt: window.serverTimestamp(),
+                    author: user.name
+                });
+                alert("Titah berhasil disebarkan!");
+                document.getElementById('admin-modal').classList.add('hidden');
+                document.getElementById('admin-input-text').value = "";
+            } catch(e) {
+                console.error(e);
+                alert("Gagal memposting: " + e.message);
+            }
+        }
 
-        // Cek 1: Jika user.avatar kosong atau default, coba ambil dari Navbar
-        const navImg = document.getElementById('nav-avatar');
-        if (navImg && navImg.src) {
-            currentAvatar = navImg.src;
-        }
-        
-        // Cek 2: Jika masih kosong, ambil dari Profil Card
-        const profImg = document.getElementById('prof-avatar');
-        if ((!currentAvatar || currentAvatar.includes("ui-avatars")) && profImg && profImg.src) {
-            currentAvatar = profImg.src;
-        }
-
-        // Cek 3: Fallback terakhir (Default Link)
-        if (!currentAvatar) {
-            currentAvatar = "https://i.pravatar.cc/150?img=12";
-        }
-        // ------------------------------------------
-
-        // Simpan ke database
-        await window.addDoc(window.collection(window.db, "announcements"), {
-            text: txt,
-            createdAt: window.serverTimestamp(),
-            author: user.name,
-            avatar: currentAvatar // Simpan foto yang sudah dipastikan ada
-        });
-        
-        alert("Titah berhasil disebarkan!");
-        document.getElementById('admin-modal').classList.add('hidden');
-        document.getElementById('admin-input-text').value = "";
-    } catch(e) {
-        console.error(e);
-        alert("Gagal memposting: " + e.message);
-    }
-        }
         // 4. Fungsi Admin: Hapus Pengumuman (Sebenarnya memposting text kosong agar hilang)
         window.clearAnnouncement = async function() {
-    // Validasi ganda: Cek di script juga
-    if (!user.isOwner) return; 
-
-    if(!confirm("Hapus pengumuman ini secara permanen dari Database?")) return;
-    
-    try {
-        // Kita timpa dengan text kosong agar banner hilang di semua orang
-        await window.addDoc(window.collection(window.db, "announcements"), {
-            text: "", 
-            createdAt: window.serverTimestamp(),
-            author: user.name
-        });
-        // Tidak perlu hide manual, listener akan otomatis menghilangkan banner
-    } catch(e) { console.error(e); }
+            if(!confirm("Hapus pengumuman yang sedang tayang?")) return;
+            try {
+                await window.addDoc(window.collection(window.db, "announcements"), {
+                    text: "", // Teks kosong akan menyembunyikan banner
+                    createdAt: window.serverTimestamp()
+                });
+                document.getElementById('admin-modal').classList.add('hidden');
+            } catch(e) { console.error(e); }
         }
 
         // 5. User menutup banner sementara (lokal)
