@@ -1113,25 +1113,47 @@
 
         // 3. Fungsi Admin: Posting
         window.postAnnouncement = async function() {
-            const txt = document.getElementById('admin-input-text').value;
-            if(!txt) return alert("Isi dulu teksnya, Paduka!");
+    const txt = document.getElementById('admin-input-text').value;
+    if(!txt) return alert("Isi dulu teksnya, Paduka!");
 
-            try {
-                // Kita tambahkan dokumen baru ke koleksi 'announcements'
-                await window.addDoc(window.collection(window.db, "announcements"), {
-                    text: txt,
-                    createdAt: window.serverTimestamp(),
-                    author: user.name
-                });
-                alert("Titah berhasil disebarkan!");
-                document.getElementById('admin-modal').classList.add('hidden');
-                document.getElementById('admin-input-text').value = "";
-            } catch(e) {
-                console.error(e);
-                alert("Gagal memposting: " + e.message);
-            }
+    try {
+        // --- PERBAIKAN LOGIKA PENGAMBILAN FOTO ---
+        let currentAvatar = user.avatar;
+
+        // Cek 1: Jika user.avatar kosong atau default, coba ambil dari Navbar
+        const navImg = document.getElementById('nav-avatar');
+        if (navImg && navImg.src) {
+            currentAvatar = navImg.src;
+        }
+        
+        // Cek 2: Jika masih kosong, ambil dari Profil Card
+        const profImg = document.getElementById('prof-avatar');
+        if ((!currentAvatar || currentAvatar.includes("ui-avatars")) && profImg && profImg.src) {
+            currentAvatar = profImg.src;
         }
 
+        // Cek 3: Fallback terakhir (Default Link)
+        if (!currentAvatar) {
+            currentAvatar = "https://i.pravatar.cc/150?img=12";
+        }
+        // ------------------------------------------
+
+        // Simpan ke database
+        await window.addDoc(window.collection(window.db, "announcements"), {
+            text: txt,
+            createdAt: window.serverTimestamp(),
+            author: user.name,
+            avatar: currentAvatar // Simpan foto yang sudah dipastikan ada
+        });
+        
+        alert("Titah berhasil disebarkan!");
+        document.getElementById('admin-modal').classList.add('hidden');
+        document.getElementById('admin-input-text').value = "";
+    } catch(e) {
+        console.error(e);
+        alert("Gagal memposting: " + e.message);
+    }
+        }
         // 4. Fungsi Admin: Hapus Pengumuman (Sebenarnya memposting text kosong agar hilang)
         window.clearAnnouncement = async function() {
     // Validasi ganda: Cek di script juga
