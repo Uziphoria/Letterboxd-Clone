@@ -1034,37 +1034,51 @@
             
             // Cek apakah teks ada isinya
             if (data.text && data.text.trim() !== "") {
-                // Isi Konten
-                document.getElementById('ann_text').innerHTML = data.text.replace(/\n/g, "<br>");
-                document.getElementById('ann_author').innerText = data.author || "Admin";
                 
-                const defaultImg = "https://ui-avatars.com/api/?name=Admin&background=random";
-                document.getElementById('ann_avatar').src = data.avatar || defaultImg;
+                // 1. Isi Konten
+                const txtElem = document.getElementById('ann_text');
+                if(txtElem) txtElem.innerHTML = data.text.replace(/\n/g, "<br>");
+                
+                const authElem = document.getElementById('ann_author');
+                if(authElem) authElem.innerText = data.author || "Admin";
+
+                const avElem = document.getElementById('ann_avatar');
+                if(avElem) avElem.src = data.avatar || "https://ui-avatars.com/api/?name=Admin&background=random";
                 
                 if(data.createdAt) {
                     const date = data.createdAt.toDate();
                     const options = { weekday: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-                    document.getElementById('ann_date').innerText = date.toLocaleDateString('id-ID', options);
+                    const dateElem = document.getElementById('ann_date');
+                    if(dateElem) dateElem.innerText = date.toLocaleDateString('id-ID', options);
                 }
                 
-                // --- LOGIKA PROTEKSI TOMBOL HAPUS ---
+                // --- LOGIKA PROTEKSI TOMBOL HAPUS (ANTI ERROR) ---
                 const btnDelete = document.getElementById('btn-ann-delete');
-                if (user.isOwner) {
-                    // Jika Owner: Munculkan tombol sampah
-                    btnDelete.classList.remove('hidden');
+                
+                // Kita cek dulu apakah elemen tombolnya ADA di HTML
+                if (btnDelete) {
+                    if (user && user.isOwner) {
+                        // Jika Owner: Munculkan tombol sampah
+                        btnDelete.classList.remove('hidden');
+                    } else {
+                        // Jika Rakyat Biasa: Sembunyikan
+                        btnDelete.classList.add('hidden');
+                    }
                 } else {
-                    // Jika Rakyat Biasa: Sembunyikan tombol (Mereka WAJIB baca)
-                    btnDelete.classList.add('hidden');
+                    console.warn("Tombol delete announcement tidak ditemukan di HTML");
                 }
                 // -------------------------------------
 
+                // TAMPILKAN BANNER
                 banner.classList.remove('hidden');
+                
             } else {
+                // Jika teks kosong (sudah dihapus), sembunyikan banner
                 banner.classList.add('hidden');
             }
         });
     });
-            }
+        }
         // 2. Fungsi Admin: Buka Modal
         window.openAdminModal = function() {
             document.getElementById('admin-modal').classList.remove('hidden');
